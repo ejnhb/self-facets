@@ -1,5 +1,31 @@
 # Codebook changelog
 
+## 0.5 (2026-11-26, proposed)
+
+- **Two tiers.** Every facet file names a `tier`. Core: `study_kind`, `format`,
+  `construct`, `report_target`, `evidence`, `validated_against`, `varies`,
+  `comparison`, `elicitation`, and the claim facets `evidence_kind`, `stance`,
+  `disposition`. Interpretive: the four unit facets, `self_sense`,
+  `object_of_study`, and the claim facets `report_source`, `origin`,
+  `integration`, `aspect`. Why: in the pilot the interpretive facets were the
+  least reliable (`self_sense` 6 of 9, `unit_disposition` 3 of 9) and the
+  slowest, so coding them on every paper made a large backlog expensive while
+  adding the least certain values. Now they are coded where a source states a
+  position, a question needs them, or a conflict turns on them.
+- `self_sense`, `unit_state`, `unit_disposition`, `unit_reporter` and
+  `object_of_study` are no longer required (version 0.5). Existing codings are
+  unchanged.
+- **New special value `not_yet_coded`**, for interpretive facets only: nobody
+  has coded it, as against `unspecified` (the source does not say). The build
+  stores it for any interpretive study facet left out of a record, except
+  `unit_position`, whose absence keeps its meaning of no position
+  (`absent_means: no_position`), and except conceptual and review studies,
+  where the facets they need not code are `not_applicable` as before.
+- **Questions can list `needs`:** interpretive facets that every claim linked to
+  the question, or to a question under it, must have coded. Interpretive claim
+  facets accept `unspecified` for this case. The build adds `question_needs`,
+  and `shared_facets` in the conflicts view no longer counts `not_yet_coded`.
+
 ## 0.4 (2026-11-26, in progress)
 
 - **Claims gain `effect_of`**, naming the varied variable whose effect the

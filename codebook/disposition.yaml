@@ -3,6 +3,7 @@ version: 0.2
 applies_to: claim
 cardinality: many
 required: false
+tier: core
 question: Which trained stance or behavioural disposition is the claim about?
 values:
   denial_of_experience:

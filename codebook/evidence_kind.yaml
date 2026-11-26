@@ -3,6 +3,7 @@ version: 0.1
 applies_to: claim
 cardinality: one
 required: true
+tier: core
 question: What kind of support does the source give this claim?
 values:
   measured:

@@ -3,6 +3,8 @@ version: 0.2
 applies_to: study
 cardinality: many
 required: false
+tier: interpretive
+absent_means: no_position
 values_from: units
 question: Which unit does the source argue is the self?
 guidance: >
@@ -12,3 +14,6 @@ guidance: >
   bearer of a state, a disposition or a report, and are coded whether or not
   the source has a view. A source that argues against a unit is not coded with
   that unit here; put the argument in a claim.
+  Unlike the other interpretive facets, leaving this one out does not mean
+  "not yet coded": it means the coder found no position in the source
+  (`absent_means: no_position`). The build stores it as `no_position`.

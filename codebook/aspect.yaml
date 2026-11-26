@@ -3,6 +3,7 @@ version: 0.2
 applies_to: claim
 cardinality: many
 required: false
+tier: interpretive
 question: Is the claim about what the system represents of itself, or about what drives its behaviour?
 values:
   represented:

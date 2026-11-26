@@ -3,6 +3,7 @@ version: 0.2
 applies_to: study
 cardinality: many
 required: true
+tier: core
 question: Which channels of evidence does the study collect?
 values:
   self_report:

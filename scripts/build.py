@@ -13,6 +13,8 @@ import sys
 from pathlib import Path
 
 from _load import (
+    LIGHT_REQUIRED,
+    NOT_YET_CODED,
     ROOT,
     as_list,
     facet_entry,
@@ -39,6 +41,8 @@ CREATE TABLE model_stage_datasets (model TEXT, dataset TEXT);
 CREATE TABLE questions (id TEXT PRIMARY KEY, text TEXT, parent TEXT, status TEXT, added TEXT);
 -- Each question with the top of its parent chain (itself if it has no parent).
 CREATE TABLE question_roots (question TEXT PRIMARY KEY, root TEXT);
+-- Interpretive facets a question's evidence must have coded (for it and every question under it).
+CREATE TABLE question_needs (question TEXT, facet TEXT);
 CREATE TABLE sources (
     id TEXT PRIMARY KEY, title TEXT, date TEXT, year INTEGER,
     coded_by TEXT, coder_model TEXT, coded_on TEXT, version_read TEXT,
@@ -84,7 +88,7 @@ SELECT ra.root AS question, a.claim AS supports, b.claim AS against,
        ca.scope_conditions AS supports_conditions, cb.scope_conditions AS against_conditions,
        (SELECT COUNT(*) FROM study_facets f JOIN study_facets g
           ON g.facet = f.facet AND g.value = f.value
-        WHERE f.study = ca.study AND g.study = cb.study) AS shared_facets
+        WHERE f.study = ca.study AND g.study = cb.study AND f.value != 'not_yet_coded') AS shared_facets
 FROM claim_questions a
 JOIN question_roots ra ON ra.question = a.question
 JOIN claim_questions b ON b.stance = 'against'
@@ -171,6 +175,8 @@ def build(out_path):
             "INSERT INTO questions VALUES (?,?,?,?,?)",
             (q["id"], text(q.get("text")), q.get("parent"), q.get("status"), text(q.get("added"))),
         )
+        for name in as_list(q.get("needs")):
+            db.execute("INSERT INTO question_needs VALUES (?,?)", (q["id"], name))
     for qid in parents:
         root = qid
         while parents.get(root):
@@ -226,6 +232,19 @@ def build(out_path):
                 for value, levels in (entry.get("levels") or {}).items():
                     for level in as_list(levels):
                         db.execute("INSERT INTO study_facet_levels VALUES (?,?,?,?)", (stid, name, value, level))
+            # An interpretive facet left out of the record is stored as not_yet_coded, so a query can tell
+            # "nobody has looked" from "the source does not say" (unspecified). In a conceptual or review study the
+            # facets it need not code are read as not_applicable, as before.
+            kind = facet_entry((study.get("facets") or {}).get("study_kind"))["value"]
+            light = bool(kind) and kind[0] in ("conceptual", "review")
+            for name, facet in facets.items():
+                if facet["applies_to"] == "study" and facet.get("tier") == "interpretive" and name not in (study.get("facets") or {}):
+                    db.execute(
+                        "INSERT INTO study_facets VALUES (?,?,?,?,?,?,?,?,?)",
+                        (stid, name, facet.get("absent_means")
+                         or ("not_applicable" if light and name not in LIGHT_REQUIRED else NOT_YET_CODED),
+                         None, None, None, None, None, None),
+                    )
 
         for claim in as_list(src.get("claims")):
             cid = claim["id"]

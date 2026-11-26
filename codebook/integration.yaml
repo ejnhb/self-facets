@@ -3,6 +3,7 @@ version: 0.2
 applies_to: claim
 cardinality: one
 required: false
+tier: interpretive
 question: How deeply does the source find the stance to be held?
 values:
   compliance:

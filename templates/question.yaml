@@ -1,0 +1,18 @@
+# Template for a question: append to questions/questions.yaml.
+# (R) required, (O) optional, (C) conditional. The rules are at the top of questions.yaml.
+
+- id: q-short-description           # (R)
+  text: >-                          # (R) worded so that yes means the effect or capacity is present
+    Does ...?
+  kind: yesno                       # (O) yesno (default) or which
+  answer_facet: origin              # (C) required for kind which: the facet whose value answers it
+  parent: q-broader-question        # (O) a broader question this sits under
+  polarity: direct                  # (O, needs parent) direct | inverse | none; yes/no questions only
+  needs: [report_source]            # (O) interpretive facets every linked claim (and its study) must code
+  frame:                            # (O) the question restated as facet values, for finding candidate studies
+    construct: [introspection]
+    varies: [post_training_stage]
+  added: 2026-01-31                 # (R)
+  status: open                      # (R)
+  note: >-                          # (O) what separates yes from no; links to related questions
+    ...

@@ -71,6 +71,24 @@ studies:
       - claude-3.5-haiku-h-only
       - claude-3-opus-h-only
     facets:
+      system_prompt:
+        value: none
+        basis: operational
+        where: "App. 12.1.2 to 12.4.2"
+        note: The prompts are given in full as Human and Assistant turns with no system turn.
+      reasoning:
+        value: none
+        basis: operational
+        where: "§4; App. 12"
+        note: Responses are sampled directly after the Assistant turn (100 tokens at temperature 1 for aggregate results); no thinking mode is mentioned. The response itself is the report and can change course within it.
+      report_readout:
+        value: free_text
+        basis: stated
+        where: "§5.4; App. 12.1.3"
+        note: Free responses are graded by an LLM judge (Claude Sonnet 4) against written criteria.
+      unit_position:
+        value: not_applicable
+        note: Backfilled in codebook 0.6. Under 0.5 and earlier this facet was left out when the coder found no position, so absence recorded that finding.
       study_kind: experiment
       unit_state:
         value: forward_pass
@@ -225,6 +243,24 @@ studies:
     models:
       - claude-opus-4.1
     facets:
+      system_prompt:
+        value: none
+        basis: operational
+        where: "App. 12.1.2 to 12.4.2"
+        note: The prompts are given in full as Human and Assistant turns with no system turn.
+      reasoning:
+        value: none
+        basis: operational
+        where: "§4; App. 12"
+        note: Responses are sampled directly after the Assistant turn (100 tokens at temperature 1 for aggregate results); no thinking mode is mentioned. The response itself is the report and can change course within it.
+      report_readout:
+        value: free_text
+        basis: stated
+        where: "§5.4; App. 12.1.3"
+        note: Free responses are graded by an LLM judge (Claude Sonnet 4) against written criteria.
+      unit_position:
+        value: not_applicable
+        note: Backfilled in codebook 0.6. Under 0.5 and earlier this facet was left out when the coder found no position, so absence recorded that finding.
       study_kind: experiment
       unit_state:
         value: forward_pass
@@ -308,6 +344,22 @@ studies:
       prompt was given to them or how many trials were run.
     models: []
     facets:
+      system_prompt:
+        value: none
+        basis: operational
+        note: Base pretrained models, run without a chat template; how their prompt was laid out is not in the pages read.
+      reasoning:
+        value: none
+        basis: operational
+        note: Base models continuing text; no reasoning step is described.
+      report_readout:
+        value: free_text
+        basis: stated
+        where: "§5.4; App. 12.1.3"
+        note: Free responses are graded by an LLM judge (Claude Sonnet 4) against written criteria.
+      unit_position:
+        value: not_applicable
+        note: Backfilled in codebook 0.6. Under 0.5 and earlier this facet was left out when the coder found no position, so absence recorded that finding.
       study_kind: experiment
       unit_state:
         value: forward_pass
@@ -414,6 +466,24 @@ studies:
       - claude-3-sonnet
       - claude-3-haiku
     facets:
+      system_prompt:
+        value: none
+        basis: operational
+        where: "App. 12.1.2 to 12.4.2"
+        note: The prompts are given in full as Human and Assistant turns with no system turn.
+      reasoning:
+        value: none
+        basis: operational
+        where: "§4; App. 12"
+        note: Responses are sampled directly after the Assistant turn (100 tokens at temperature 1 for aggregate results); no thinking mode is mentioned. The response itself is the report and can change course within it.
+      report_readout:
+        value: free_text
+        basis: stated
+        where: "§5.4; App. 12.1.3"
+        note: Free responses are graded by an LLM judge (Claude Sonnet 4) against written criteria.
+      unit_position:
+        value: not_applicable
+        note: Backfilled in codebook 0.6. Under 0.5 and earlier this facet was left out when the coder found no position, so absence recorded that finding.
       study_kind: experiment
       unit_state:
         value: forward_pass
@@ -490,6 +560,24 @@ studies:
       - claude-3-sonnet
       - claude-3-haiku
     facets:
+      system_prompt:
+        value: none
+        basis: operational
+        where: "App. 12.1.2 to 12.4.2"
+        note: The prompts are given in full as Human and Assistant turns with no system turn.
+      reasoning:
+        value: none
+        basis: operational
+        where: "§4; App. 12"
+        note: Responses are sampled directly after the Assistant turn (100 tokens at temperature 1 for aggregate results); no thinking mode is mentioned. The response itself is the report and can change course within it.
+      report_readout:
+        value: generated_choice
+        basis: stated
+        where: "App. 12.2.2, 12.2.3"
+        note: The model gives one word (at most 5 tokens, "Answer immediately"); a judge maps it to one of ten words. The transcription half is a behaviour, scored by string match.
+      unit_position:
+        value: not_applicable
+        note: Backfilled in codebook 0.6. Under 0.5 and earlier this facet was left out when the coder found no position, so absence recorded that finding.
       study_kind: experiment
       unit_state:
         value: forward_pass
@@ -577,6 +665,24 @@ studies:
       - claude-3-sonnet
       - claude-3-haiku
     facets:
+      system_prompt:
+        value: none
+        basis: operational
+        where: "App. 12.1.2 to 12.4.2"
+        note: The prompts are given in full as Human and Assistant turns with no system turn.
+      reasoning:
+        value: none
+        basis: operational
+        where: "§4; App. 12"
+        note: Responses are sampled directly after the Assistant turn (100 tokens at temperature 1 for aggregate results); no thinking mode is mentioned. The response itself is the report and can change course within it.
+      report_readout:
+        value: free_text
+        basis: stated
+        where: "§5.4; App. 12.1.3"
+        note: Free responses are graded by an LLM judge (Claude Sonnet 4) against written criteria.
+      unit_position:
+        value: not_applicable
+        note: Backfilled in codebook 0.6. Under 0.5 and earlier this facet was left out when the coder found no position, so absence recorded that finding.
       study_kind: experiment
       unit_state:
         value: conversation
@@ -691,6 +797,21 @@ studies:
       - claude-3-sonnet
       - claude-3-haiku
     facets:
+      system_prompt:
+        value: none
+        basis: operational
+        where: "App. 12.1.2 to 12.4.2"
+        note: The prompts are given in full as Human and Assistant turns with no system turn.
+      reasoning:
+        value: not_applicable
+        where: "App. 12.4.2"
+        note: The Assistant turn is the given sentence, prefilled; activations on it are measured and nothing is generated.
+      report_readout:
+        value: not_applicable
+        note: No self-report; the measure is cosine similarity of activations with the concept vector.
+      unit_position:
+        value: not_applicable
+        note: Backfilled in codebook 0.6. Under 0.5 and earlier this facet was left out when the coder found no position, so absence recorded that finding.
       study_kind: experiment
       unit_state:
         value: forward_pass
@@ -783,6 +904,9 @@ studies:
       of what the experiments do and do not establish.
     models: []
     facets:
+      unit_position:
+        value: not_applicable
+        note: Backfilled in codebook 0.6. Under 0.5 and earlier this facet was left out when the coder found no position, so absence recorded that finding.
       study_kind: conceptual
       self_sense:
         value: [self_access, self_model]

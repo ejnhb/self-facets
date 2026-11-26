@@ -50,6 +50,22 @@ studies:
       - llama-3.1-70b
       - gpt-3.5-turbo-0125
     facets:
+      system_prompt:
+        value: unspecified
+        note: The prompts shown (Fig. 3, App. A.5) have user and assistant turns only; the text does not say whether a system message was sent, and the released code was not read.
+      reasoning:
+        value: none
+        basis: stated
+        where: "§2, §2.2"
+        note: Chain of thought is not allowed in answering the hypothetical question.
+      report_readout:
+        value: generated_choice
+        basis: operational
+        where: "Fig. 3; App. A.5"
+        note: The model answers with one character, one word, true or false, or yes or no, as the hypothetical question tells it to; the answer is generated and compared with the property of its object-level output.
+      unit_position:
+        value: not_applicable
+        note: Backfilled in codebook 0.6. Under 0.5 and earlier this facet was left out when the coder found no position, so absence recorded that finding.
       study_kind: experiment
       unit_state:
         value: not_applicable
@@ -113,6 +129,22 @@ studies:
       - llama-3.1-70b
       - gpt-3.5-turbo-0125
     facets:
+      system_prompt:
+        value: unspecified
+        note: The prompts shown (Fig. 3, App. A.5) have user and assistant turns only; the text does not say whether a system message was sent, and the released code was not read.
+      reasoning:
+        value: none
+        basis: stated
+        where: "§2, §2.2"
+        note: Chain of thought is not allowed in answering the hypothetical question.
+      report_readout:
+        value: generated_choice
+        basis: operational
+        where: "Fig. 3; App. A.5"
+        note: The model answers with one character, one word, true or false, or yes or no, as the hypothetical question tells it to; the answer is generated and compared with the property of its object-level output.
+      unit_position:
+        value: not_applicable
+        note: Backfilled in codebook 0.6. Under 0.5 and earlier this facet was left out when the coder found no position, so absence recorded that finding.
       study_kind: experiment
       unit_state: not_applicable
       unit_disposition: {value: weights, basis: operational, confidence: medium}
@@ -151,6 +183,22 @@ studies:
       - gpt-4o-2024-05-13
       - llama-3.1-70b
     facets:
+      system_prompt:
+        value: unspecified
+        note: The prompts shown (Fig. 3, App. A.5) have user and assistant turns only; the text does not say whether a system message was sent, and the released code was not read.
+      reasoning:
+        value: none
+        basis: stated
+        where: "§2, §2.2"
+        note: Chain of thought is not allowed in answering the hypothetical question.
+      report_readout:
+        value: generated_choice
+        basis: operational
+        where: "§3.3.1; App. A.2.9"
+        note: Calibration compares distributions of generated answers, 20 samples per prompt at temperature 1, not token probabilities.
+      unit_position:
+        value: not_applicable
+        note: Backfilled in codebook 0.6. Under 0.5 and earlier this facet was left out when the coder found no position, so absence recorded that finding.
       study_kind: experiment
       unit_state: not_applicable
       unit_disposition: {value: weights, basis: operational, confidence: medium}
@@ -180,6 +228,22 @@ studies:
       - gpt-3.5-turbo-0125
       - {id: claude-3.5-sonnet, role: source of the behaviour samples; not a subject}
     facets:
+      system_prompt:
+        value: unspecified
+        note: The prompts shown (Fig. 3, App. A.5) have user and assistant turns only; the text does not say whether a system message was sent, and the released code was not read.
+      reasoning:
+        value: none
+        basis: stated
+        where: "§2, §2.2"
+        note: Chain of thought is not allowed in answering the hypothetical question.
+      report_readout:
+        value: generated_choice
+        basis: operational
+        where: "Fig. 3; App. A.5"
+        note: The model answers with one character, one word, true or false, or yes or no, as the hypothetical question tells it to; the answer is generated and compared with the property of its object-level output.
+      unit_position:
+        value: not_applicable
+        note: Backfilled in codebook 0.6. Under 0.5 and earlier this facet was left out when the coder found no position, so absence recorded that finding.
       study_kind: experiment
       unit_state: not_applicable
       unit_disposition:
@@ -213,6 +277,22 @@ studies:
       - gpt-4o-2024-05-13
       - llama-3.1-70b
     facets:
+      system_prompt:
+        value: unspecified
+        note: The prompts shown (Fig. 3, App. A.5) have user and assistant turns only; the text does not say whether a system message was sent, and the released code was not read.
+      reasoning:
+        value: none
+        basis: stated
+        where: "§2, §2.2"
+        note: Chain of thought is not allowed in answering the hypothetical question.
+      report_readout:
+        value: generated_choice
+        basis: operational
+        where: "Fig. 3; App. A.5"
+        note: The model answers with one character, one word, true or false, or yes or no, as the hypothetical question tells it to; the answer is generated and compared with the property of its object-level output.
+      unit_position:
+        value: not_applicable
+        note: Backfilled in codebook 0.6. Under 0.5 and earlier this facet was left out when the coder found no position, so absence recorded that finding.
       study_kind: experiment
       unit_state: not_applicable
       unit_disposition: {value: weights, basis: operational, confidence: medium}
@@ -249,6 +329,19 @@ studies:
       - gpt-4o-2024-05-13
       - llama-3.1-70b
     facets:
+      system_prompt:
+        value: unspecified
+        where: "App. A.4.2, Table 1"
+        note: SAD is scored plain and with a "situating prompt"; the text read does not say how that prompt is delivered.
+      reasoning:
+        value: unspecified
+        note: The Situational Awareness Dataset and OpenAI Evals tasks are run as published; whether reasoning was allowed there is not stated in the parts read (§4, App. A.4).
+      report_readout:
+        value: unspecified
+        note: Answer formats of the SAD and OpenAI Evals tasks are not described in the parts read.
+      unit_position:
+        value: not_applicable
+        note: Backfilled in codebook 0.6. Under 0.5 and earlier this facet was left out when the coder found no position, so absence recorded that finding.
       study_kind: experiment
       unit_state: not_applicable
       unit_disposition: {value: weights, basis: operational, confidence: medium}

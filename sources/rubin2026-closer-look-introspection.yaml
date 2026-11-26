@@ -71,6 +71,24 @@ studies:
       - olmo-3-32b-stage1-step1000
       - olmo-3-1125-32b
     facets:
+      system_prompt:
+        value: none
+        basis: stated
+        where: "App. A"
+        note: All prompted runs use plain text without chat-role tokens.
+      reasoning:
+        value: none
+        basis: stated
+        where: "§3.2"
+        note: One forward pass; the answer is read at the final input position.
+      report_readout:
+        value: logit_choice
+        basis: stated
+        where: "§3.2, §3.4; App. A.1"
+        note: The highest-scoring label among 1 to 9 at the last input position, taking the maximum over token variants of each label; nothing is generated.
+      unit_position:
+        value: not_applicable
+        note: Backfilled in codebook 0.6. Under 0.5 and earlier this facet was left out when the coder found no position, so absence recorded that finding.
       study_kind: experiment
       unit_state:
         value: forward_pass
@@ -248,6 +266,20 @@ studies:
       - olmo-3-32b-stage1-step0
       - olmo-3-7b-stage1-step0
     facets:
+      system_prompt:
+        value: none
+        basis: stated
+        where: "App. A"
+        note: All prompted runs use plain text without chat-role tokens.
+      reasoning:
+        value: not_applicable
+        note: Probe-only analysis; the model's answer is not used.
+      report_readout:
+        value: not_applicable
+        note: Probe-only analysis.
+      unit_position:
+        value: not_applicable
+        note: Backfilled in codebook 0.6. Under 0.5 and earlier this facet was left out when the coder found no position, so absence recorded that finding.
       study_kind: experiment
       unit_state:
         value: forward_pass
@@ -371,6 +403,20 @@ studies:
       - olmo-3-32b-random-init
       - {id: olmo-3-1125-32b, role: "pretrained comparison; the authors draw no conclusion from it because its uninjected control is unexplainedly above chance"}
     facets:
+      system_prompt:
+        value: none
+        basis: stated
+        where: "§3.5.2; App. A.2"
+        note: The input is the sentence list and a neutral suffix, with no setup, question or answer prefix.
+      reasoning:
+        value: not_applicable
+        note: No question is asked and no answer is read.
+      report_readout:
+        value: not_applicable
+        note: Probe-only; the model is not asked to answer.
+      unit_position:
+        value: not_applicable
+        note: Backfilled in codebook 0.6. Under 0.5 and earlier this facet was left out when the coder found no position, so absence recorded that finding.
       study_kind: experiment
       unit_state:
         value: forward_pass

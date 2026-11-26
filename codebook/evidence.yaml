@@ -1,5 +1,5 @@
 facet: evidence
-version: 0.2
+version: 0.6
 applies_to: study
 cardinality: many
 required: true
@@ -17,7 +17,7 @@ values:
     rule: Use when chain of thought or a thinking trace is analysed as data in its own right, apart from the final answer.
   output_probabilities:
     definition: Token probabilities or logits for an answer, read directly.
-    rule: Use when the measurement is the probability the model assigns, as opposed to what it states. The probability of "yes" and a stated "60%" are different measurements.
+    rule: Use when the measurement is the probability the model assigns, as opposed to what it states. The probability of "yes" and a stated "60%" are different measurements. Code it whether the probability is the self-report (report_readout probability) or the yardstick (validated_against output_probabilities).
   internals:
     definition: Activations, weights, attention patterns, or interventions on them.
     rule: Use when the study reads or writes internal state.

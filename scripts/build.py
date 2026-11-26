@@ -38,9 +38,11 @@ CREATE TABLE models (
 );
 CREATE TABLE model_stage_methods (model TEXT, method TEXT);
 CREATE TABLE model_stage_datasets (model TEXT, dataset TEXT);
-CREATE TABLE questions (id TEXT PRIMARY KEY, text TEXT, parent TEXT, status TEXT, added TEXT);
+CREATE TABLE questions (id TEXT PRIMARY KEY, text TEXT, parent TEXT, kind TEXT, polarity TEXT, answer_facet TEXT, status TEXT, added TEXT);
 -- Each question with the top of its parent chain (itself if it has no parent).
-CREATE TABLE question_roots (question TEXT PRIMARY KEY, root TEXT);
+-- For yes/no questions: the question whose tree a stance counts in, and the sign that turns the stance into one
+-- on that root (-1 under an inverse question). A polarity none question is its own root.
+CREATE TABLE question_roots (question TEXT PRIMARY KEY, root TEXT, sign INTEGER);
 -- Interpretive facets a question's evidence must have coded (for it and every question under it).
 CREATE TABLE question_needs (question TEXT, facet TEXT);
 CREATE TABLE sources (
@@ -72,27 +74,37 @@ CREATE TABLE claim_models (claim TEXT, model TEXT, scoped INTEGER);
 CREATE TABLE claim_codes (claim TEXT, facet TEXT, value TEXT);
 CREATE TABLE claim_about (claim TEXT, kind TEXT, ref TEXT);
 CREATE TABLE relations (source TEXT, kind TEXT, from_ TEXT, to_ TEXT, to_external TEXT, where_ TEXT, note TEXT);
+-- Answers to which-questions: the claim's (or its study's) values of the question's answer_facet.
+CREATE TABLE claim_answers (claim TEXT, question TEXT, value TEXT);
+-- Pairs of claims under one which-question whose answers differ. shared_facets as in conflicts.
+CREATE TABLE which_conflicts (question TEXT, claim_a TEXT, claim_b TEXT, answers_a TEXT, answers_b TEXT, shared_facets INTEGER);
+
+-- Each stance turned into a stance on its tree's root (flipped under an inverse question).
+CREATE VIEW root_stances AS
+SELECT q.claim, q.question, r.root,
+       CASE WHEN r.sign = -1 AND q.stance = 'supports' THEN 'against'
+            WHEN r.sign = -1 AND q.stance = 'against' THEN 'supports'
+            ELSE q.stance END AS stance
+FROM claim_questions q JOIN question_roots r ON r.question = q.question;
 
 -- One row per claim and facet value, with facets inherited from the study.
 CREATE VIEW claim_facets AS
 SELECT c.id AS claim, c.question, c.stance, f.facet, f.value
 FROM claims c JOIN study_facets f ON f.study = c.study;
 
--- Pairs of claims that take opposite stances on the same question, or on
--- questions under the same parent. `question` is the shared top-level question.
+-- Pairs of claims that take opposite stances on the same question, or on questions in the same tree, after
+-- turning each stance into one on the root (root_stances). `question` is the root.
 -- `shared_facets` counts the facet values the two claims' studies have in
 -- common; sort by it to see the most comparable pairs first.
 CREATE VIEW conflicts AS
-SELECT ra.root AS question, a.claim AS supports, b.claim AS against,
+SELECT a.root AS question, a.claim AS supports, b.claim AS against,
        a.question AS supports_question, b.question AS against_question,
        ca.scope_conditions AS supports_conditions, cb.scope_conditions AS against_conditions,
        (SELECT COUNT(*) FROM study_facets f JOIN study_facets g
           ON g.facet = f.facet AND g.value = f.value
         WHERE f.study = ca.study AND g.study = cb.study AND f.value != 'not_yet_coded') AS shared_facets
-FROM claim_questions a
-JOIN question_roots ra ON ra.question = a.question
-JOIN claim_questions b ON b.stance = 'against'
-JOIN question_roots rb ON rb.question = b.question AND rb.root = ra.root
+FROM root_stances a
+JOIN root_stances b ON b.root = a.root AND b.stance = 'against'
 JOIN claims ca ON ca.id = a.claim
 JOIN claims cb ON cb.id = b.claim
 WHERE a.stance = 'supports';
@@ -168,20 +180,26 @@ def build(out_path):
         for ds in as_list(stage.get("datasets")):
             db.execute("INSERT INTO model_stage_datasets VALUES (?,?)", (m["id"], ds))
 
-    parents = {}
+    qs = {}
     for _, q in load_list_dir("questions"):
-        parents[q["id"]] = q.get("parent")
+        qs[q["id"]] = q
         db.execute(
-            "INSERT INTO questions VALUES (?,?,?,?,?)",
-            (q["id"], text(q.get("text")), q.get("parent"), q.get("status"), text(q.get("added"))),
+            "INSERT INTO questions VALUES (?,?,?,?,?,?,?,?)",
+            (q["id"], text(q.get("text")), q.get("parent"), q.get("kind", "yesno"),
+             q.get("polarity", "direct") if q.get("parent") and q.get("kind", "yesno") == "yesno" else None,
+             q.get("answer_facet"), q.get("status"), text(q.get("added"))),
         )
         for name in as_list(q.get("needs")):
             db.execute("INSERT INTO question_needs VALUES (?,?)", (q["id"], name))
-    for qid in parents:
-        root = qid
-        while parents.get(root):
-            root = parents[root]
-        db.execute("INSERT INTO question_roots VALUES (?,?)", (qid, root))
+    for qid, q in qs.items():
+        if q.get("kind", "yesno") != "yesno":
+            continue
+        root, sign = qid, 1
+        while qs[root].get("parent") and qs[root].get("polarity", "direct") != "none":
+            if qs[root].get("polarity") == "inverse":
+                sign = -sign
+            root = qs[root]["parent"]
+        db.execute("INSERT INTO question_roots VALUES (?,?,?)", (qid, root, sign))
 
     for _, src in load_sources():
         sid = src["id"]
@@ -207,6 +225,7 @@ def build(out_path):
                 db.execute("INSERT INTO affiliations VALUES (?,?,?)", (sid, author["person"], org))
 
         study_models = {}
+        study_facets_by_id = {st["id"]: (st.get("facets") or {}) for st in as_list(src.get("studies"))}
         for study in as_list(src.get("studies")):
             stid = study["id"]
             db.execute(
@@ -241,8 +260,7 @@ def build(out_path):
                 if facet["applies_to"] == "study" and facet.get("tier") == "interpretive" and name not in (study.get("facets") or {}):
                     db.execute(
                         "INSERT INTO study_facets VALUES (?,?,?,?,?,?,?,?,?)",
-                        (stid, name, facet.get("absent_means")
-                         or ("not_applicable" if light and name not in LIGHT_REQUIRED else NOT_YET_CODED),
+                        (stid, name, "not_applicable" if light and name not in LIGHT_REQUIRED else NOT_YET_CODED,
                          None, None, None, None, None, None),
                     )
 
@@ -257,10 +275,20 @@ def build(out_path):
                     text(claim.get("where")), text(claim.get("note")),
                 ),
             )
-            if claim.get("question"):
-                db.execute("INSERT INTO claim_questions VALUES (?,?,?,1)", (cid, claim["question"], claim.get("stance")))
-            for link in as_list(claim.get("other_questions")):
-                db.execute("INSERT INTO claim_questions VALUES (?,?,?,0)", (cid, link["question"], link["stance"]))
+            links = ([(claim["question"], claim.get("stance"), 1)] if claim.get("question") else []) + [
+                (link["question"], link.get("stance"), 0) for link in as_list(claim.get("other_questions"))]
+            for qid, stance, main in links:
+                q = qs[qid]
+                if q.get("kind", "yesno") == "which":
+                    name = q["answer_facet"]
+                    if facets[name]["applies_to"] == "claim":
+                        values = as_list(claim.get(name))
+                    else:
+                        values = facet_entry((study_facets_by_id[claim["study"]]).get(name))["value"]
+                    for value in values:
+                        db.execute("INSERT INTO claim_answers VALUES (?,?,?)", (cid, qid, value))
+                else:
+                    db.execute("INSERT INTO claim_questions VALUES (?,?,?,?)", (cid, qid, stance, main))
             for other in as_list(claim.get("compares")):
                 db.execute("INSERT INTO claim_compares VALUES (?,?)", (cid, other))
             for var in as_list(claim.get("effect_of")):
@@ -282,6 +310,23 @@ def build(out_path):
                 (sid, rel.get("kind"), rel.get("from"), rel.get("to"), text(rel.get("to_external")),
                  text(rel.get("where")), text(rel.get("note"))),
             )
+
+    # Which-question conflicts: every pair of claims on one which-question whose answer sets differ.
+    answers = {}
+    for cid, qid, value in db.execute("SELECT claim, question, value FROM claim_answers"):
+        answers.setdefault(qid, {}).setdefault(cid, set()).add(value)
+    for qid, by_claim in answers.items():
+        claims = sorted(by_claim)
+        for i, a in enumerate(claims):
+            for b in claims[i + 1:]:
+                if by_claim[a] == by_claim[b]:
+                    continue
+                shared = db.execute(
+                    "SELECT COUNT(*) FROM study_facets f JOIN study_facets g ON g.facet = f.facet AND g.value = f.value "
+                    "JOIN claims ca ON ca.study = f.study JOIN claims cb ON cb.study = g.study "
+                    "WHERE ca.id = ? AND cb.id = ? AND f.value != 'not_yet_coded'", (a, b)).fetchone()[0]
+                db.execute("INSERT INTO which_conflicts VALUES (?,?,?,?,?,?)",
+                           (qid, a, b, ", ".join(sorted(by_claim[a])), ", ".join(sorted(by_claim[b])), shared))
 
     db.commit()
     tables = ("sources", "studies", "study_facets", "claims", "questions", "models")

@@ -95,6 +95,24 @@ studies:
       - llama-3.3-70b-instruct
       - mistral-large-instruct-2411
     facets:
+      system_prompt:
+        value: [developer_default, none]
+        basis: operational
+        where: "App. A"
+        note: Instruction-tuned models are run through their default chat templates (apply_chat_template), so whatever default those templates insert; base models get raw text. The paper does not say what the templates contain.
+      reasoning:
+        value: none
+        basis: stated
+        where: "§3.1 (footnote 1); App. A"
+        note: The prompt ends with "My answer is" and the probabilities of "1" and "2" are read there; nothing is generated.
+      report_readout:
+        value: probability
+        basis: stated
+        where: "§2, §3.1 Eq. 1, §4.1"
+        note: The prompted response is the log-probability difference between the answer tokens "1" and "2", averaged over two option orders; this difference is analysed as the report. The direct measure (string probabilities) is the yardstick, coded under validated_against.
+      unit_position:
+        value: not_applicable
+        note: Backfilled in codebook 0.6. Under 0.5 and earlier this facet was left out when the coder found no position, so absence recorded that finding.
       study_kind: experiment
       unit_state:
         value: not_applicable
@@ -302,6 +320,24 @@ studies:
       - llama-3.3-70b-instruct
       - mistral-large-instruct-2411
     facets:
+      system_prompt:
+        value: [developer_default, none]
+        basis: operational
+        where: "App. A"
+        note: Instruction-tuned models are run through their default chat templates (apply_chat_template), so whatever default those templates insert; base models get raw text. The paper does not say what the templates contain.
+      reasoning:
+        value: none
+        basis: stated
+        where: "§3.1 (footnote 1); App. A"
+        note: The prompt ends with "My answer is" and the probabilities of "1" and "2" are read there; nothing is generated.
+      report_readout:
+        value: probability
+        basis: stated
+        where: "§2, §3.1 Eq. 1, §4.1"
+        note: The prompted response is the log-probability difference between the answer tokens "1" and "2", averaged over two option orders; this difference is analysed as the report. The direct measure (string probabilities) is the yardstick, coded under validated_against.
+      unit_position:
+        value: not_applicable
+        note: Backfilled in codebook 0.6. Under 0.5 and earlier this facet was left out when the coder found no position, so absence recorded that finding.
       study_kind: experiment
       unit_state:
         value: not_applicable
@@ -460,6 +496,23 @@ studies:
       - olmo-2-1124-13b
       - olmo-2-1124-13b-seeds
     facets:
+      system_prompt:
+        value: none
+        basis: operational
+        note: OLMo 2 base models only (Table 1 lists no instruct variant), run as raw text.
+      reasoning:
+        value: none
+        basis: stated
+        where: "§3.1 (footnote 1); App. A"
+        note: The prompt ends with "My answer is" and the probabilities of "1" and "2" are read there; nothing is generated.
+      report_readout:
+        value: probability
+        basis: stated
+        where: "§2, §3.1 Eq. 1, §4.1"
+        note: The prompted response is the log-probability difference between the answer tokens "1" and "2", averaged over two option orders; this difference is analysed as the report. The direct measure (string probabilities) is the yardstick, coded under validated_against.
+      unit_position:
+        value: not_applicable
+        note: Backfilled in codebook 0.6. Under 0.5 and earlier this facet was left out when the coder found no position, so absence recorded that finding.
       study_kind: experiment
       unit_state:
         value: not_applicable

@@ -89,6 +89,24 @@ def validate():
                 rep.err(f"dataset {did}", f"component '{comp}' is not a dataset")
 
     for qid, q in questions.items():
+        kind = q.get("kind", "yesno")
+        if kind not in ("yesno", "which"):
+            rep.err(f"question {qid}", f"kind '{kind}' must be yesno or which")
+        if kind == "which":
+            name = q.get("answer_facet")
+            if name not in facets:
+                rep.err(f"question {qid}", f"a which-question needs answer_facet naming a facet (got '{name}')")
+            if "polarity" in q:
+                rep.err(f"question {qid}", "a which-question has no polarity: its claims take no stance")
+        elif "answer_facet" in q:
+            rep.err(f"question {qid}", "answer_facet is only for kind: which")
+        polarity = q.get("polarity", "direct")
+        if polarity not in ("direct", "inverse", "none"):
+            rep.err(f"question {qid}", f"polarity '{polarity}' must be direct, inverse or none")
+        if "polarity" in q and not q.get("parent"):
+            rep.err(f"question {qid}", "polarity says how a question points relative to its parent, so it needs a parent")
+        if q.get("parent") in questions and questions[q["parent"]].get("kind") == "which" and kind != "which":
+            rep.err(f"question {qid}", "a yes/no question cannot sit under a which-question")
         for name in as_list(q.get("needs")):
             if name not in facets:
                 rep.err(f"question {qid}", f"needs '{name}', which is not a facet")
@@ -273,8 +291,7 @@ def validate():
                 if facet is None:
                     continue
                 if facet["applies_to"] == "study":
-                    absent = [] if facet.get("absent_means") else [NOT_YET_CODED]
-                    if study is not None and NOT_YET_CODED in facet_entry(study_coded.get(name))["value"] + (absent if name not in study_coded else []):
+                    if study is not None and NOT_YET_CODED in facet_entry(study_coded.get(name))["value"] + ([NOT_YET_CODED] if name not in study_coded else []):
                         rep.err(cid, f"question '{qid}' needs '{name}' coded on study {study.get('id')} (unspecified if the source does not settle it)")
                 elif not as_list(claim.get(name)):
                     rep.err(cid, f"question '{qid}' needs '{name}' on the claim (unspecified if the source does not settle it)")
@@ -282,8 +299,29 @@ def validate():
             question = claim.get("question")
             if question is not None and question not in questions:
                 rep.err(cid, f"question '{question}' is not in questions/")
-            if question is not None and not claim.get("stance"):
-                rep.err(cid, "a claim linked to a question needs a stance")
+            def is_which(qid):
+                return questions.get(qid, {}).get("kind") == "which"
+
+            def check_answer(qid, where):
+                # A which-question is answered by its answer_facet, coded on the claim or its study; no stance.
+                name = questions[qid].get("answer_facet")
+                facet = facets.get(name)
+                if facet is None:
+                    return
+                if facet["applies_to"] == "claim":
+                    values = as_list(claim.get(name))
+                else:
+                    values = facet_entry(((study or {}).get("facets") or {}).get(name))["value"]
+                if not values or NOT_YET_CODED in values:
+                    rep.err(cid, f"{where}: which-question '{qid}' is answered by '{name}', which is not coded")
+
+            if question is not None and question in questions:
+                if is_which(question):
+                    if claim.get("stance"):
+                        rep.err(cid, f"question '{question}' is a which-question: its answer is '{questions[question].get('answer_facet')}', not a stance")
+                    check_answer(question, "question")
+                elif not claim.get("stance"):
+                    rep.err(cid, "a claim linked to a question needs a stance")
             if question is None and claim.get("stance"):
                 rep.err(cid, "stance given without a question")
             if question is None and claim.get("other_questions"):
@@ -291,6 +329,10 @@ def validate():
             for link in as_list(claim.get("other_questions")):
                 if not isinstance(link, dict) or link.get("question") not in questions:
                     rep.err(cid, f"other_questions: '{link}' does not name a question in questions/")
+                elif is_which(link["question"]):
+                    if link.get("stance"):
+                        rep.err(cid, f"other_questions: '{link['question']}' is a which-question and takes no stance")
+                    check_answer(link["question"], "other_questions")
                 elif link.get("stance") not in claim_facets["stance"]["values"]:
                     rep.err(cid, f"other_questions: stance '{link.get('stance')}' is not in the codebook")
             if study is not None:
@@ -336,6 +378,23 @@ def validate():
             rep.err(sid, "relation needs exactly one of to (a coded record) or to_external (a citation)")
         if not rel.get("where"):
             rep.err(sid, "relation needs where (the place the source states it)")
+
+    # The templates must name every facet the codebook has, and nothing it lacks, so they cannot drift.
+    from _load import ROOT, read_yaml
+    tpl_path = ROOT / "templates" / "source.yaml"
+    if tpl_path.exists():
+        tpl = read_yaml(tpl_path) or {}
+        tpl_study = set(((tpl.get("studies") or [{}])[0].get("facets") or {}))
+        tpl_claim = set((tpl.get("claims") or [{}])[0]) & set(facets)
+        claim_keys = set((tpl.get("claims") or [{}])[0])
+        for name in sorted(set(study_facets) - tpl_study):
+            rep.err("templates/source.yaml", f"study facet '{name}' is missing from the template")
+        for name in sorted(tpl_study - set(study_facets)):
+            rep.err("templates/source.yaml", f"'{name}' in the template is not a study facet")
+        for name in sorted(set(claim_facets) - {"stance"} - claim_keys):
+            rep.err("templates/source.yaml", f"claim facet '{name}' is missing from the template")
+        for name in sorted(tpl_claim - set(claim_facets)):
+            rep.err("templates/source.yaml", f"'{name}' in the template is not a claim facet")
 
     counts = {
         "sources": len(source_ids),

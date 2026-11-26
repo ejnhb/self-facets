@@ -9,6 +9,25 @@ are coded.
 1. Read the last few entries of `LOG.md` to see what was done and what is open.
 2. Run `python scripts/validate.py`. If it fails, fix that first.
 
+## Coding a paper, in order
+
+1. **Read** the paper, its code and data if released, and the figures the
+   results depend on. Note what you read; it goes in `coding`.
+2. **Split it into studies** by the facet test (below: "A study is a set of
+   results that share every facet value").
+3. **Copy `templates/source.yaml`** to `sources/<id>.yaml` and code the core
+   facets of each study: every one, using `unspecified` or `not_applicable`
+   rather than leaving any out.
+4. **Write the claims**, one finding each, with `where`, `evidence_kind`,
+   `effect_of` and `scope` where they apply.
+5. **Link claims to questions** (`questions/questions.yaml`; template in
+   `templates/question.yaml`). Reuse a question where one fits; otherwise add
+   a narrower one under the closest, with its `polarity`.
+6. **Code the interpretive facets** that the linked questions `need`, and any
+   the source takes a position on. Leave the rest out.
+7. **Register** only the people, orgs, models and datasets the record uses.
+8. **Validate and build**, then log and open a pull request (End of session).
+
 ## Coding rules
 
 - **Code from the source, never from memory.** Open the paper, post or repo in
@@ -99,8 +118,12 @@ are coded.
 - **Questions.** Before adding a question, look for one that fits. If an
   existing question is close but its wording excludes this design, add a
   narrower question and give both the same `parent`, creating the parent if
-  needed. A claim that bears on a second question lists it under
-  `other_questions` with its own stance.
+  needed. Give every question with a parent its `polarity`: `inverse` when
+  yes to it counts as no on the parent, `none` when it bears on the parent
+  but not along its yes/no axis. A question answered by a choice rather than
+  yes or no is `kind: which` with an `answer_facet`; its claims code that
+  facet and take no stance. A claim that bears on a second question lists it
+  under `other_questions` with its own stance (none for a which-question).
 - **Relations.** `from` is the work doing the criticising or extending. Point
   `to` at a coded record, or use `to_external` with a citation when the target
   is not coded yet.

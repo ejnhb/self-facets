@@ -1,0 +1,16 @@
+# Template for a model: append to models/models.yaml. Register a model only when a record needs it, and only
+# to the depth needed (CLAUDE.md, "Registries stay small").
+
+- id: model-slug                    # (R) short lowercase slug; one entry per checkpoint a claim is scoped to
+  name: Model Name (snapshot)       # (R)
+  family: family-slug               # (R)
+  developer: org-slug               # (R) an id in orgs/
+  open_weights: true                # (R)
+  size: 7B                          # (O)
+  derived_from: parent-model-slug   # (O) the checkpoint this one was trained from
+  stage: null                       # (R) null until the pipeline is coded from the developer's documentation, then:
+  #   methods: [sft]                # enums.yaml stage_method
+  #   datasets: [dataset-slug]      # ids in datasets/
+  #   disclosure: partial           # enums.yaml disclosure
+  #   documented_in: source id or citation
+  note: null                        # (O)

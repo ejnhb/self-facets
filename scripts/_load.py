@@ -38,6 +38,11 @@ def load_list_dir(dirname):
     return items
 
 
+def load_links():
+    """Every links file: (path, data). One file per source, named after it."""
+    return [(path, read_yaml(path) or {}) for path in yaml_files("links")]
+
+
 def load_codebook():
     """Return (facets, enums).
 

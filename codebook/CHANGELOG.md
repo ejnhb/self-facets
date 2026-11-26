@@ -1,5 +1,30 @@
 # Codebook changelog
 
+## 0.7 (2026-11-26, proposed)
+
+- **The unit `persona` is renamed `speaker`** (`units.yaml`, used by the four
+  unit facets), defined as the voice the network computes and speaks as. In
+  the persona selection sense a persona is what post-training selects, which a
+  base model's implied author is not; object_of_study still says which kind of
+  speaker. 16 codings renamed.
+- **Links move out of the records** into `links/<source id>.yaml`: a claim's
+  question, stance and other questions are now link entries (45 moved, none
+  lost). Linking is the question poser's judgement, so coding a paper no longer
+  includes it.
+- **Questions can `require` facet values** for a claim to count as evidence,
+  inherited down the tree. `q-privileged-self-access` requires
+  `evidence: self_report`; every claim already linked under it meets that.
+- **Readings and views are built** (`readings/`, `views/`, `design/readings.md`):
+  reading status enum, selectors on facets or `model.post_training_reached`,
+  reclassify and reinterpret effects, and the view tables in the build. Two
+  readings from published sources and two example views.
+- **Models gain `post_training_reached`** (untrained, base, post_trained, sft,
+  preference, rl, unspecified), filled for all 42 from the sources or the
+  models' names, so readings can select on training history before pipelines
+  are coded.
+- Templates for links, readings and views; the source template drops the link
+  fields; the question and model templates gain the new fields.
+
 ## 0.6 (2026-11-26, proposed)
 
 - **Three new core facets**, coded on every study and backfilled on the 19

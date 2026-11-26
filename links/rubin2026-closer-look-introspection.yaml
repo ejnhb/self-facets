@@ -1,0 +1,26 @@
+# Links from rubin2026-closer-look-introspection's claims to questions: which question a claim bears on, and with what stance.
+# A link is a judgement by whoever poses or maintains the question, not part of what the paper reports.
+# Moved here from the source record in codebook 0.7. Each link may carry a note saying why it bears on the question.
+source: rubin2026-closer-look-introspection
+links:
+- claim: rubin2026-closer-look-introspection.c1
+  question: q-report-matches-probe
+  stance: against
+- claim: rubin2026-closer-look-introspection.c1
+  question: q-injected-state-report
+  stance: against
+- claim: rubin2026-closer-look-introspection.c2
+  question: q-injected-state-report
+  stance: supports
+- claim: rubin2026-closer-look-introspection.c2
+  question: q-report-matches-probe
+  stance: inconclusive
+- claim: rubin2026-closer-look-introspection.c4
+  question: q-injected-state-report
+  stance: supports
+- claim: rubin2026-closer-look-introspection.c5
+  question: q-report-matches-probe
+  stance: against
+- claim: rubin2026-closer-look-introspection.c7
+  question: q-introspection-success-generalises
+  stance: against

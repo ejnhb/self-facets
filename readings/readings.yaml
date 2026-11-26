@@ -1,0 +1,37 @@
+# Readings: lenses that change, under a view only, how matching claims are read (design/readings.md).
+# A reading never edits a record. Readings here rest on published sources; readers can keep their own elsewhere
+# and apply them to these claims by id.
+
+- id: r-logit-readout-not-answer
+  status: argued
+  statement: >
+    An answer read from logits or token probabilities is not the answer the model would give in text, so it is
+    not a self-report in the ordinary sense.
+  applies_to:
+    selector: {report_readout: [logit_choice, probability]}
+  effect:
+    reclassify:
+      - {facet: evidence, from: self_report, to: not_applicable}
+  sources:
+    - 'Wang, Ma, Hu, Weber-Genzel, Röttger, Kreuter, Hovy and Plank (2024), "My answer is C": first-token probabilities do not match text answers in instruction-tuned language models, Findings of ACL 2024'
+  tested_by: The same items asked for a generated answer, compared with the logit or probability readout.
+  note: >
+    Song et al. (2025) cite Wang et al. and append "My answer is" before reading probabilities; Rubin et al. (2026,
+    §6) list scoring nine candidate labels, instead of free generation, among their limitations.
+
+- id: r-similarity-uncontrolled
+  status: argued
+  statement: >
+    A self-over-other advantage counts as evidence of privileged access only when the comparison model is about as
+    similar to the reporter as the reporter is to itself.
+  applies_to:
+    selector: {validated_against: [other_model], varies: [self_vs_other]}
+  effect:
+    reinterpret: >
+      The advantage may reflect differences between the models rather than access to the reporter's own states.
+  sources:
+    - "Song, Hu and Mahowald (2025), Language models fail to introspect about their knowledge of language, COLM 2025 (§1)"
+  tested_by: Self against seed variants or base and instruct pairs, controlling for similarity.
+  note: >
+    The selector over-matches: whether similarity was controlled is not a facet, so it also catches studies that did
+    control for it (Song et al. s2 and s3 among them).

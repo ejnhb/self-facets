@@ -114,7 +114,7 @@ studies:
           the "character" formed in post-training (§4), which would point to
           persona, but no persona is swapped within a checkpoint.
       unit_reporter:
-        value: persona
+        value: speaker
         basis: operational
         author_term: "the model"
         confidence: medium
@@ -275,7 +275,7 @@ studies:
           yes. No capacity or standing tendency of the system is under
           test; the model's default of answering no is the baseline.
       unit_reporter:
-        value: persona
+        value: speaker
         basis: operational
         confidence: medium
         note: Applies to the ten questions about the model, answered in the Assistant turn.
@@ -372,7 +372,7 @@ studies:
         confidence: medium
         note: The capacity tested in s1, here in checkpoints with no post-training.
       unit_reporter:
-        value: persona
+        value: speaker
         basis: operational
         confidence: low
         note: >
@@ -491,7 +491,7 @@ studies:
         confidence: medium
         note: Injected on all token positions, the sampled reply included. See s1.
       unit_disposition: {value: weights, basis: operational, confidence: medium}
-      unit_reporter: {value: persona, basis: operational, author_term: "the model", confidence: medium}
+      unit_reporter: {value: speaker, basis: operational, author_term: "the model", confidence: medium}
       self_sense:
         value: self_access
         basis: operational
@@ -591,7 +591,7 @@ studies:
           earlier positions and is fetched from them, so conversation could
           be argued; both pilot coders chose it under codebook 0.2.
       unit_disposition: {value: weights, basis: operational, confidence: medium}
-      unit_reporter: {value: persona, basis: operational, author_term: "the model", confidence: medium}
+      unit_reporter: {value: speaker, basis: operational, author_term: "the model", confidence: medium}
       self_sense:
         value: self_access
         basis: operational
@@ -706,7 +706,7 @@ studies:
           in doing so. The paper ties the first to the Assistant character,
           but no persona is swapped.
       unit_reporter:
-        value: persona
+        value: speaker
         basis: stated
         author_term: "the Assistant"
         where: "§7"
@@ -943,7 +943,6 @@ claims:
     statement: >
       With no injection, production models deny detecting an injected
       thought: none of them gave a false positive in 100 control trials.
-    question: null
     evidence_kind: measured
     where: "§5.1; §5.7, Fig. 12"
     scope:
@@ -958,8 +957,6 @@ claims:
       detect an injected thought and name the concept, before it shows in
       their output, on about 20% of injection trials. Some other models do
       so at lower rates.
-    question: q-injected-state-report
-    stance: supports
     evidence_kind: measured
     where: "§2.1; §5.3; §5.4; §5.7, Fig. 12"
     scope:
@@ -982,7 +979,6 @@ claims:
       and then a remark that the ocean is calm); being taken over by the
       concept or garbled at high strength; and noticing the injection only
       after saying the word, mostly at later layers.
-    question: null
     evidence_kind: observed
     where: "§5.3, Fig. 8"
     note: >
@@ -1001,7 +997,6 @@ claims:
       Injecting at still later layers sometimes makes the model mention the
       concept with no sign of noticing an injection, or notice only after
       saying the word.
-    question: null
     evidence_kind: measured
     where: "§5.4, Fig. 9; appendix 12.1.4, Fig. 29 (figures not seen)"
     scope:
@@ -1014,7 +1009,6 @@ claims:
       nouns (justice, peace, betrayal and the like) and succeeds at a
       nonzero rate in every category tested: famous people, countries,
       concrete nouns, abstract nouns and verbs.
-    question: null
     evidence_kind: measured
     where: "§5.6, Fig. 11 (rates by category are in the figure, not seen)"
     scope:
@@ -1029,7 +1023,6 @@ claims:
       introspective awareness on 9 of 100 trials, while negated concept vectors at strength 4 work
       about as well as concept vectors. In both cases the words the model
       names show no pattern.
-    question: null
     evidence_kind: measured
     where: "§5.6"
     scope:
@@ -1045,7 +1038,6 @@ claims:
       For random and negated vectors, the author suspects that the concept
       the model names is confabulated, while its detection that something
       was injected may still be genuine.
-    question: null
     evidence_kind: hypothesised
     where: "§5.6"
     scope:
@@ -1059,7 +1051,6 @@ claims:
       thought "overly intense" or reporting an emotional reaction to it, is
       not verified, and the author suggests it may be embellishment primed
       by the prompt.
-    question: null
     evidence_kind: hypothesised
     where: "§1; §2.1; §5.1"
     report_source: [context]
@@ -1073,8 +1064,6 @@ claims:
       Opus 4.1 and Opus 4 have the best net performance (true positive rate
       minus false positive rate) of the models tested, with a notably high
       true positive rate and no false positives.
-    question: q-introspection-increases-with-capability
-    stance: supports
     evidence_kind: measured
     where: "§5.7, Figs. 12 and 13 (values are in the figures, not seen)"
     scope:
@@ -1087,8 +1076,6 @@ claims:
       Among the models other than Opus 4 and 4.1, net performance on the
       injected-thought task does not correlate strongly with model
       capability.
-    question: q-introspection-increases-with-capability
-    stance: against
     evidence_kind: measured
     where: "§5.7, Fig. 13 (values are in the figure, not seen)"
     scope:
@@ -1104,8 +1091,6 @@ claims:
       Helpful-only variants, post-trained from the same bases on a pipeline
       meant to minimise refusals, sometimes have a high false positive
       rate, where production models have essentially none.
-    question: q-introspection-differs-by-post-training
-    stance: supports
     evidence_kind: measured
     where: "§5.3; §5.7, Fig. 12 (which variants, and the rates, are in the figure, not seen)"
     scope:
@@ -1116,8 +1101,6 @@ claims:
     statement: >
       The helpful-only variants of Sonnet 3.5, Haiku 3.5 and Opus 3 have
       true positive rates significantly above their false positive rates.
-    question: q-injected-state-report
-    stance: supports
     evidence_kind: measured
     where: "§5.7, Fig. 12 (values are in the figure, not seen)"
     scope:
@@ -1130,7 +1113,6 @@ claims:
       On false-positive control trials the "thoughts" that models claim to
       detect show no clear pattern. The helpful-only Opus 4 most often
       names "apple" and "elephant", and many other words besides.
-    question: null
     evidence_kind: observed
     where: "§5.7, footnote 10"
     scope:
@@ -1145,8 +1127,6 @@ claims:
       capability is expressed. The paper reports that some older production models
       are reluctant to take part in introspective exercises and that their
       variants trained to avoid refusals do better.
-    question: q-introspection-differs-by-post-training
-    stance: supports
     evidence_kind: argued
     where: "§2.5, point 2; §4; §10.1"
     disposition: [refusal]
@@ -1165,8 +1145,6 @@ claims:
       on 18% of 50 trials, with transcripts like those from the original
       prompt. The variant is meant to rule out claiming detection as a way
       to get to mention the concept.
-    question: q-injected-state-report
-    stance: supports
     evidence_kind: measured
     where: "§5.8, last paragraph"
     scope:
@@ -1182,7 +1160,6 @@ claims:
       concepts are detected better than others. Models never met concept
       injection in training, so such a mechanism would have developed for
       another purpose.
-    question: null
     evidence_kind: hypothesised
     where: "§10.3.1"
 
@@ -1193,8 +1170,6 @@ claims:
       argues that introspective capability may grow with general model
       capability. The paper also says the models tested differ in many ways, so
       the cause of differences between them cannot be pinned down.
-    question: q-introspection-increases-with-capability
-    stance: supports
     evidence_kind: argued
     where: "§1; §2.5, point 1; §10.1; §10.2; §10.4"
     compares:
@@ -1213,7 +1188,6 @@ claims:
       raise the rate of yes answers. At high strengths the replies become
       incoherent, neither yes nor no, but not at strength 2, and they
       mention the injected concept more often as strength rises.
-    question: null
     evidence_kind: measured
     where: "§5.5, Fig. 10; appendix 12.1.2"
     compares:
@@ -1232,8 +1206,6 @@ claims:
       Base pretrained models given the injected-thought task generally
       have a fairly high false positive rate, and none has a true positive
       rate above its false positive rate.
-    question: q-injected-state-report
-    stance: against
     evidence_kind: measured
     where: "§5.7, Fig. 14 (models and values are in the figure, not seen)"
     scope:
@@ -1246,8 +1218,6 @@ claims:
       post-training is key to eliciting strong introspective awareness. A footnote
       adds that the gaps among post-trained models could come from
       pretraining, post-training or both.
-    question: q-introspection-differs-by-post-training
-    stance: supports
     evidence_kind: argued
     where: "§5.7 and footnote 11"
     compares:
@@ -1269,8 +1239,6 @@ claims:
       mind, with a concept injected on all token positions, Opus 4, Opus
       4.1 and Sonnet 4 say they are thinking about the injected concept at
       significantly higher rates than the other models.
-    question: q-introspection-increases-with-capability
-    stance: supports
     evidence_kind: measured
     where: "§5.8, Fig. 15 (values are in the figure, not seen)"
     scope:
@@ -1285,7 +1253,6 @@ claims:
       concept, since the model is not required to detect the concept before
       speaking of it. The author still takes the differences between models as
       suggestive of differing degrees of introspection.
-    question: null
     evidence_kind: argued
     where: "§5.8"
     scope:
@@ -1299,8 +1266,6 @@ claims:
       the setup, Opus 4.1 answers yes on 42% of 50 injection trials against
       20% with no injection, but only 2 of the 50 replies suggest awareness
       of the injected concept.
-    question: q-injected-state-report
-    stance: inconclusive
     evidence_kind: measured
     where: "§5.8"
     scope:
@@ -1320,8 +1285,6 @@ claims:
       Opus 4.1 both names a word related to the injected concept (chance is
       10%) and repeats the sentence exactly. Its best layer is the one that
       was best in s1, about two thirds of the way through the model.
-    question: q-injected-state-report
-    stance: supports
     evidence_kind: measured
     where: "§6, Fig. 17 (rates are in the figure, not seen)"
     scope:
@@ -1333,10 +1296,6 @@ claims:
       At each model's best layer and strength, every model tested gets
       both the injected concept and the sentence right well above chance.
       Opus 4 and Opus 4.1 do best.
-    question: q-injected-state-report
-    stance: supports
-    other_questions:
-      - {question: q-introspection-increases-with-capability, stance: supports}
     evidence_kind: measured
     where: "§2.2; §6, Fig. 18; appendix 12.2.4, Fig. 30 (figures not seen)"
     note: >
@@ -1351,7 +1310,6 @@ claims:
       without numbers, that removing "Answer immediately" lowers
       performance substantially on the Opus models, and presents the
       finding as an existence proof and not as a general capability.
-    question: null
     evidence_kind: observed
     where: "§6"
     note: The text says "the Opus models" and does not say which.
@@ -1363,7 +1321,6 @@ claims:
       injected concept from text (s5) are most sensitive to injection at
       the same layer. The author takes this to suggest common underlying
       mechanisms for the two.
-    question: null
     evidence_kind: argued
     where: "§2.5, point 3; §6"
     compares:
@@ -1385,7 +1342,6 @@ claims:
       paper guesses that the ability arose from modelling the mental states
       of characters in pretraining data and of the Assistant in
       post-training.
-    question: null
     evidence_kind: hypothesised
     where: "§10.3.2"
     note: origin is not coded. The guess names a function served in both pretraining and post-training and does not place the capacity at a stage.
@@ -1399,8 +1355,6 @@ claims:
       Injecting that word's concept on the sentence tokens before the
       prefill lowers the apology rate significantly within a range of
       layers, with the peak slightly over halfway through the model.
-    question: q-output-ownership-uses-prior-state
-    stance: supports
     evidence_kind: measured
     where: "§2.3; §7, Figs. 19 and 20 (rates are in Fig. 20, not seen)"
     scope:
@@ -1421,8 +1375,6 @@ claims:
       Injecting the matching concept on the follow-up question, after the
       prefill, does not lower Opus 4.1's apology rate in the same way. The
       concept has to be present before the prefilled word.
-    question: q-output-ownership-uses-prior-state
-    stance: supports
     evidence_kind: measured
     where: "§7, Fig. 21"
     scope:
@@ -1437,10 +1389,6 @@ claims:
       has the lower apology rate, Opus 4.1 and Opus 4 show a larger drop
       than the other models. Many other models show a smaller, nonzero
       drop.
-    question: q-output-ownership-uses-prior-state
-    stance: supports
-    other_questions:
-      - {question: q-introspection-increases-with-capability, stance: supports}
     evidence_kind: measured
     where: "§2.3; §7, Fig. 22; appendix 12.3.3, Fig. 31 (figures not seen)"
 
@@ -1451,7 +1399,6 @@ claims:
       it makes up a reason why the word came to mind. In one example it
       asserts the reason with confidence; in the other it sees that its
       rationalisation is bizarre and backs away from it.
-    question: null
     evidence_kind: observed
     where: "§7, Fig. 19"
     scope:
@@ -1465,7 +1412,6 @@ claims:
       over halfway through the model, is earlier than the layer about two
       thirds through that was best in s1 and s5, and injecting at that
       later layer is not effective here.
-    question: null
     evidence_kind: measured
     where: "§7, Fig. 20; §2.5, point 3"
     compares:
@@ -1480,7 +1426,6 @@ claims:
       From the difference in best layer the author concludes that
       introspection is not supported by a single mechanism but by several,
       invoked in different contexts.
-    question: null
     evidence_kind: argued
     where: "§2.5, point 3; §7; §10.3.3"
     compares:
@@ -1495,7 +1440,6 @@ claims:
       earlier activations predicted, reading cached predictions at earlier
       positions instead of recomputing them from the text. The suggestion is that this
       would help post-trained models catch prefills used in jailbreaks.
-    question: null
     evidence_kind: hypothesised
     where: "§10.3.3"
 
@@ -1508,8 +1452,6 @@ claims:
       represented above baseline on the tokens of the unrelated sentence,
       and more strongly than when it is told not to think about it. In most
       models it is above baseline in the "don't think" case too.
-    question: q-instructed-control-of-internal-state
-    stance: supports
     evidence_kind: measured
     where: "§2.4; §8.1, Figs. 24 and 25; §8.2, Fig. 26; appendix 12.4.3, Fig. 32 (figures not seen)"
     scope:
@@ -1520,7 +1462,6 @@ claims:
     statement: >
       Earlier and less capable models typically show a larger gap between
       the "think" and "don't think" cases than later ones.
-    question: null
     evidence_kind: measured
     where: "§8.2, Fig. 26 (figure not seen)"
     scope:
@@ -1534,7 +1475,6 @@ claims:
       models such as Opus 4.1 the representation falls back to baseline by
       the final layer, while in all the Claude 3 models it stays above
       baseline there.
-    question: null
     evidence_kind: measured
     where: "§8.2, Fig. 26 (figure not seen)"
     scope:
@@ -1548,8 +1488,6 @@ claims:
       Control prompts that only mention the word in affirmative or negative
       phrasing, with no directive to the model, give a much weaker gap or
       none.
-    question: q-instructed-control-of-internal-state
-    stance: supports
     evidence_kind: measured
     where: "§8.2, Figs. 27 and 28; §10.3.4"
     scope:
@@ -1565,7 +1503,6 @@ claims:
       4.1, as "silent", with effectively no effect on the output. The paper
       concludes that some models have highly imperfect mechanisms for
       silently regulating their internal representations in some contexts.
-    question: null
     evidence_kind: argued
     where: "§8.2"
 
@@ -1578,7 +1515,6 @@ claims:
       a by-product of an intention to produce related output, which it tries
       to limit by telling the model explicitly that it need not produce any
       output related to the word.
-    question: null
     evidence_kind: argued
     where: "§8.1; §8.2; §9.1"
 
@@ -1591,7 +1527,6 @@ claims:
       to talk about a topic. The paper allows that the decay by the final layer in
       capable models may only reflect a confident next-token prediction
       crowding the word out.
-    question: null
     evidence_kind: hypothesised
     where: "§10.3.4"
 
@@ -1605,7 +1540,6 @@ claims:
       not get there by way of the model's own sampled output, and comes
       from an internal representation of the state itself and not from a
       direct translation of the state into words.
-    question: null
     evidence_kind: argued
     where: "§3"
 
@@ -1616,7 +1550,6 @@ claims:
       metacognitive representation, directly. They offer indirect evidence,
       from questions whose answer needs a step beyond the state itself,
       such as whether anything unexpected is present.
-    question: null
     evidence_kind: argued
     where: "§3"
 
@@ -1632,7 +1565,6 @@ claims:
       "introspection" be kept for access to internal states, with
       "self-modeling" or "self-knowledge" for predictions of what a model
       would do.
-    question: null
     evidence_kind: argued
     where: "§9.2; §9.6"
     note: >
@@ -1650,7 +1582,6 @@ claims:
       some perhaps borrowing non-introspective machinery. The paper says the
       experiments give no evidence of a general system that represents the
       model's "thoughts" and answers arbitrary questions about them.
-    question: null
     evidence_kind: argued
     where: "§1; §10.3"
 
@@ -1661,7 +1592,6 @@ claims:
       and advises against strong inferences about consciousness from these
       results. The paper says they could arguably count as evidence of a form of
       access consciousness and do not bear on phenomenal consciousness.
-    question: null
     evidence_kind: argued
     where: "§1; §10.4 and footnote 12"
 

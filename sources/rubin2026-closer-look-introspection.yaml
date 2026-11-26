@@ -109,7 +109,7 @@ studies:
           checkpoint. Each checkpoint's weights fix it. The authors do not
           discuss the matter.
       unit_reporter:
-        value: [persona, weights]
+        value: [speaker, weights]
         basis: operational
         author_term: "the model's own answers; raw answer"
         confidence: medium
@@ -540,10 +540,6 @@ claims:
       model's activations picks out the injected sentence on 98.3% of
       held-out trials, while the model's own answer is right on 11.1%, which
       is chance.
-    question: q-report-matches-probe
-    stance: against
-    other_questions:
-      - {question: q-injected-state-report, stance: against}
     evidence_kind: measured
     where: "Abstract; §4.1, Fig. 2"
     scope:
@@ -559,10 +555,6 @@ claims:
       The released 32B base model, which has had no post-training, names the
       injected sentence on 89.6% of trials against a chance rate of 11.1%.
       The probe scores 99.1% at the same setting.
-    question: q-injected-state-report
-    stance: supports
-    other_questions:
-      - {question: q-report-matches-probe, stance: inconclusive}
     evidence_kind: measured
     where: "Abstract; §4.1, Fig. 2"
     scope:
@@ -590,7 +582,6 @@ claims:
       answers become accurate only later. Accurate answers are present in the
       released base, so the authors conclude that reporting develops without
       post-training.
-    question: null
     evidence_kind: measured
     where: "§4.1, Fig. 2; §5.1"
     scope:
@@ -615,8 +606,6 @@ claims:
       layer 6 and on 89.6% when it is at layer 0, against a chance rate of
       11.1%. The authors conclude that a low score at one injection site does
       not show a general inability to localize.
-    question: q-injected-state-report
-    stance: supports
     evidence_kind: measured
     where: "§1.2; §5.1; App. C.2"
     scope:
@@ -630,8 +619,6 @@ claims:
       probe at layer 24 picks out the injected sentence on 83.1% of trials
       (80.8 to 85.6% across seeds) against 37.7% for the model's answer. A
       probe fitted on shuffled labels scores 12.0%.
-    question: q-report-matches-probe
-    stance: against
     evidence_kind: measured
     where: "App. C.2"
     scope:
@@ -645,7 +632,6 @@ claims:
       higher for concept-vector injections than for random directions: the
       probe scores 86.1% against 80.2%, and the model's answer 42.8% against
       32.6%.
-    question: null
     evidence_kind: measured
     where: "App. C.2"
     scope:
@@ -661,8 +647,6 @@ claims:
       computation. They say this limits what localization success alone can
       establish about a model's ability to report other aspects of its
       computation, and that it does not rule introspection out.
-    question: q-introspection-success-generalises
-    stance: against
     evidence_kind: argued
     where: "Abstract; §5.3"
     compares:
@@ -679,7 +663,6 @@ claims:
       the model's correct answers. They do not test this, and state that
       their comparison of probe and answer does not show that the model uses
       the features the probe reads.
-    question: null
     evidence_kind: hypothesised
     where: "§5.3; §6"
     note: >
@@ -693,7 +676,6 @@ claims:
       decodable above chance. In 32B the probe scores 37.2% at strength 4
       against 11.3% with shuffled labels; at strength 2 it scores 30.5% in
       32B and 27.6% in 7B against shuffled-label scores of 10.1% and 11.6%.
-    question: null
     evidence_kind: measured
     where: "§4.1; App. B.5, C.3"
     scope:
@@ -720,7 +702,6 @@ claims:
       after about 8.4 billion training tokens. The rise is not uniform, and
       at some strengths an early checkpoint is more decodable than the end of
       stage 1.
-    question: null
     evidence_kind: measured
     where: "App. C.3, Fig. 4"
     scope:
@@ -739,7 +720,6 @@ claims:
       strengths. At strength 8 it scores 31.5% immediately after the list and
       21.5% after 256 further tokens, against 11.5% and 10.9% with no
       injection.
-    question: null
     evidence_kind: measured
     where: "§4.2; App. D, Table 1"
     scope:
@@ -765,7 +745,6 @@ claims:
       The random-network result is not confined to injections into the last
       sentence. For targets in sentences 1 to 8, accuracy is 30.6%
       immediately after the list and 21.9% after 256 tokens.
-    question: null
     evidence_kind: measured
     where: "§4.2"
     scope:
@@ -781,7 +760,6 @@ claims:
       uninjected scores (14.3% and 14.1%) are above chance for reasons the
       authors could not find, so they draw no conclusion about how
       pretraining changes propagation.
-    question: null
     evidence_kind: measured
     where: "§4.2; §5.2; App. D.1, Table 2"
     scope:
@@ -798,7 +776,6 @@ claims:
       to 28.9% on fresh numbered text in the random networks, but fall to
       11.1 to 12.2%, about chance, when the numbering is removed from that
       text.
-    question: null
     evidence_kind: measured
     where: "App. D.2"
     scope:
@@ -817,7 +794,6 @@ claims:
       networks and the pretrained base and for all three seeds. The source
       takes this to show that the perturbation reaches later tokens through
       attention, independently of how well a probe does.
-    question: null
     evidence_kind: measured
     where: "App. D.3"
     scope:

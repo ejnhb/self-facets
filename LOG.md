@@ -2,6 +2,35 @@
 
 Newest first. Each entry: what changed, what is open, what needs a decision.
 
+## 2026-11-26: codebook 0.7 (speaker; links, readings and views built)
+
+Coder: claude (claude-opus-5-5), working with the owner.
+
+**Changed**
+
+- Unit `persona` renamed `speaker` (16 codings). Links moved to `links/` (45,
+  none lost; conflicts unchanged at 159). `requires` on questions;
+  `q-privileged-self-access` requires a self-report. `post_training_reached`
+  on all 42 models. Readings and views built, per `design/readings.md`.
+
+**First views** (`views/views.yaml`, on `q-privileged-self-access`)
+
+- Text answers only (r-logit-readout-not-answer): 27 linked claims count with
+  no readings, 16 under the view. The 11 that drop are Rubin et al.'s
+  logit-readout claims and Song et al.'s probability-readout claims; Binder et
+  al.'s generated answers stay. Conflicting pairs under the root fall from 154
+  to 24.
+- Similarity critique (r-similarity-uncontrolled): nothing excluded; the
+  reinterpretation attaches to 12 claims, including Song et al.'s own, because
+  similarity control is not a facet (as the reading's note says).
+
+**For the owner to decide**
+
+- `post_training_reached` for chat API models is `post_trained` until their
+  pipelines are coded; Llama 3.1 70B in Binder et al. is `unspecified`.
+- Whether similarity control should become a facet, so the similarity reading
+  can stop over-matching.
+
 ## 2026-11-26: design proposal for readings and views
 
 Coder: claude (claude-opus-5-5), working with the owner.

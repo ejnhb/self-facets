@@ -9,6 +9,8 @@
   parent: q-broader-question        # (O) a broader question this sits under
   polarity: direct                  # (O, needs parent) direct | inverse | none; yes/no questions only
   needs: [report_source]            # (O) interpretive facets every linked claim (and its study) must code
+  requires:                         # (O) facet values a linked claim must have to count as evidence (inherited down;
+    evidence: [self_report]         #     readings can reclassify a claim out of it). Implies the facet is coded.
   frame:                            # (O) the question restated as facet values, for finding candidate studies
     construct: [introspection]
     varies: [post_training_stage]

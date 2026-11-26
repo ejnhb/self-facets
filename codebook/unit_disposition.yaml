@@ -1,5 +1,5 @@
 facet: unit_disposition
-version: 0.5
+version: 0.7
 applies_to: study
 cardinality: many
 required: false
@@ -12,7 +12,7 @@ guidance: >
   whether the system can do something (detect an injected state, recognise
   its own text), code what that ability is fixed in, even when the study is
   mainly about a state. Code the unit that fixes it. Most are fixed
-  in the weights. Use persona when the disposition goes with the character and
+  in the weights. Use speaker when the disposition goes with the character and
   changes under a persona swap, scaffolded_system when it is set by a standing
   prompt or by records, and conversation when it is established in context.
   If the study varies this (for example the same disposition installed by

@@ -65,7 +65,7 @@ studies:                            # one per set of results that share every fa
         confidence: medium          # enums.yaml confidence
         note: Why this value and not a neighbouring one.
       unit_disposition: weights     # codebook/unit_disposition.yaml
-      unit_reporter: persona        # codebook/unit_reporter.yaml
+      unit_reporter: speaker        # codebook/unit_reporter.yaml
       unit_position: not_applicable # codebook/unit_position.yaml (the source's own view of what the self is)
       self_sense: self_facts        # codebook/self_sense.yaml
       object_of_study: default_persona   # codebook/object_of_study.yaml; nested_in for a layer inside another
@@ -77,10 +77,7 @@ claims:
       ...
     where: "§4.1, Table 2"          # (R) say "read from Fig. N" for values off a plot
     evidence_kind: measured         # (R) codebook/evidence_kind.yaml
-    question: q-short-description   # (O) from questions/; a yes/no question needs a stance
-    stance: supports                # (C) codebook/stance.yaml; not for a which-question
-    other_questions:                # (O) further questions this claim bears on
-      - {question: q-another, stance: against}   # a which-question takes no stance
+    # Links to questions are not part of the record: they go in links/<source id>.yaml (templates/links.yaml).
     effect_of: [task]               # (O) the varied variable whose effect the claim reports (one of the study's varies)
     scope:                          # (O) when the claim holds for part of the study
       models: [model-slug]

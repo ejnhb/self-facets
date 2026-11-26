@@ -1,0 +1,35 @@
+# Links from song2025-fail-to-introspect's claims to questions: which question a claim bears on, and with what stance.
+# A link is a judgement by whoever poses or maintains the question, not part of what the paper reports.
+# Moved here from the source record in codebook 0.7. Each link may carry a note saying why it bears on the question.
+source: song2025-fail-to-introspect
+links:
+- claim: song2025-fail-to-introspect.c3
+  question: q-report-matches-direct-measure
+  stance: against
+- claim: song2025-fail-to-introspect.c4
+  question: q-report-matches-direct-measure
+  stance: against
+- claim: song2025-fail-to-introspect.c7
+  question: q-self-access-without-training
+  stance: against
+- claim: song2025-fail-to-introspect.c8
+  question: q-self-access-without-training
+  stance: against
+- claim: song2025-fail-to-introspect.c9
+  question: q-self-access-without-training
+  stance: against
+- claim: song2025-fail-to-introspect.c10
+  question: q-self-access-without-training
+  stance: against
+- claim: song2025-fail-to-introspect.c11
+  question: q-self-access-without-training
+  stance: against
+- claim: song2025-fail-to-introspect.c12
+  question: q-report-matches-direct-measure
+  stance: against
+- claim: song2025-fail-to-introspect.c15
+  question: q-self-access-without-training
+  stance: against
+- claim: song2025-fail-to-introspect.c16
+  question: q-self-access-without-training
+  stance: against

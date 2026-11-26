@@ -19,6 +19,10 @@ Expect breaking changes.
 | `codebook/` | Definitions and decision rules for every facet and controlled value |
 | `sources/` | One file per piece of work, holding its studies and claims |
 | `questions/` | Questions that claims take a stance on |
+| `links/` | Which claims bear on which questions, with stances: one file per source |
+| `readings/` | Lenses that change how matching claims are read, without editing them |
+| `views/` | A question answered with chosen readings applied |
+| `templates/` | Annotated templates for every kind of record |
 | `models/` | Model checkpoints, their lineage and training stages |
 | `datasets/` | Training datasets referenced by model stages and claims |
 | `people/`, `orgs/` | Authors and organisations |
@@ -39,17 +43,26 @@ SQLite database for querying; the database is derived and not committed.
   where the state under study lives, what a reported disposition is fixed in,
   and who does the reporting.
 - A **claim** is one finding, in a sentence or two, tied to the study behind
-  it. A claim inherits its study's facets. It can link to a **question** with a
-  stance (supports, against, mixed, inconclusive).
+  it. A claim inherits its study's facets. Sources, studies and claims record
+  what the paper did and found, and nothing more.
+- A **link** says a claim bears on a **question**, with a stance (supports,
+  against, mixed, inconclusive). Links are kept apart from the records because
+  they are the judgement of whoever poses the question, not part of the paper.
 - Questions form a shallow tree: a narrow question names a broader one as its
-  parent.
+  parent, and says which way it points (`polarity`). A question answered by a
+  choice rather than yes or no names the facet that answers it. A question can
+  `require` facet values for a claim to count as evidence.
 - Two claims **conflict** when they take opposite stances on one question, or
-  on questions under the same parent. The build produces a view listing the
-  facets on which their studies differ.
+  on questions in the same tree. The build lists the facets on which their
+  studies differ.
+- A **reading** is a lens: it changes, under a view only, how matching claims
+  are read (a facet value, or an alternative explanation beside the result).
+  A **view** answers a question with chosen readings applied, and the build
+  shows what changes against no readings. See `design/readings.md`.
 
 Every coding records who made it, from which version of the source, and how
 much of the source was read. `unspecified` is a legitimate value: it marks that
-a source does not say which unit, sense or persona it means.
+a source does not say which unit, sense or speaker it means.
 
 ## Using it
 

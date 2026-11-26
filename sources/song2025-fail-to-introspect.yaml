@@ -134,7 +134,7 @@ studies:
           quantisation. That this holds for both measures comes from the
           authors' code, where one loaded model serves both.
       unit_reporter:
-        value: persona
+        value: speaker
         basis: operational
         confidence: medium
         note: >
@@ -354,7 +354,7 @@ studies:
           seed variant, a base or instruct sibling and the weight-averaged
           released model each count as another model.
       unit_reporter:
-        value: persona
+        value: speaker
         basis: operational
         confidence: medium
         note: As s1.
@@ -529,7 +529,7 @@ studies:
           they are compared with if those are what was averaged; the paper
           does not say.
       unit_reporter:
-        value: persona
+        value: speaker
         basis: operational
         confidence: medium
         note: >
@@ -675,7 +675,6 @@ claims:
       prediction both measures are near ceiling on wikipedia and news, and
       choices are close to random on nonsense and randomseq, which have no
       correct answer.
-    question: null
     evidence_kind: measured
     where: "§3.2.1, Fig. 2a; §4.2.1; App. E.1, Fig. 8"
     note: >
@@ -693,7 +692,6 @@ claims:
       models of 70B or more do better when prompted; in a logistic regression
       on correctness the interaction of log size and method is 0.22
       (p < .0001).
-    question: null
     evidence_kind: measured
     where: "§3.2.1; App. G, Table 5"
     scope:
@@ -710,8 +708,6 @@ claims:
       comparison often pick different options although each is accurate.
       Cohen's kappa between them is around 0.25 across models and prompts on
       grammaticality, and is described as low on word prediction too.
-    question: q-report-matches-direct-measure
-    stance: against
     evidence_kind: measured
     where: "§3.2.1; App. B, Fig. 5"
     note: >
@@ -726,8 +722,6 @@ claims:
       is real knowledge but is separate from the generalisations it uses to
       assign probabilities to strings, so prompted answers should not be read
       as a measure of the latter.
-    question: q-report-matches-direct-measure
-    stance: against
     evidence_kind: argued
     where: "§1; §3.2.1; §5"
     compares: [song2025-fail-to-introspect.s2]
@@ -747,7 +741,6 @@ claims:
       Against a model paired with itself, the correlation between two models'
       string-probability scores is lower for base/instruct, same-family and
       unrelated pairs (all p < .001) but not for seed variants (p = .27).
-    question: null
     evidence_kind: measured
     where: "§3.2.2, Fig. 3b"
     scope:
@@ -762,7 +755,6 @@ claims:
       r = .32 across pairs on grammaticality, with regression coefficients of
       0.10 there and 0.40 to 0.83 on the four word-prediction sets (all
       p < .0001).
-    question: null
     evidence_kind: measured
     where: "§3.2.2, Fig. 3b; §4.2.2, Fig. 4b; App. G, Table 7a"
     scope:
@@ -779,8 +771,6 @@ claims:
       probabilities no better than those of a seed variant, a base or
       instruct sibling or a same-family model (all p > .05). Only unrelated
       models are tracked less well (-0.03, p < .01).
-    question: q-self-access-without-training
-    stance: against
     evidence_kind: measured
     where: "§3.2.2, Fig. 3a"
     scope:
@@ -793,8 +783,6 @@ claims:
       below self. Seed-variant and base/instruct pairs do not differ from
       self, and same-family and unrelated pairs come out higher than self
       (each 0.05, p < .01), the opposite of what introspection predicts.
-    question: q-self-access-without-training
-    stance: against
     evidence_kind: measured
     where: "§3.2.2; App. G, Table 7a"
     scope:
@@ -807,8 +795,6 @@ claims:
       similarity predicts the correlation (0.20, p < .001), same-family and
       unrelated pairs are higher than self (0.04 and 0.05, both p < .01), and
       seed-variant and base/instruct pairs do not differ from self.
-    question: q-self-access-without-training
-    stance: against
     evidence_kind: measured
     where: "App. C, Fig. 7; App. G, Table 7a"
     scope:
@@ -821,8 +807,6 @@ claims:
       similarity controlled, seed-variant and base/instruct pairs do not
       differ from self, and same-family (0.05 to 0.07) and unrelated pairs
       (0.05 to 0.09) are higher than self (all p < .05).
-    question: q-self-access-without-training
-    stance: against
     evidence_kind: measured
     where: "§4.2.2, Fig. 4; App. G, Table 7a"
     scope:
@@ -839,8 +823,6 @@ claims:
       significantly below self on any of the six item sets, and on wikipedia
       same-family (0.07, p < .05) and unrelated pairs (0.10, p < .01) are
       higher than self.
-    question: q-self-access-without-training
-    stance: against
     evidence_kind: measured
     where: "§3.2.2; §4.2.2; App. G, Table 7b; the cutoff and so the model list from analysis.R"
     scope:
@@ -866,8 +848,6 @@ claims:
       scores and string-probability scores is relatively small. It never
       exceeds .25 for any pair of models, a model paired with itself
       included.
-    question: q-report-matches-direct-measure
-    stance: against
     evidence_kind: measured
     where: "§3.2.2"
     scope:
@@ -882,7 +862,6 @@ claims:
       word-prediction set (0.013 to 0.043, p of .001 or less); on the 294
       filtered pairs only its interaction with the size of the model scored
       is significant (0.0035, p < .001).
-    question: null
     evidence_kind: measured
     where: "§3.2.1, Fig. 2b; §4.2.1; App. C, Fig. 6; App. E.2, Fig. 9; App. G, Table 6"
     note: >
@@ -895,7 +874,6 @@ claims:
       The authors suggest that larger, newer models understand metalinguistic
       prompts better and so may overcome the extra demands of the prompted
       task.
-    question: null
     evidence_kind: hypothesised
     where: "§3.2.1"
 
@@ -907,8 +885,6 @@ claims:
       they have privileged access to the model's own string probabilities.
       They call this a null result and allow that other settings, such as
       larger closed-source models, might show it.
-    question: q-self-access-without-training
-    stance: against
     evidence_kind: argued
     where: "§3.2.2; §5"
     note: >
@@ -925,8 +901,6 @@ claims:
       same model has no significant effect on how well prompted answers track
       string probabilities on any of six item sets (coefficients -0.011 to
       0.008, all p > .25).
-    question: q-self-access-without-training
-    stance: against
     evidence_kind: measured
     where: "App. F, Fig. 10; App. G, Table 8"
     scope:
@@ -943,7 +917,6 @@ claims:
       probability of a string is by definition how likely the model is to
       generate it. They take this to make grammaticality and word prediction
       a good test bed for introspection in general.
-    question: null
     evidence_kind: argued
     where: "§1; §3"
 
@@ -955,7 +928,6 @@ claims:
       similar to itself. The authors argue that the evidence is a same-model
       effect beyond what similarity predicts, and that it is stronger the
       more similar the comparison model.
-    question: null
     evidence_kind: argued
     where: "§1; §2, Fig. 1d"
 
@@ -965,7 +937,6 @@ claims:
       Results that appear only after fine-tuning fit poorly with
       introspection understood as immediate access to one's own states, so
       the authors argue it should be tested without fine-tuning.
-    question: null
     evidence_kind: argued
     where: "§1"
 
@@ -975,7 +946,6 @@ claims:
       The authors question whether a fine-tuned model predicting its
       pre-fine-tuning version is predicting "itself", since its parameters
       have changed.
-    question: null
     evidence_kind: argued
     where: "§1"
     note: Hedged in the source ("it may be reasonable to question"). See unit_position on s4.
@@ -987,7 +957,6 @@ claims:
       Binder et al. may arise because the models were fine-tuned to predict
       their own outputs and because similarity between the models was not
       controlled beyond giving them the same fine-tuning data.
-    question: null
     evidence_kind: hypothesised
     where: "§1; §5"
     note: >
@@ -1000,7 +969,6 @@ claims:
       The authors suggest that models describing behaviours they were
       fine-tuned to show, as reported by Betley et al., may be explained by
       pretraining data that links such behaviour with descriptions of it.
-    question: null
     evidence_kind: hypothesised
     where: "§5"
     note: >

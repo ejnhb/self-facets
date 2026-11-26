@@ -3,7 +3,7 @@
 The codebook defines every controlled value used in the database. A value that
 is not defined here fails validation.
 
-Status: **v0.6, draft.** Revised after a six-coder pilot on three papers
+Status: **v0.7, draft.** Revised after a six-coder pilot on three papers
 (see `pilot/`), then split into core and interpretive tiers. See `CHANGELOG.md`.
 
 ## Three kinds of file
@@ -56,6 +56,19 @@ Validation then requires every claim linked to that question, or to any
 question under it, to code those facets: study facets on its study, claim
 facets on the claim. `unspecified` counts as coded; `not_yet_coded` does not.
 
+A question can also say which values a claim must have to count as evidence on
+it at all, again for itself and every question under it:
+
+```yaml
+- id: q-privileged-self-access
+  requires:
+    evidence: [self_report]
+```
+
+A linked claim that lacks them is kept but not counted (`counted` in the
+build). A reading can reclassify a claim out of a question this way under a
+view, which is how a lens changes an answer (`design/readings.md`).
+
 ### Which way a question points, and questions that are not yes or no
 
 Each question below another names its `polarity` (direct, inverse or none),
@@ -92,7 +105,7 @@ Claim facets:
 | Facet | Tier | Question |
 |---|---|---|
 | `evidence_kind` | core | What kind of support does the source give? |
-| `stance` | core | How does the claim bear on its question? (with a question) |
+| `stance` | core | How does a claim bear on a question? (coded on the link, in `links/`) |
 | `disposition` | core | Which trained stance is the claim about? (optional) |
 | `report_source` | interpretive | Where does the report's content come from? |
 | `origin` | interpretive | Where does the disposition come from? |

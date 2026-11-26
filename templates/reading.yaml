@@ -1,0 +1,22 @@
+# Template for a reading: append to readings/readings.yaml (design/readings.md).
+# A reading is a lens: under a view, it changes how matching claims are read. It never edits a record.
+# In this repo, readings rest on published sources; keep your own readings elsewhere and apply them by id.
+
+- id: r-short-name                  # (R)
+  status: argued                    # (R) enums.yaml reading_status: grounded | argued | speculative
+  statement: >                      # (R) what the reading holds, in a sentence or two
+    ...
+  applies_to:                       # (R) exactly one of:
+    selector:                       #   facet values (all must match the record), or model.post_training_reached
+      report_readout: [logit_choice]
+      # model.post_training_reached: [base, untrained]   # matches a claim when all its models have one of these
+    # targets: [familyYEAR-title.c2, familyYEAR-title.s1]  # or named claims or studies
+  effect:                           # (R) one or both of:
+    reclassify:                     #   change a facet value under the lens only
+      - {facet: evidence, from: self_report, to: not_applicable}
+    reinterpret: >                  #   an alternative explanation, shown beside the matched claims
+      ...
+  sources: []                       # (O) published works that make or support the argument
+  tested_by: >                      # (O) what would settle it, for readings that are hypotheses
+    ...
+  note: null                        # (O)

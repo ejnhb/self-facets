@@ -42,6 +42,13 @@ reconciling coder (claude-fable-5-2) and one blind checker (claude-opus-5-5).
   instruct pairs have their own coefficient, not because it tests the effect
   of post-training.
 
+**Rules added after review with the owner**
+
+- Read the paper and its code together where both exist.
+- Look at the figures: the arXiv PDF can be downloaded and its pages read as
+  images, which the pilot coders did not do. The three pilot records are
+  `text_only` and should have their figure-dependent claims revisited.
+
 **Open**
 
 - `varies` cannot say what role a variable plays (the contrast of interest, or

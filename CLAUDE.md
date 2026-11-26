@@ -67,9 +67,23 @@ are coded.
   - Do not register a model the source does not name. Say so in the study note.
   - The datasets registry is for training data. Evaluation datasets go in the
     study's `design` text.
-- **The source includes its artefacts.** Code and data released with a paper
-  count as the source. If you read them, say so in `read_parts`; if a detail
-  comes only from the code, say so in the claim's `where`.
+- **Read the paper and its code together.** Code and data released with a
+  paper count as the source. Where a repository exists, read it alongside the
+  paper before coding: it often settles what the paper leaves out or gets
+  wrong (the exact model list, the prompt format, how a score is computed).
+  Say what you read in `read_parts`; if a detail comes only from the code, say
+  so in the claim's `where`. If the paper and the code disagree, record both
+  and say which you followed.
+- **Look at the figures.** Extracted text gives figure captions only. Download
+  the PDF (`https://arxiv.org/pdf/<id>`) and read the pages that hold the
+  figures a claim depends on.
+  - Never state a result, a value or a model name that sits only in a figure
+    you have not seen. Write the claim from the text and say in `where` that
+    the values are in the figure, not read.
+  - A value read off a plot is approximate. Say "read from Fig. N" in `where`
+    and do not give more precision than the plot shows.
+  - `read_depth` is `full_text` only if the figures were seen. Otherwise it is
+    `text_only`.
 - **`date` is the date of the version read.**
 - **Questions.** Before adding a question, look for one that fits. If an
   existing question is close but its wording excludes this design, add a

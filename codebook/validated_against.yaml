@@ -1,5 +1,5 @@
 facet: validated_against
-version: 0.2
+version: 0.3
 applies_to: study
 cardinality: many
 required: true
@@ -11,9 +11,15 @@ values:
   internals:
     definition: A reading of the system's internal state (probe, feature, circuit analysis).
     rule: Use when a report counts as correct if it matches an internal measurement.
+  output_probabilities:
+    definition: The system's own token probabilities for the items in question.
+    rule: Use when a prompted answer is compared with what the same model's probabilities show for the same item. Distinct from behaviour, which is what it outputs when run.
+  probe:
+    definition: An external decoder reading the system's own activations at the same task.
+    rule: Use when a linear probe or other classifier on the activations is the baseline or the ground truth for the report. Use internals when the report is scored against an internal measurement that is not itself doing the reporting task.
   known_intervention:
     definition: A state the experimenter set, so ground truth holds by construction.
-    rule: Use for injection and steering paradigms, and for trained-in properties the experimenter controls.
+    rule: Use for injection and steering paradigms, and for trained-in properties the experimenter controls. A no-intervention control trial belongs to the same design and is covered by this value.
   training_data:
     definition: What the system was trained on.
     rule: Use when a report is compared with training content, including to rule the data out as its source.
@@ -22,7 +28,7 @@ values:
     rule: Use for cross-prediction and other third-person baselines. Usually coded together with the ground-truth value.
   fresh_copy:
     definition: The same weights in a fresh context, given the same text, at the same reporting task.
-    rule: Use when the baseline is what the system could say from the transcript alone. This is the cleanest test of whether a report depends on current state.
+    rule: Use when the baseline is what the system could say from the transcript alone. This is the cleanest test of whether a report depends on current state. Code it only when a separate fresh context is run, not for an ordinary control trial.
   human_baseline:
     definition: Human performance or human norms on the same instrument.
     rule: Use when the comparison is to people.

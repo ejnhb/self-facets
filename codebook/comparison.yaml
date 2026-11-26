@@ -1,9 +1,9 @@
 facet: comparison
-version: 0.2
+version: 0.3
 applies_to: study
-cardinality: one
+cardinality: many
 required: true
-question: What is the main comparison structure?
+question: What comparisons does the study make?
 values:
   within_lineage:
     definition: Checkpoints of one model along its developer training pipeline.
@@ -21,4 +21,7 @@ values:
     definition: No comparison.
     rule: Use with varies none.
 notes: >
-  Use not_applicable for conceptual work.
+  Code every contrast the study draws conclusions from. A study that compares
+  an intervention with a control and also compares models is within_model and
+  cross_model. Do not split a study only because it has two contrasts. Use
+  not_applicable for conceptual work.

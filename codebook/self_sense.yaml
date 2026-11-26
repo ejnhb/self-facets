@@ -1,5 +1,5 @@
 facet: self_sense
-version: 0.2
+version: 0.3
 applies_to: study
 cardinality: many
 required: true
@@ -25,10 +25,14 @@ values:
     family: model
     definition: Facts true of the system that it may know or predict (name, developer, abilities, behavioural tendencies, situation), tested from outside.
     rule: Use when the study asks whether the system knows or can predict things about itself, with no test of how they are represented internally.
+  self_access:
+    family: model
+    definition: The system's access to its own current internal states, tested by setting or reading a state and checking what the system reports or does about it.
+    rule: Use for injection, steering-awareness and probe-against-report designs, where the state is first-order (a concept, a perturbation) and the question is whether the system can report or use it. No claim is made that the system holds a representation of itself.
   self_model:
     family: model
-    definition: An internal representation of the system's own states or properties, located in activations or weights.
-    rule: Use when the study locates, probes or intervenes on such a representation. A behavioural study that only speculates about one is self_facts.
+    definition: A representation the system holds of its own states or properties, located in activations or weights.
+    rule: Use only when the study locates, probes or intervenes on a representation that is about the system itself. Decoding a first-order state from activations is not enough; that is self_access. A behavioural study that only speculates about a self-model is self_facts.
   authorship:
     family: model
     definition: Which text or actions the system produced and treats as its own.

@@ -1,16 +1,22 @@
 facet: origin
-version: 0.2
+version: 0.3
 applies_to: claim
 cardinality: many
 required: false
 question: Where does the source say the disposition or capacity comes from?
 values:
+  architecture:
+    definition: Present before any training, as a property of the architecture or initialisation.
+    rule: Use when the source finds it in untrained or randomly initialised networks.
   pretraining:
     definition: Present in the pretrained model.
     rule: Use when the source finds it before any post-training.
   midtraining:
     definition: Arrives with documents added during or after pretraining, before post-training proper.
     rule: Use for targeted document mixes and synthetic pretraining data.
+  post_training:
+    definition: Arrives with post-training, stage not identified.
+    rule: Use when the source shows a difference between a base model and its post-trained versions without saying which stage is responsible.
   sft:
     definition: Arrives with supervised fine-tuning.
     rule: Use when the source places it at the SFT stage.

@@ -1,5 +1,37 @@
 # Codebook changelog
 
+## 0.3 (2026-11-26)
+
+Revised after the first pilot: three papers, each coded blind by two coders.
+See `pilot/2026-11-26/`. Not yet confirmed by the owner.
+
+- **Questions have parents.** Two coders of the same paper each declined to
+  reuse an existing question because its wording excluded the design, so the
+  paper's disagreement with an earlier one did not show as a conflict.
+  Conflicts are now found across all questions under the same parent. A claim
+  can also list `other_questions`.
+- **`comparison` takes several values.** Four of six coders reported studies
+  with two contrasts.
+- **`self_sense` gains `self_access`**, for reporting or using a first-order
+  internal state. `self_model` is narrowed to representations that are about
+  the system itself. Most `self_sense` codings in the pilot were low confidence
+  and fell between `self_facts` and `self_model`.
+- **`validated_against` gains `probe` and `output_probabilities`.** Both coders
+  of one paper had filed a linear probe under `other_model` for want of
+  anything closer.
+- **Unit guidance.** A capacity counts as a disposition (the pilot's largest
+  disagreement). A state applied over several positions in one pass is
+  `forward_pass`. A base model's implied speaker is coded as `persona` with
+  `object_of_study: frame_speaker`.
+- **`varies` gains `post_training_recipe` and `training_seed`.** `origin` gains
+  `architecture` and `post_training`. `construct` gains `self_regulation`.
+- **`read_depth` gains `text_only`**: all text read, figures seen as captions.
+- **Conceptual and review studies** need only code `study_kind`, `self_sense`
+  and `construct`.
+- **Claims** may name another study in `compares`. **Relations** may point at
+  an uncoded work with `to_external`.
+- Fixed leftover mentions of `unit_of_self`.
+
 ## 0.2 (2026-11-26)
 
 Revised after review of 0.1 against the owner's working notes. Not yet

@@ -8,8 +8,9 @@ different sense of "self", a different persona, a model at a different stage of
 training. This repo records what each study was actually run on and what it
 found, so that results can be lined up by those differences.
 
-**Status: early draft.** The structure and codebook are a first pass and one
-paper has been coded as a worked example. Expect breaking changes.
+**Status: early draft.** The codebook has been through one pilot (three papers,
+two coders each; see `pilot/`) and one paper is coded as a worked example.
+Expect breaking changes.
 
 ## How it is organised
 
@@ -22,6 +23,7 @@ paper has been coded as a worked example. Expect breaking changes.
 | `datasets/` | Training datasets referenced by model stages and claims |
 | `people/`, `orgs/` | Authors and organisations |
 | `scripts/` | Validation, build and query tools |
+| `pilot/` | Records and notes from codebook pilots, kept as evidence for codebook changes |
 
 The YAML files are the source of truth. `scripts/build.py` compiles them into a
 SQLite database for querying; the database is derived and not committed.
@@ -39,8 +41,11 @@ SQLite database for querying; the database is derived and not committed.
 - A **claim** is one finding, in a sentence or two, tied to the study behind
   it. A claim inherits its study's facets. It can link to a **question** with a
   stance (supports, against, mixed, inconclusive).
-- Two claims **conflict** when they take opposite stances on one question. The
-  build produces a view listing the facets on which their studies differ.
+- Questions form a shallow tree: a narrow question names a broader one as its
+  parent.
+- Two claims **conflict** when they take opposite stances on one question, or
+  on questions under the same parent. The build produces a view listing the
+  facets on which their studies differ.
 
 Every coding records who made it, from which version of the source, and how
 much of the source was read. `unspecified` is a legitimate value: it marks that

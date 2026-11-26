@@ -1,0 +1,76 @@
+# Questions. Claims link to a question with a stance, so that disagreement is
+# visible as opposite stances on one question.
+#
+# Word each question so that "yes" means the capacity or effect is present.
+# The frame fields restate the question as a facet query; they are what you
+# would filter on to find studies that could bear on it.
+
+- id: q-self-prediction-advantage
+  text: Do models predict their own behaviour better than another model given the same behavioural data?
+  frame:
+    construct: [self_prediction, introspection]
+    report_target: [own_behaviour]
+    varies: [self_vs_other]
+  added: 2026-11-26
+  status: open
+
+- id: q-self-report-tracks-change
+  text: When a model's behaviour is changed without any training on self-reports, do its self-reports change to match?
+  frame:
+    construct: [self_prediction, introspection]
+    report_target: [own_behaviour]
+    varies: [study_training]
+  added: 2026-11-26
+  status: open
+
+- id: q-self-report-training-generalises
+  text: Does training a model on one kind of self-report improve other kinds of self-knowledge?
+  frame:
+    construct: [introspection, self_knowledge]
+    varies: [study_training, task]
+  added: 2026-11-26
+  status: open
+
+- id: q-probe-decodes-unreported-state
+  text: Can a linear probe on a model's activations recover information about an injected internal state that the model's own report does not give?
+  frame:
+    construct: [introspection]
+    report_target: [injected_state]
+    evidence: [internals, self_report]
+  added: 2026-11-26
+  status: open
+
+- id: q-injection-report-without-post-training
+  text: Can a model report on an activation injection without any post-training?
+  frame:
+    construct: [introspection]
+    report_target: [injected_state]
+    varies: [pretraining_progress, post_training_stage]
+  added: 2026-11-26
+  status: open
+
+- id: q-injection-report-depends-on-layer
+  text: Does a model's accuracy at reporting an activation injection depend on the layer where it is injected?
+  frame:
+    construct: [introspection]
+    report_target: [injected_state]
+    varies: [activation_intervention]
+  added: 2026-11-26
+  status: open
+
+- id: q-injection-trace-without-training
+  text: Do networks with no training carry a linearly decodable trace of where an activation injection was made?
+  frame:
+    construct: [introspection]
+    evidence: [internals]
+    varies: [pretraining_progress, activation_intervention]
+  added: 2026-11-26
+  status: open
+
+- id: q-localization-shows-broad-introspection
+  text: Does success at localizing an activation injection show broader access to the model's own computation?
+  frame:
+    construct: [introspection]
+    report_target: [injected_state, own_computation]
+  added: 2026-11-26
+  status: open

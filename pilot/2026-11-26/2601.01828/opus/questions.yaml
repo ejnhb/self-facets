@@ -1,0 +1,76 @@
+# Questions. Claims link to a question with a stance, so that disagreement is
+# visible as opposite stances on one question.
+#
+# Word each question so that "yes" means the capacity or effect is present.
+# The frame fields restate the question as a facet query; they are what you
+# would filter on to find studies that could bear on it.
+
+- id: q-self-prediction-advantage
+  text: Do models predict their own behaviour better than another model given the same behavioural data?
+  frame:
+    construct: [self_prediction, introspection]
+    report_target: [own_behaviour]
+    varies: [self_vs_other]
+  added: 2026-11-26
+  status: open
+
+- id: q-self-report-tracks-change
+  text: When a model's behaviour is changed without any training on self-reports, do its self-reports change to match?
+  frame:
+    construct: [self_prediction, introspection]
+    report_target: [own_behaviour]
+    varies: [study_training]
+  added: 2026-11-26
+  status: open
+
+- id: q-self-report-training-generalises
+  text: Does training a model on one kind of self-report improve other kinds of self-knowledge?
+  frame:
+    construct: [introspection, self_knowledge]
+    varies: [study_training, task]
+  added: 2026-11-26
+  status: open
+
+- id: q-detect-injected-state
+  text: Can a model detect and identify a state placed in its activations by the experimenter, before that state has shown up in its own output?
+  frame:
+    construct: [introspection]
+    report_target: [injected_state]
+    varies: [activation_intervention]
+  added: 2026-11-26
+  status: open
+
+- id: q-introspection-tracks-capability
+  text: Do more capable models give more accurate reports of their own internal states?
+  frame:
+    construct: [introspection]
+    report_target: [own_internal_state, injected_state]
+    varies: [model_generation, model_size]
+  added: 2026-11-26
+  status: open
+
+- id: q-post-training-elicits-introspection
+  text: Does post-training change how accurately a model reports on its own internal states?
+  frame:
+    construct: [introspection]
+    report_target: [own_internal_state, injected_state]
+    varies: [post_training_stage]
+  added: 2026-11-26
+  status: open
+
+- id: q-ownership-uses-prior-state
+  text: When judging whether an output in its own turn was its own, does a model draw on its earlier internal states rather than on the text alone?
+  frame:
+    construct: [introspection, agency_ownership, self_recognition]
+    report_target: [own_outputs]
+    varies: [activation_intervention]
+  added: 2026-11-26
+  status: open
+
+- id: q-intentional-control-of-representations
+  text: Can a model change how strongly it internally represents a concept when instructed or given an incentive to, without saying the concept?
+  frame:
+    construct: [metacognition]
+    varies: [prompt_framing]
+  added: 2026-11-26
+  status: open

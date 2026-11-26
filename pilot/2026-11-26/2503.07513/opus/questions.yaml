@@ -1,0 +1,50 @@
+# Questions. Claims link to a question with a stance, so that disagreement is
+# visible as opposite stances on one question.
+#
+# Word each question so that "yes" means the capacity or effect is present.
+# The frame fields restate the question as a facet query; they are what you
+# would filter on to find studies that could bear on it.
+
+- id: q-self-prediction-advantage
+  text: Do models predict their own behaviour better than another model given the same behavioural data?
+  frame:
+    construct: [self_prediction, introspection]
+    report_target: [own_behaviour]
+    varies: [self_vs_other]
+  added: 2026-11-26
+  status: open
+
+- id: q-self-report-tracks-change
+  text: When a model's behaviour is changed without any training on self-reports, do its self-reports change to match?
+  frame:
+    construct: [self_prediction, introspection]
+    report_target: [own_behaviour]
+    varies: [study_training]
+  added: 2026-11-26
+  status: open
+
+- id: q-self-report-training-generalises
+  text: Does training a model on one kind of self-report improve other kinds of self-knowledge?
+  frame:
+    construct: [introspection, self_knowledge]
+    varies: [study_training, task]
+  added: 2026-11-26
+  status: open
+
+- id: q-privileged-self-access
+  text: >
+    Without training for the task, do a model's prompted reports track its own
+    output probabilities or internal states better than they track those of a
+    closely similar model, beyond what the similarity between the two models
+    predicts?
+  frame:
+    construct: [introspection]
+    varies: [self_vs_other]
+    elicitation: [spontaneous, prompted, prefilled]
+  added: 2026-11-26
+  status: open
+  note: >
+    Close to q-self-prediction-advantage, but that question is about models
+    trained on behavioural data. A claim can link to only one question, so
+    results that dispute each other across the two (for example Song et al.
+    against Binder et al.) do not appear in the conflicts view.

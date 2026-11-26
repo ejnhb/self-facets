@@ -27,16 +27,23 @@ are coded.
   the construct, put it in `author_term` next to the coded value.
 - **Claims are in our words**, one or two sentences, with the numbers that
   matter and a `where` pointer. Quote at most a short phrase.
-- **One study per setup.** A claim inherits every facet of its study, so
-  bundling different sub-experiments into one study makes conflicts look like
-  they differ on things they do not. The test: would any claim in the study
-  inherit a facet value that is wrong for it? If so, split.
-  - Different topics (construct, report target, validation, elicitation, what
-    is varied) are different studies.
-  - Different models are not. List them all on one study, and narrow a claim
-    to some of them with `scope.models`.
-  - Split by model only when the model changes a facet, for example one run as
-    a base model and another through a chat template.
+- **A study is a set of results that share every facet value.** Sections and
+  headings do not decide the split; the facets do. The test: would any claim
+  in the study inherit a facet value that is wrong for it? If so, split.
+  - Results on different topics (construct, report target, validation,
+    elicitation) are different studies, even when they come from the same runs.
+    A probe-only analysis is split from the self-report analysis it sits
+    beside, because its claims would otherwise inherit self-report facets.
+  - Different models are not different studies. List them all, and narrow a
+    claim to some of them with `scope.models`.
+  - Two contrasts in one design are not different studies. `comparison` and
+    `varies` take several values.
+  - Models that differ on a facet (a base model on raw text, a chat model
+    through its template) are split only when their results are reported
+    apart. When results pool or compare them, keep one study, code both
+    values, and say in the note which models have which.
+  - A claim that compares two studies goes in the one whose facets fit it
+    best, and names the other in `compares`.
 - **Record the conditions.** `varies` names a variable; put the conditions
   actually used in its `levels`. When a claim holds for only some of them, say
   which in `scope.conditions`.
@@ -52,6 +59,26 @@ are coded.
 - **Registries stay small.** Add a model, dataset, person or org only when a
   record needs it, and only to the depth needed. Leave `stage: null` on a model
   until its pipeline is coded from the developer's documentation.
+  - A checkpoint gets its own model entry only when a claim is scoped to it.
+    A sweep over many checkpoints is one entry for the series, with the
+    checkpoints listed in the `levels` of `varies`.
+  - Networks the authors built (random initialisations, toy models) get one
+    entry with the authors' organisation as developer.
+  - Do not register a model the source does not name. Say so in the study note.
+  - The datasets registry is for training data. Evaluation datasets go in the
+    study's `design` text.
+- **The source includes its artefacts.** Code and data released with a paper
+  count as the source. If you read them, say so in `read_parts`; if a detail
+  comes only from the code, say so in the claim's `where`.
+- **`date` is the date of the version read.**
+- **Questions.** Before adding a question, look for one that fits. If an
+  existing question is close but its wording excludes this design, add a
+  narrower question and give both the same `parent`, creating the parent if
+  needed. A claim that bears on a second question lists it under
+  `other_questions` with its own stance.
+- **Relations.** `from` is the work doing the criticising or extending. Point
+  `to` at a coded record, or use `to_external` with a citation when the target
+  is not coded yet.
 - **Mark your work.** Set `coded_by: claude`, `coder_model` to your model id,
   and `status: draft`. Only a human reviewer sets `status: reviewed`.
 

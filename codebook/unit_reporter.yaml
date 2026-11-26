@@ -1,5 +1,5 @@
 facet: unit_reporter
-version: 0.2
+version: 0.3
 applies_to: study
 cardinality: many
 required: true
@@ -7,7 +7,10 @@ values_from: units
 question: Who does the reporting?
 guidance: >
   The unit that produces the self-report. In nearly all chat-format studies
-  this is a persona, and object_of_study says which one. Code weights only if
+  this is a persona, and object_of_study says which one. For a base model on
+  raw text, code persona and let object_of_study frame_speaker say that no
+  trained persona is present. Code weights only when there is no speaker in
+  any sense (an answer read from the logits of an untrained network), or when
   the study has a way to attribute the report to the network apart from any
-  persona, and say how in the note. Use not_applicable when the study collects
+  persona; say which in the note. Use not_applicable when the study collects
   no self-report.

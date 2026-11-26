@@ -1,0 +1,52 @@
+facet: varies
+version: 0.1
+applies_to: study
+cardinality: many
+required: true
+question: What does the study vary (its independent variables)?
+values:
+  post_training_stage:
+    definition: Stage of the developer's post-training pipeline (base, SFT, preference optimisation, RL, ...).
+    rule: Use only when the same lineage is compared across stages. Comparing two unrelated chat models is model_family.
+  pretraining_progress:
+    definition: Position along pretraining (checkpoints by tokens or steps).
+    rule: Use for studies that track something through pretraining.
+  model_family:
+    definition: Which model, across developers or families.
+    rule: Use when several unrelated models are tested and compared.
+  model_size:
+    definition: Parameter count within one family and generation.
+    rule: Use when size is the intended contrast.
+  model_generation:
+    definition: Successive releases within one family.
+    rule: Use when versions are compared.
+  study_training:
+    definition: Training applied by the study's authors (fine-tuning, LoRA, RL), compared with not applying it or with a different version of it.
+    rule: Use when the authors change the weights as part of the design.
+  prompt_framing:
+    definition: Wording, instructions, system prompt or chat template.
+    rule: Use when the same question is asked under different framings.
+  persona:
+    definition: Which character the system is asked or trained to be.
+    rule: Use when persona is manipulated. Pair with object_of_study.
+  activation_intervention:
+    definition: Direct changes to internal state (injection, steering, ablation, patching).
+    rule: Use when the intervention is the manipulated variable.
+  self_vs_other:
+    definition: Whether the system reports on itself or on another system, or whether the reporter is the target or a third party.
+    rule: Use for self/other contrasts, including cross-prediction designs.
+  task:
+    definition: The task, dataset or property being asked about.
+    rule: Use when results are broken down by task and the breakdown matters to the conclusion.
+  context:
+    definition: Context length, number of turns, memory or compaction.
+    rule: Use for long-horizon and persistence manipulations.
+  language:
+    definition: Natural language of the prompts.
+    rule: Use for cross-lingual comparisons.
+  none:
+    definition: A single condition with nothing varied.
+    rule: Use for one-model, one-condition demonstrations.
+notes: >
+  This is the facet that makes a question answerable by filter. A study
+  only counts as direct evidence on "does X differ by Y" if Y is coded here.

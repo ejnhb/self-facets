@@ -1,0 +1,60 @@
+# Model registry. One entry per checkpoint that some study in the database
+# touches, coded only to the depth a claim needs.
+#
+# A checkpoint points at its parent with derived_from, and stage describes the
+# training step that produced it from that parent:
+#
+#   stage:
+#     methods: [sft]              # codebook enum stage_method
+#     datasets: [some-dataset]    # ids from datasets/
+#     disclosure: partial         # codebook enum disclosure
+#     documented_in: <source id or free-text citation>
+#
+# stage: null means the pipeline has not been coded yet. Do not fill it from
+# memory; code it from the developer's documentation and cite that.
+
+- id: gpt-4o-2024-05-13
+  name: GPT-4o (2024-05-13)
+  family: gpt-4o
+  developer: openai
+  open_weights: false
+  derived_from: null
+  stage: null
+
+- id: gpt-4
+  name: GPT-4
+  family: gpt-4
+  developer: openai
+  open_weights: false
+  derived_from: null
+  stage: null
+  note: Snapshot unspecified. Split into dated snapshots when a source names one.
+
+- id: gpt-3.5-turbo-0125
+  name: GPT-3.5 Turbo (0125)
+  family: gpt-3.5
+  developer: openai
+  open_weights: false
+  derived_from: null
+  stage: null
+
+- id: llama-3.1-70b
+  name: Llama 3.1 70B
+  family: llama-3.1
+  developer: meta
+  open_weights: true
+  size: 70B
+  derived_from: null
+  stage: null
+  note: >
+    Variant (base or instruct) not recorded. Binder et al. cite Dubey et al.
+    2024 for this model; code the pipeline from that report.
+
+- id: claude-3.5-sonnet
+  name: Claude 3.5 Sonnet
+  family: claude-3.5
+  developer: anthropic
+  open_weights: false
+  derived_from: null
+  stage: null
+  note: Snapshot unspecified.

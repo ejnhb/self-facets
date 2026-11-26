@@ -1,0 +1,22 @@
+facet: study_kind
+version: 0.1
+applies_to: study
+cardinality: one
+required: true
+question: What kind of work is this unit?
+values:
+  experiment:
+    definition: The authors ran a controlled procedure on one or more models and report the results.
+    rule: Use when conditions were set by the authors. Most empirical papers.
+  benchmark:
+    definition: A reusable test set or battery, reported with scores for a range of models.
+    rule: Use when the main contribution is the instrument. An experiment that happens to release its data is still an experiment.
+  observational:
+    definition: Analysis of data the authors did not generate by controlled manipulation (deployment logs, user surveys, public posts, released transcripts).
+    rule: Use when there is data but no manipulation.
+  conceptual:
+    definition: An argument, framework, definition or position with no new data.
+    rule: Use for philosophy and theory. Claims from these are usually coded evidence_kind argued.
+  review:
+    definition: A synthesis of other work.
+    rule: Use when the unit's claims are about the literature. Prefer coding the primary sources.

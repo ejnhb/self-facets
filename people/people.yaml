@@ -1,0 +1,12 @@
+# People. IDs are family-given in lowercase ASCII; add a number on collision.
+# orcid is null until someone has checked it. Affiliations live on sources.
+
+- {id: binder-felix, name: Felix J Binder, orcid: null}
+- {id: chua-james, name: James Chua, orcid: null}
+- {id: evans-owain, name: Owain Evans, orcid: null}
+- {id: hughes-john, name: John Hughes, orcid: null}
+- {id: korbak-tomek, name: Tomek Korbak, orcid: null}
+- {id: long-robert, name: Robert Long, orcid: null}
+- {id: perez-ethan, name: Ethan Perez, orcid: null}
+- {id: sleight-henry, name: Henry Sleight, orcid: null}
+- {id: turpin-miles, name: Miles Turpin, orcid: null}

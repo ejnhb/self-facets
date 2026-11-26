@@ -1,0 +1,272 @@
+#!/usr/bin/env python3
+"""Check every record against the codebook and against each other.
+
+Usage: python scripts/validate.py
+Exits 0 if clean, 1 if there are errors.
+"""
+
+import sys
+
+from _load import (
+    SPECIAL,
+    as_list,
+    facet_entry,
+    load_codebook,
+    load_list_dir,
+    load_sources,
+    model_ref,
+)
+
+
+class Report:
+    def __init__(self):
+        self.errors = []
+
+    def err(self, where, msg):
+        self.errors.append(f"{where}: {msg}")
+
+
+def check_enum(rep, where, field, value, enums, name, required=True):
+    if value is None:
+        if required:
+            rep.err(where, f"missing {field}")
+        return
+    if value not in enums[name]:
+        rep.err(where, f"{field} '{value}' is not in codebook enum {name}")
+
+
+def index(rep, items, kind):
+    """Build id -> record, reporting duplicates and missing ids."""
+    out = {}
+    for path, item in items:
+        if not isinstance(item, dict) or not item.get("id"):
+            rep.err(path, f"{kind} entry with no id")
+            continue
+        if item["id"] in out:
+            rep.err(path, f"duplicate {kind} id '{item['id']}'")
+        out[item["id"]] = item
+    return out
+
+
+def validate():
+    rep = Report()
+    facets, enums = load_codebook()
+
+    for name, facet in facets.items():
+        where = f"codebook/{name}.yaml"
+        if facet.get("applies_to") not in ("study", "claim"):
+            rep.err(where, "applies_to must be study or claim")
+        if facet.get("cardinality") not in ("one", "many"):
+            rep.err(where, "cardinality must be one or many")
+        for value, body in (facet.get("values") or {}).items():
+            if not isinstance(body, dict) or not body.get("definition"):
+                rep.err(where, f"value '{value}' has no definition")
+            if value in SPECIAL:
+                rep.err(where, f"'{value}' is a special value and must not be redefined")
+
+    orgs = index(rep, load_list_dir("orgs"), "org")
+    people = index(rep, load_list_dir("people"), "person")
+    datasets = index(rep, load_list_dir("datasets"), "dataset")
+    models = index(rep, load_list_dir("models"), "model")
+    questions = index(rep, load_list_dir("questions"), "question")
+
+    for oid, org in orgs.items():
+        check_enum(rep, f"org {oid}", "kind", org.get("kind"), enums, "org_kind")
+
+    for did, ds in datasets.items():
+        for comp in as_list(ds.get("components")):
+            if comp not in datasets:
+                rep.err(f"dataset {did}", f"component '{comp}' is not a dataset")
+
+    for mid, model in models.items():
+        where = f"model {mid}"
+        if model.get("developer") not in orgs:
+            rep.err(where, f"developer '{model.get('developer')}' is not an org")
+        parent = model.get("derived_from")
+        if parent is not None and parent not in models:
+            rep.err(where, f"derived_from '{parent}' is not a model")
+        stage = model.get("stage")
+        if stage is not None:
+            for method in as_list(stage.get("methods")):
+                check_enum(rep, where, "stage method", method, enums, "stage_method")
+            check_enum(rep, where, "stage disclosure", stage.get("disclosure"), enums, "disclosure")
+            for ds in as_list(stage.get("datasets")):
+                if ds not in datasets:
+                    rep.err(where, f"stage dataset '{ds}' is not a dataset")
+
+    study_facets = {n: f for n, f in facets.items() if f["applies_to"] == "study"}
+    claim_facets = {n: f for n, f in facets.items() if f["applies_to"] == "claim"}
+
+    source_ids, study_ids, claim_ids = set(), set(), set()
+    all_relations = []
+
+    for path, src in load_sources():
+        sid = src.get("id")
+        if not sid:
+            rep.err(path, "source has no id")
+            continue
+        if path.stem != sid:
+            rep.err(path, f"file name must match id '{sid}'")
+        if sid in source_ids:
+            rep.err(path, f"duplicate source id '{sid}'")
+        source_ids.add(sid)
+
+        if not src.get("title"):
+            rep.err(sid, "missing title")
+
+        for i, author in enumerate(as_list(src.get("authors")), 1):
+            if author.get("person") not in people:
+                rep.err(sid, f"author {i}: '{author.get('person')}' is not in people/")
+            for org in as_list(author.get("orgs")):
+                if org not in orgs:
+                    rep.err(sid, f"author {i}: org '{org}' is not in orgs/")
+
+        if not as_list(src.get("artefacts")):
+            rep.err(sid, "a source needs at least one artefact")
+        for i, art in enumerate(as_list(src.get("artefacts")), 1):
+            check_enum(rep, sid, f"artefact {i} kind", art.get("kind"), enums, "artefact_kind")
+            if "arxiv" in art and not isinstance(art["arxiv"], str):
+                rep.err(sid, f"artefact {i}: quote the arXiv id so YAML keeps it as text")
+
+        coding = src.get("coding") or {}
+        for field in ("coded_by", "coded_on", "version_read"):
+            if not coding.get(field):
+                rep.err(sid, f"coding.{field} is missing")
+        check_enum(rep, sid, "coding.read_depth", coding.get("read_depth"), enums, "read_depth")
+        check_enum(rep, sid, "coding.status", coding.get("status"), enums, "record_status")
+        if coding.get("read_depth") == "partial" and not coding.get("read_parts"):
+            rep.err(sid, "read_depth partial needs read_parts")
+        if coding.get("status") == "reviewed" and not coding.get("reviewed_by"):
+            rep.err(sid, "status reviewed needs reviewed_by")
+
+        local_studies = {}
+        for study in as_list(src.get("studies")):
+            stid = study.get("id")
+            if not stid or not stid.startswith(sid + ".s"):
+                rep.err(sid, f"study id '{stid}' must start with '{sid}.s'")
+                continue
+            if stid in study_ids:
+                rep.err(sid, f"duplicate study id '{stid}'")
+            study_ids.add(stid)
+            local_studies[stid] = study
+
+            study_models = set()
+            for raw in as_list(study.get("models")):
+                mid, _ = model_ref(raw)
+                study_models.add(mid)
+                if mid not in models:
+                    rep.err(stid, f"model '{mid}' is not in models/")
+            study["_models"] = study_models
+
+            coded = study.get("facets") or {}
+            for name in coded:
+                if name not in study_facets:
+                    rep.err(stid, f"'{name}' is not a study facet in the codebook")
+            for name, facet in study_facets.items():
+                if name not in coded:
+                    if facet.get("required"):
+                        rep.err(stid, f"facet '{name}' is not coded (use unspecified if the source does not say)")
+                    continue
+                entry = facet_entry(coded[name])
+                values = entry["value"]
+                if not values:
+                    rep.err(stid, f"facet '{name}' has no value")
+                if facet["cardinality"] == "one" and len(values) > 1:
+                    rep.err(stid, f"facet '{name}' takes one value, got {len(values)}")
+                if len(values) > 1 and SPECIAL & set(values):
+                    rep.err(stid, f"facet '{name}': a special value cannot be combined with others")
+                for value in values:
+                    if value not in facet["values"] and value not in SPECIAL:
+                        rep.err(stid, f"facet '{name}': '{value}' is not in the codebook")
+                check_enum(rep, stid, f"{name}.basis", entry.get("basis"), enums, "basis", required=False)
+                check_enum(rep, stid, f"{name}.confidence", entry.get("confidence"), enums, "confidence", required=False)
+
+        for claim in as_list(src.get("claims")):
+            cid = claim.get("id")
+            if not cid or not cid.startswith(sid + ".c"):
+                rep.err(sid, f"claim id '{cid}' must start with '{sid}.c'")
+                continue
+            if cid in claim_ids:
+                rep.err(sid, f"duplicate claim id '{cid}'")
+            claim_ids.add(cid)
+
+            study = local_studies.get(claim.get("study"))
+            if study is None:
+                rep.err(cid, f"study '{claim.get('study')}' is not a study in this source")
+            if not claim.get("statement"):
+                rep.err(cid, "missing statement")
+            if not claim.get("where"):
+                rep.err(cid, "missing where (section, page or figure)")
+
+            for name, facet in claim_facets.items():
+                values = as_list(claim.get(name))
+                if facet.get("required") and not values:
+                    rep.err(cid, f"missing {name}")
+                if facet["cardinality"] == "one" and len(values) > 1:
+                    rep.err(cid, f"{name} takes one value")
+                for value in values:
+                    if value not in facet["values"]:
+                        rep.err(cid, f"{name} '{value}' is not in the codebook")
+
+            question = claim.get("question")
+            if question is not None and question not in questions:
+                rep.err(cid, f"question '{question}' is not in questions/")
+            if question is not None and not claim.get("stance"):
+                rep.err(cid, "a claim linked to a question needs a stance")
+            if question is None and claim.get("stance"):
+                rep.err(cid, "stance given without a question")
+
+            for mid in as_list((claim.get("scope") or {}).get("models")):
+                if mid not in models:
+                    rep.err(cid, f"scope model '{mid}' is not in models/")
+                elif study is not None and mid not in study["_models"]:
+                    rep.err(cid, f"scope model '{mid}' is not one of the study's models")
+
+            about = claim.get("about") or {}
+            for mid in as_list(about.get("models")):
+                if mid not in models:
+                    rep.err(cid, f"about model '{mid}' is not in models/")
+            for did in as_list(about.get("datasets")):
+                if did not in datasets:
+                    rep.err(cid, f"about dataset '{did}' is not in datasets/")
+
+        for rel in as_list(src.get("relations")):
+            all_relations.append((sid, rel))
+
+    # Relations can point across sources, so resolve them last.
+    targets = source_ids | claim_ids | study_ids
+    for sid, rel in all_relations:
+        check_enum(rep, sid, "relation kind", rel.get("kind"), enums, "relation_kind")
+        for end in ("from", "to"):
+            if rel.get(end) not in targets:
+                rep.err(sid, f"relation {end} '{rel.get(end)}' is not a source, study or claim")
+        if not rel.get("where"):
+            rep.err(sid, "relation needs where (the place the source states it)")
+
+    counts = {
+        "sources": len(source_ids),
+        "studies": len(study_ids),
+        "claims": len(claim_ids),
+        "questions": len(questions),
+        "people": len(people),
+        "orgs": len(orgs),
+        "models": len(models),
+        "datasets": len(datasets),
+    }
+    return rep.errors, counts
+
+
+def main():
+    errors, counts = validate()
+    print(", ".join(f"{n} {k}" for k, n in counts.items()))
+    if errors:
+        print(f"\n{len(errors)} error(s):")
+        for e in errors:
+            print("  " + e)
+        return 1
+    print("OK")
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())

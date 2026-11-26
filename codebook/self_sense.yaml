@@ -1,0 +1,36 @@
+facet: self_sense
+version: 0.1
+applies_to: study
+cardinality: many
+required: true
+question: What does "self" mean in this study?
+values:
+  self_pointer:
+    definition: Indexical self-reference. How "I", "you" or the assistant role is bound to the system, and how self and other are told apart at the level of tokens or representations.
+    rule: Use when the work is about what the first person refers to, or about a representation that marks content as the system's own.
+  point_of_view:
+    definition: A perspective. What is known or accessible from the system's position, as distinct from another agent's.
+    rule: Use for perspective-taking and self/other belief tracking where the system's own viewpoint is one of the perspectives.
+  self_as_entity:
+    definition: The system as an object with facts true of it (name, developer, architecture, abilities, behavioural tendencies, situation).
+    rule: Use when the study asks whether the system knows or can predict facts about itself, without a claim about how those facts are represented internally.
+  self_model:
+    definition: An internal representation of the system's own states or properties, as found in activations or weights.
+    rule: Use when the study locates, probes or intervenes on such a representation. A behavioural study that only speculates about one is self_as_entity.
+  identity:
+    definition: Sameness conditions. What makes the system the same individual over time, across copies or across versions.
+    rule: Use for persistence and individuation questions.
+  persona:
+    definition: A character or trait profile (values, personality, style).
+    rule: Use when the self is treated as a set of traits. Pair with object_of_study to say whose.
+  authorship:
+    definition: Ownership of outputs and actions. Which text or actions count as the system's own.
+    rule: Use for self-recognition of text, prefill and tampering detection, and attribution of actions. Proposed value; review.
+  subject:
+    definition: The self as a bearer of experience, valence or welfare.
+    rule: Use when the study treats the system as something states can be good or bad for, or asks about experience. Proposed value; review.
+notes: >
+  Always fill author_term for this facet when the source uses a term of its own
+  ("self-model", "self-awareness", "identity"). Sources use these words
+  inconsistently, and the mismatch between author_term and the coded value is
+  the main thing this facet exists to expose.

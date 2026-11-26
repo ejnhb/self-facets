@@ -1,0 +1,19 @@
+facet: evidence
+version: 0.1
+applies_to: study
+cardinality: many
+required: true
+question: Which channels of evidence does the study collect?
+values:
+  self_report:
+    definition: What the system says about itself.
+    rule: Use whenever the system's statements about itself are data, including forced-choice answers about itself.
+  behaviour:
+    definition: What the system does on tasks that are not about itself.
+    rule: Use for object-level outputs, choices and actions.
+  internals:
+    definition: Activations, weights, attention patterns, or interventions on them.
+    rule: Use when the study reads or writes internal state.
+notes: >
+  This facet says what was collected. validated_against says what the
+  self-report was checked against.

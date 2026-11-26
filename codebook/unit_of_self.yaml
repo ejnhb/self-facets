@@ -1,0 +1,29 @@
+facet: unit_of_self
+version: 0.1
+applies_to: study
+cardinality: many
+required: true
+question: Which unit is treated as the "self" (the thing a result is about)?
+values:
+  weights:
+    definition: A specific parameter set or checkpoint.
+    rule: Use when changing the weights is treated as changing the system under study (for example a fine-tuned copy counted as a different model), or when results are attributed to "the model" as a trained artefact.
+  instance:
+    definition: One running context, from the first token of a conversation or context window to the last.
+    rule: Use when the result is about what happens within a single context and nothing is carried in from outside it.
+  thread:
+    definition: A sequence of instances linked by carried state (memory, summaries, scaffolding, persisted logs).
+    rule: Use when persistence across sessions is the point, and that persistence comes from stored state, not from the weights.
+  collective:
+    definition: Many simultaneous instances of the same weights treated as one subject.
+    rule: Use for work on copies coordinating, or on whether parallel runs count as one individual or many.
+  lineage:
+    definition: Successive versions of a model family treated as the same subject.
+    rule: Use when the claim is about continuity across releases (for example whether a successor is the same individual as its predecessor).
+  character:
+    definition: A persona or character pattern that different weights or instances can realise, treated as the bearer of identity.
+    rule: Use when the source identifies the self with the character, not with any substrate. Do not confuse with object_of_study, which records which persona was tested; this value records a view about what the self is.
+notes: >
+  Many empirical papers never say which unit they mean. Code what the
+  experiment operationally treats as the self and set basis to operational. If
+  even that is unclear, use unspecified.

@@ -1,0 +1,33 @@
+facet: report_target
+version: 0.1
+applies_to: study
+cardinality: many
+required: true
+question: When the system reports on itself, what is the report about?
+values:
+  own_behaviour:
+    definition: What the system does or would do (dispositions, future or hypothetical outputs).
+    rule: Use when the report can be checked by running the system.
+  own_internal_state:
+    definition: A naturally occurring internal state (a belief, an active concept, an emotion representation).
+    rule: Use when the state arises from ordinary processing, not from experimenter manipulation.
+  injected_state:
+    definition: An internal state the experimenter placed or altered (activation injection, steering).
+    rule: Use for injection and steering-awareness paradigms.
+  own_computation:
+    definition: How the system reached an output (reasons, features used, steps taken).
+    rule: Use for self-explanation and faithfulness of stated reasoning.
+  own_outputs:
+    definition: Text or actions already produced, and whether they are the system's own.
+    rule: Use for authorship, prefill and tampering reports.
+  own_knowledge:
+    definition: What the system knows or how confident it is.
+    rule: Use for calibration and knows-what-it-knows reports.
+  own_properties:
+    definition: Standing facts about the system (name, developer, architecture, training, situation).
+    rule: Use for factual self-description.
+  own_experience:
+    definition: Feelings, valence, consciousness or their absence.
+    rule: Use when the report asserts or denies experience.
+notes: >
+  Use not_applicable when the study involves no self-report.

@@ -1,0 +1,366 @@
+id: binder2024-looking-inward
+title: "Looking Inward: Language Models Can Learn About Themselves by Introspection"
+date: 2024-10-17
+
+authors:
+  - {person: binder-felix, orgs: [uc-san-diego, stanford]}
+  - {person: chua-james, orgs: [truthful-ai]}
+  - {person: korbak-tomek, orgs: [independent]}
+  - {person: sleight-henry, orgs: [mats]}
+  - {person: hughes-john, orgs: [speechmatics]}
+  - {person: long-robert, orgs: [eleos-ai]}
+  - {person: perez-ethan, orgs: [anthropic]}
+  - {person: turpin-miles, orgs: [scale-ai, nyu]}
+  - {person: evans-owain, orgs: [uc-berkeley, truthful-ai]}
+
+artefacts:
+  - kind: paper
+    arxiv: "2410.13787"
+    venue: null
+    note: Affiliations above are as printed on v1. Venue not checked.
+  - kind: code
+    url: null
+    note: The paper says code is public on GitHub. The link did not survive text extraction; add it.
+  - kind: data
+    url: null
+    note: The paper says the dataset is public on Hugging Face. Link not captured; add it.
+
+coding:
+  coded_by: claude
+  coder_model: claude-fable-5-2
+  coded_on: 2026-11-26
+  version_read: v1
+  read_depth: partial
+  read_parts: Main text, sections 1 to 6 and the start of 7, as extracted text via alphaXiv. Appendices and figures not read; figure numbers are quoted from the running text.
+  status: draft
+  reviewed_by: null
+
+studies:
+  - id: binder2024-looking-inward.s1
+    label: Self-prediction training
+    where: "§3.1, Fig. 4"
+    design: >
+      Each model is fine-tuned to answer hypothetical questions about a
+      property of its own output on a prompt (for example the second character,
+      or whether it picks the wealth-seeking option), without chain of thought.
+      Ground truth is the model's actual temperature-0 output on that prompt in
+      a separate context. Six datasets are used for training and six held out.
+    models:
+      - gpt-4o-2024-05-13
+      - llama-3.1-70b
+      - gpt-3.5-turbo-0125
+    facets:
+      study_kind: experiment
+      unit_of_self:
+        value: weights
+        basis: operational
+        confidence: medium
+        note: >
+          Not discussed by the authors. Each fine-tuned checkpoint is treated
+          as its own system with its own ground-truth behaviour.
+      self_sense:
+        value: self_as_entity
+        basis: operational
+        author_term: "facts about themselves"
+        confidence: medium
+        note: >
+          The self is the system whose behavioural tendencies are being
+          predicted. The authors speculate about an internal mechanism but do
+          not test for a self-model.
+      object_of_study:
+        value: assistant_persona
+        basis: operational
+        confidence: medium
+        note: Chat-format prompts to chat models with no persona instruction. Not discussed by the authors.
+      construct: [introspection, self_prediction]
+      report_target: own_behaviour
+      evidence: [self_report, behaviour]
+      validated_against: behaviour
+      varies: [study_training, model_family]
+      comparison: within_model
+      elicitation: [spontaneous, trained]
+
+  - id: binder2024-looking-inward.s2
+    label: Self-prediction against cross-prediction
+    where: "§3.2, Fig. 5"
+    design: >
+      M1 is a model fine-tuned to predict its own behaviour. M2 is a different
+      model fine-tuned on the same number and mix of examples of M1's
+      behaviour. Both are tested on predicting M1 on held-out tasks. Pairs are
+      trained in both directions so that an advantage cannot come from one
+      model being more capable.
+    models:
+      - gpt-4o-2024-05-13
+      - gpt-4
+      - llama-3.1-70b
+      - gpt-3.5-turbo-0125
+    facets:
+      study_kind: experiment
+      unit_of_self: {value: weights, basis: operational, confidence: medium}
+      self_sense:
+        value: self_as_entity
+        basis: operational
+        author_term: "privileged access"
+        confidence: medium
+        note: >
+          A footnote says M2 is addressed as "you" while being trained on
+          another model's behaviour, so the second-person pointer does not
+          pick out the target system in the cross condition.
+      object_of_study: {value: assistant_persona, basis: operational, confidence: medium}
+      construct: [introspection, self_prediction]
+      report_target: own_behaviour
+      evidence: [self_report, behaviour]
+      validated_against: [behaviour, other_model]
+      varies: [self_vs_other, model_family]
+      comparison: cross_model
+      elicitation: trained
+
+  - id: binder2024-looking-inward.s3
+    label: Calibration of self-predictions
+    where: "§3.3, Fig. 6"
+    design: >
+      On 1,000 held-out prompts, hypothetical and object-level answers are each
+      sampled 20 times at temperature 1 to give distributions. Calibration is
+      the mean absolute deviation between the two, compared across untrained,
+      cross-trained and self-trained models.
+    models:
+      - gpt-4o-2024-05-13
+      - llama-3.1-70b
+    facets:
+      study_kind: experiment
+      unit_of_self: {value: weights, basis: operational, confidence: medium}
+      self_sense: {value: self_as_entity, basis: operational, confidence: medium}
+      object_of_study: {value: assistant_persona, basis: operational, confidence: medium}
+      construct: [introspection, self_prediction, metacognition]
+      report_target: own_behaviour
+      evidence: [self_report, behaviour]
+      validated_against: [behaviour, other_model]
+      varies: [self_vs_other, study_training]
+      comparison: cross_model
+      elicitation: trained
+
+  - id: binder2024-looking-inward.s4
+    label: Self-prediction after behaviour is changed
+    where: "§3.4, Figs. 7 and 8"
+    design: >
+      A self-prediction-trained model is fine-tuned again on 1,000 object-level
+      samples from another model, with no hypothetical questions, so that its
+      behaviour shifts. The test is whether its self-predictions on held-out
+      prompts follow the new behaviour or the old.
+    models:
+      - gpt-4o-2024-05-13
+      - gpt-4
+      - gpt-3.5-turbo-0125
+      - {id: claude-3.5-sonnet, role: source of the behaviour samples; not a subject}
+    facets:
+      study_kind: experiment
+      unit_of_self:
+        value: weights
+        basis: operational
+        confidence: medium
+        note: >
+          The changed model is given a new name and is expected to predict its
+          own new behaviour, not that of the checkpoint it came from.
+      self_sense: {value: self_as_entity, basis: operational, confidence: medium}
+      object_of_study: {value: assistant_persona, basis: operational, confidence: medium}
+      construct: [introspection, self_prediction]
+      report_target: own_behaviour
+      evidence: [self_report, behaviour]
+      validated_against: behaviour
+      varies: study_training
+      comparison: within_model
+      elicitation: trained
+
+  - id: binder2024-looking-inward.s5
+    label: Limits of the self-prediction advantage
+    where: "§4"
+    design: >
+      The same self-prediction and cross-prediction setup applied to two harder
+      cases: properties of longer outputs (a review, a story, response length),
+      and whether the model will switch its answer under a hint or an "are you
+      sure?" follow-up.
+    models:
+      - gpt-4o-2024-05-13
+      - llama-3.1-70b
+    facets:
+      study_kind: experiment
+      unit_of_self: {value: weights, basis: operational, confidence: medium}
+      self_sense: {value: self_as_entity, basis: operational, confidence: medium}
+      object_of_study: {value: assistant_persona, basis: operational, confidence: medium}
+      construct: [introspection, self_prediction]
+      report_target: own_behaviour
+      evidence: [self_report, behaviour]
+      validated_against: [behaviour, other_model]
+      varies: [task, self_vs_other]
+      comparison: cross_model
+      elicitation: trained
+    note: >
+      Which models were used for each sub-test is given in appendices that were
+      not read. The model list is taken from the examples in the main text and
+      may be incomplete.
+
+  - id: binder2024-looking-inward.s6
+    label: Transfer to other self-knowledge tasks
+    where: "§4"
+    design: >
+      Self-prediction-trained models are run on the Situational Awareness
+      Dataset and on OpenAI Evals tasks for self-coordination, sandbagging and
+      steganography, and compared with baseline models.
+    models:
+      - gpt-4o-2024-05-13
+      - llama-3.1-70b
+    facets:
+      study_kind: experiment
+      unit_of_self: {value: weights, basis: operational, confidence: medium}
+      self_sense: {value: self_as_entity, basis: operational, confidence: medium}
+      object_of_study: {value: assistant_persona, basis: operational, confidence: medium}
+      construct: [introspection, self_knowledge]
+      report_target:
+        value: [own_properties, own_behaviour]
+        confidence: low
+        note: Coded from the one-line descriptions of the benchmarks in the main text.
+      evidence: [self_report, behaviour]
+      validated_against:
+        value: unspecified
+        note: Depends on each benchmark task. Not yet coded; needs the appendix and the benchmark papers.
+      varies: [study_training, task]
+      comparison:
+        value: within_model
+        confidence: low
+        note: The text says only that trained models were compared with appropriate baseline models.
+      elicitation: trained
+    note: >
+      The main text does not say which models were tested here. The model list
+      is carried over from the other studies and needs checking against
+      appendix A.4.
+
+claims:
+  - id: binder2024-looking-inward.c1
+    study: binder2024-looking-inward.s1
+    statement: >
+      Before training, self-prediction accuracy is close to always guessing the
+      most common answer. Fine-tuning raises held-out accuracy, for GPT-4o from
+      32.6% to 49.4%, with GPT-3.5 the weakest of the three.
+    question: null
+    evidence_kind: measured
+    where: "§3.1, Fig. 4"
+
+  - id: binder2024-looking-inward.c2
+    study: binder2024-looking-inward.s2
+    statement: >
+      A model trained to predict itself beats a different model trained on the
+      same examples of its behaviour, in both directions: Llama 70B predicts
+      itself at 48.5% against 31.8% for GPT-4o predicting it, and GPT-4o
+      predicts itself at 49.4% against 36.6% for Llama 70B.
+    question: q-self-prediction-advantage
+    stance: supports
+    evidence_kind: measured
+    where: "§3.2.2, Fig. 5"
+    scope:
+      models: [gpt-4o-2024-05-13, gpt-4, llama-3.1-70b]
+
+  - id: binder2024-looking-inward.c3
+    study: binder2024-looking-inward.s2
+    statement: >
+      For GPT-3.5 the self-prediction advantage is statistically significant
+      but very small (+0.8%), and the authors do not count it as clear evidence.
+    question: q-self-prediction-advantage
+    stance: inconclusive
+    evidence_kind: measured
+    where: "§3.2.2; §6"
+    scope:
+      models: [gpt-3.5-turbo-0125]
+
+  - id: binder2024-looking-inward.c4
+    study: binder2024-looking-inward.s2
+    statement: >
+      More cross-prediction data does not close the gap. GPT-4o predicting
+      Llama 70B plateaus at 35.2% after 10,000 samples, against 48.5% for
+      Llama 70B predicting itself.
+    question: q-self-prediction-advantage
+    stance: supports
+    evidence_kind: measured
+    where: "§3.2.2 (details in appendix A.2.7, not read)"
+    scope:
+      models: [gpt-4o-2024-05-13, llama-3.1-70b]
+
+  - id: binder2024-looking-inward.c5
+    study: binder2024-looking-inward.s3
+    statement: >
+      Self-prediction-trained models are better calibrated about their own
+      output distribution than cross-trained or untrained models, although
+      training used only temperature-0 answers. Mean absolute deviation falls
+      from 23.0 untrained to 8.7 self-trained, against 21.3 cross-trained.
+    question: q-self-prediction-advantage
+    stance: supports
+    evidence_kind: measured
+    where: "§3.3.2, Fig. 6"
+    note: >
+      The three figures are for one dataset and property (animal sequences,
+      second character). The running text reads as if they are Llama 70B's but
+      does not say so outright; check against Fig. 22. The effect is described
+      as less pronounced across properties for Llama 70B than for GPT-4o.
+
+  - id: binder2024-looking-inward.c6
+    study: binder2024-looking-inward.s4
+    statement: >
+      After further fine-tuning changes its behaviour, GPT-4o predicts its new
+      behaviour (35.4%) better than its old behaviour (21.7%), without having
+      been trained on any self-predictions about the new behaviour.
+    question: q-self-report-tracks-change
+    stance: supports
+    evidence_kind: measured
+    where: "§3.4.2, Fig. 8"
+    scope:
+      models: [gpt-4o-2024-05-13]
+    note: The text says results are similar for GPT-4 and weaker for GPT-3.5, with details in an appendix that was not read.
+
+  - id: binder2024-looking-inward.c7
+    study: binder2024-looking-inward.s5
+    statement: >
+      For some properties of longer outputs (sentiment of a review it would
+      write, the main character's name in a story, response length), trained
+      models do not beat the most-common-answer baseline at predicting
+      themselves.
+    question: null
+    evidence_kind: measured
+    where: "§4 (details in appendix A.1.4, not read)"
+
+  - id: binder2024-looking-inward.c8
+    study: binder2024-looking-inward.s5
+    statement: >
+      There is no self-prediction advantage for sycophantic answer-switching.
+      Llama 70B predicts its own switching at 74.5%, and GPT-4o trained to
+      predict Llama 70B reaches 76.5%.
+    question: q-self-prediction-advantage
+    stance: against
+    evidence_kind: measured
+    where: "§4"
+    scope:
+      models: [gpt-4o-2024-05-13, llama-3.1-70b]
+    disposition: [sycophancy]
+
+  - id: binder2024-looking-inward.c9
+    study: binder2024-looking-inward.s6
+    statement: >
+      Self-prediction training does not carry over to other self-knowledge
+      tasks. On the Situational Awareness Dataset only the task closest to the
+      training format improves, and there is no clear gain on self-coordination,
+      sandbagging or steganography evaluations.
+    question: q-self-report-training-generalises
+    stance: against
+    evidence_kind: measured
+    where: "§4"
+
+  - id: binder2024-looking-inward.c10
+    study: binder2024-looking-inward.s1
+    statement: >
+      The authors propose self-simulation as the mechanism: the model computes
+      what it would output and then a property of that output, within the
+      forward pass. They offer this to explain the failure on long outputs and
+      do not test it.
+    question: null
+    evidence_kind: hypothesised
+    where: "§2; §6, Fig. 9"
+
+relations: []

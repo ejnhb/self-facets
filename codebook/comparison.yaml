@@ -1,0 +1,21 @@
+facet: comparison
+version: 0.1
+applies_to: study
+cardinality: one
+required: true
+question: What is the main comparison structure?
+values:
+  within_lineage:
+    definition: Checkpoints of one model along its developer training pipeline.
+    rule: Use when the compared systems are stages of the same lineage as released or reconstructed.
+  within_model:
+    definition: One model under different conditions, including before and after training applied by the study.
+    rule: Use for prompt, intervention and study-training contrasts on a single starting model.
+  cross_model:
+    definition: Different models compared with each other.
+    rule: Use when the contrast is between models, including self against other.
+  single_condition:
+    definition: No comparison.
+    rule: Use with varies none.
+notes: >
+  Use not_applicable for conceptual work.

@@ -1,0 +1,57 @@
+# Organisations: labs, universities, programmes. One entry per organisation.
+# Affiliation is recorded per source (see sources/), so a person's history over
+# time is derived from their papers and not stored here.
+
+- id: anthropic
+  name: Anthropic
+  kind: company
+
+- id: eleos-ai
+  name: Eleos AI
+  kind: nonprofit
+
+- id: independent
+  name: Independent
+  kind: independent
+  note: Placeholder for authors listed with no institution.
+
+- id: mats
+  name: MATS Program
+  kind: programme
+
+- id: meta
+  name: Meta
+  kind: company
+
+- id: nyu
+  name: New York University
+  kind: university
+
+- id: openai
+  name: OpenAI
+  kind: company
+
+- id: scale-ai
+  name: Scale AI
+  kind: company
+
+- id: speechmatics
+  name: Speechmatics
+  kind: company
+
+- id: stanford
+  name: Stanford University
+  kind: university
+
+- id: truthful-ai
+  name: Truthful AI
+  kind: nonprofit
+  note: Kind not verified; check before relying on it.
+
+- id: uc-berkeley
+  name: UC Berkeley
+  kind: university
+
+- id: uc-san-diego
+  name: UC San Diego
+  kind: university

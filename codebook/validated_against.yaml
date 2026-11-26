@@ -1,5 +1,5 @@
 facet: validated_against
-version: 0.3
+version: 0.6
 applies_to: study
 cardinality: many
 required: true
@@ -14,7 +14,7 @@ values:
     rule: Use when a report counts as correct if it matches an internal measurement.
   output_probabilities:
     definition: The system's own token probabilities for the items in question.
-    rule: Use when a prompted answer is compared with what the same model's probabilities show for the same item. Distinct from behaviour, which is what it outputs when run.
+    rule: Use when a prompted answer is compared with what the same model's probabilities show for the same item. Distinct from behaviour, which is what it outputs when run. Distinct from report_readout probability, where the probability is itself the report.
   probe:
     definition: An external decoder reading the system's own activations at the same task.
     rule: Use when a linear probe or other classifier on the activations is the baseline or the ground truth for the report. Use internals when the report is scored against an internal measurement that is not itself doing the reporting task.

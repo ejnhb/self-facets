@@ -1,19 +1,17 @@
 facet: unit_position
-version: 0.2
+version: 0.6
 applies_to: study
 cardinality: many
 required: false
 tier: interpretive
-absent_means: no_position
 values_from: units
 question: Which unit does the source argue is the self?
 guidance: >
-  Optional. Code only when the source takes a position on what the self, the
-  subject or the interlocutor is. This records a view the source holds. The
-  other three unit facets record what a study operationally treats as the
-  bearer of a state, a disposition or a report, and are coded whether or not
-  the source has a view. A source that argues against a unit is not coded with
-  that unit here; put the argument in a claim.
-  Unlike the other interpretive facets, leaving this one out does not mean
-  "not yet coded": it means the coder found no position in the source
-  (`absent_means: no_position`). The build stores it as `no_position`.
+  Code it when the source takes a position on what the self, the subject or
+  the interlocutor is. This records a view the source holds. The other three
+  unit facets record what a study operationally treats as the bearer of a
+  state, a disposition or a report, whether or not the source has a view. A
+  source that argues against a unit is not coded with that unit here; put the
+  argument in a claim. If the coder read for a position and the source takes
+  none, code not_applicable. Left out, it reads as not_yet_coded, like every
+  interpretive facet.

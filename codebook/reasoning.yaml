@@ -1,0 +1,23 @@
+facet: reasoning
+version: 0.6
+applies_to: study
+cardinality: many
+required: true
+tier: core
+question: Could the model reason in text before giving the answer that is scored?
+values:
+  none:
+    definition: The answer is given directly, with no reasoning text before it.
+    rule: Use when the prompt asks for the answer alone, the output is capped to it, or the answer is read at a position before any text is generated.
+  chain_of_thought:
+    definition: The model writes visible reasoning before the scored answer, because the prompt asks for it or allows it.
+    rule: Use for prompted step-by-step reasoning and for free-text answers that reason before concluding, from a model without a separate reasoning mode.
+  reasoning_trace:
+    definition: A reasoning model's own thinking phase runs before the answer (extended thinking, a hidden or summarised trace).
+    rule: Use when the model's native reasoning mode is on. Say in the note whether the trace was visible to the authors and whether it was analysed.
+notes: >
+  Recorded because self-reports can change with reasoning: a denial given
+  directly may soften or reverse after a chain of thought. If the study
+  compares conditions, code each and add reasoning under varies. When the
+  source does not say and the design does not settle it (a free-text answer
+  from an API model with no stated instruction), code unspecified.

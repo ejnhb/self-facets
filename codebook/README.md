@@ -3,7 +3,7 @@
 The codebook defines every controlled value used in the database. A value that
 is not defined here fails validation.
 
-Status: **v0.5, draft.** Revised after a six-coder pilot on three papers
+Status: **v0.6, draft.** Revised after a six-coder pilot on three papers
 (see `pilot/`), then split into core and interpretive tiers. See `CHANGELOG.md`.
 
 ## Three kinds of file
@@ -36,8 +36,9 @@ Facets come in two tiers, named by `tier` in each file.
   - a conflict between two claims turns on it.
 
   Otherwise they are left out, and the build stores them as `not_yet_coded`.
-  `unit_position` is the exception: leaving it out means the source takes no
-  position, as before (`absent_means: no_position`).
+  A coder who reads for a facet and finds the source silent codes
+  `unspecified`, or `not_applicable` when the facet does not apply (for
+  `unit_position`, a source that takes no position).
 
 So a paper can be coded quickly at the core tier and deepened later, where the
 deeper coding changes an answer.
@@ -55,6 +56,12 @@ Validation then requires every claim linked to that question, or to any
 question under it, to code those facets: study facets on its study, claim
 facets on the claim. `unspecified` counts as coded; `not_yet_coded` does not.
 
+### Which way a question points, and questions that are not yes or no
+
+Each question below another names its `polarity` (direct, inverse or none),
+and a question answered by a choice is `kind: which` with an `answer_facet`.
+The rules are at the top of `questions/questions.yaml`.
+
 ## The facets
 
 Study facets:
@@ -70,6 +77,9 @@ Study facets:
 | `varies` | core | What does the study vary? |
 | `comparison` | core | What comparisons does the study make? |
 | `elicitation` | core | How was the report or capacity brought out? |
+| `reasoning` | core | Could the model reason before the scored answer? |
+| `system_prompt` | core | What system prompt was it run under? |
+| `report_readout` | core | How is the self-report read out? |
 | `unit_state` | interpretive | Where does the state under study live? |
 | `unit_disposition` | interpretive | What is the disposition under study fixed in? |
 | `unit_reporter` | interpretive | Who does the reporting? |

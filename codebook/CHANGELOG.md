@@ -1,5 +1,36 @@
 # Codebook changelog
 
+## 0.6 (2026-11-26, proposed)
+
+- **Three new core facets**, coded on every study and backfilled on the 19
+  non-conceptual studies from the papers' methods sections:
+  - `reasoning`: none, chain of thought, or a reasoning model's own trace.
+    Self-reports can change with reasoning, and the existing facets could not
+    say whether it was allowed.
+  - `system_prompt`: none, the developer's default, or custom. Kept apart from
+    `format` (template or not) and `prompt_framing` (what is varied).
+  - `report_readout`: free text, a generated short answer, the top-scoring
+    option's logits, or a probability taken as the report. Pilot coders had
+    to explain this in notes (a logit readout "never generated"). The rule
+    separates `probability` (the probability is the report) from
+    `validated_against: output_probabilities` (the probabilities are the
+    yardstick); `evidence` and `validated_against` cross-refer.
+  - `varies` gains `reasoning`.
+- **`unit_position` follows the other interpretive facets.** Left out, it is
+  `not_yet_coded`; a source with no position is `not_applicable`. The 20
+  studies that left it out under the old rule (which meant no position found)
+  now say `not_applicable`, with a note. `absent_means` is gone.
+- **Question `polarity`** (direct, inverse, none) says which way a child
+  points. The build flips the stances of inverse questions before looking for
+  conflicts (`root_stances`, `question_roots.sign`); a polarity none question
+  roots its own subtree.
+- **`kind: which` questions** are answered by an `answer_facet` instead of a
+  stance. The build stores answers in `claim_answers` and pairs of differing
+  answers in `which_conflicts`.
+- **Templates** (`templates/source.yaml`, `question.yaml`, `model.yaml`), each
+  field annotated. `validate.py` fails if the source template lacks a facet
+  the codebook has, or names one it lacks.
+
 ## 0.5 (2026-11-26, proposed)
 
 - **Two tiers.** Every facet file names a `tier`. Core: `study_kind`, `format`,

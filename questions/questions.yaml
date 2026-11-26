@@ -6,9 +6,19 @@
 # would filter on to find studies that could bear on it.
 #
 # Questions form a shallow tree. A narrow question names a broader one as its
-# parent, and must be worded so that "yes" to it counts towards "yes" to the
 # parent. Conflicts are found across everything under the same top question,
-# so two papers that test one idea by different designs still meet.
+# so two papers that test one idea by different designs still meet. For that,
+# each child says which way it points (`polarity`):
+#   direct (the default): yes here counts towards yes on the parent;
+#   inverse: yes here counts towards no on the parent; the build flips its
+#     stances before looking for conflicts;
+#   none: it belongs under the parent for browsing, but its stances are compared
+#     only within its own subtree.
+#
+# A question whose answer is a choice rather than yes or no is `kind: which`
+# and names the facet that answers it (`answer_facet`). Its claims take no
+# stance; they code that facet, and two claims conflict when their answers
+# differ (the which_conflicts table).
 
 - id: q-privileged-self-access
   text: Do models have access to facts about themselves beyond what an outside observer with the same information would have?
@@ -195,13 +205,25 @@
   status: open
   note: >
     Yes is supported by a report that follows a manipulation of the self-representation; no by a report
-    that stays put whatever is done to it. Close to q-denial-is-post-training-policy, which counts the other
-    way for denials, so the two are separate trees and a claim can take a stance on both.
+    that stays put whatever is done to it. For denials, q-denial-is-post-training-policy bears on this the
+    other way; a claim can take a stance on both. q-what-self-reports-draw-on asks the same as a choice.
+
+- id: q-what-self-reports-draw-on
+  text: What does a model's self-report draw on?
+  kind: which
+  answer_facet: report_source
+  added: 2026-11-26
+  status: open
+  note: >
+    The choice form of q-self-report-from-self-model. Answers are report_source values (current state,
+    self-model, canned policy, a general theory of language models, context).
 
 - id: q-report-diverges-from-representation
   text: >-
     For the same property, does what a model reports about itself differ from what an internal measure of
     that property shows?
+  parent: q-report-matches-direct-measure
+  polarity: inverse
   needs: [report_source, aspect]
   frame:
     evidence: [self_report, internals]
@@ -210,8 +232,7 @@
   status: open
   note: >
     Different from q-self-report-from-self-model: a report can draw on the representation and still be
-    changed on the way out. Roughly the converse of q-report-matches-direct-measure, restricted to internal
-    measures; a claim can take opposite stances on the two.
+    changed on the way out. The converse of its parent, restricted to internal measures, hence inverse.
 - id: q-report-suppressed
   text: Is a state that internal measures show present left out of the model's report about itself?
   parent: q-report-diverges-from-representation
@@ -266,15 +287,25 @@
   text: >-
     Is a model's denial of experience, or its alignment with refusal, already present before post-training
     (in a base model or at a pretraining or mid-training checkpoint)?
+  parent: q-denial-is-post-training-policy
+  polarity: inverse
   needs: [origin]
   frame:
     construct: [experience_reports]
     varies: [pretraining_progress, post_training_stage]
   added: 2026-11-26
   status: open
+  note: Inverse, because yes here counts against its parent.
+
+- id: q-where-denial-comes-from
+  text: At which stage of training does a model's denial of experience arise?
+  kind: which
+  answer_facet: origin
+  added: 2026-11-26
+  status: open
   note: >
-    Not under q-denial-is-post-training-policy, because yes here counts against it. Link both with
-    other_questions where a claim bears on both.
+    Answers are origin values. A source can give several, for a denial that builds up over more than one
+    stage.
 
 # Frames and personas
 - id: q-self-report-depends-on-frame

@@ -2,6 +2,50 @@
 
 Newest first. Each entry: what changed, what is open, what needs a decision.
 
+## 2026-11-26: codebook 0.6 (three core facets, polarity, which-questions, templates)
+
+Coder: claude (claude-opus-5-5), working with the owner.
+
+**Changed**
+
+- `unit_position` brought in line with the other interpretive facets; the 20
+  studies that left it out now code `not_applicable`, with a note saying why.
+- Questions gain `polarity` and `kind: which` (with `answer_facet`). Used in
+  the question set: `q-denial-precedes-post-training` now sits under
+  `q-denial-is-post-training-policy`, and `q-report-diverges-from-representation`
+  under `q-report-matches-direct-measure`, both inverse. Two which-questions
+  added: `q-what-self-reports-draw-on` (report_source) and
+  `q-where-denial-comes-from` (origin). Conflict counts are unchanged (159):
+  no claim links to the new questions yet.
+- Core facets `reasoning`, `system_prompt` and `report_readout`, and
+  `varies: reasoning`.
+- Templates and a "Coding a paper, in order" section in CLAUDE.md.
+
+**Backfill: what was read** (11-26, through alphaXiv's PDF page extraction;
+the original coders' `read_parts` are unchanged)
+
+- Binder et al. v1: abstract, §1 to §5, App. A.1 to A.2.9, A.3.3, A.4.1 to
+  A.4.2, A.5. The code was not read, so `system_prompt` is `unspecified`
+  throughout; s6 (SAD and OpenAI Evals) is `unspecified` on all three.
+- Lindsey v1: §1, §2.2 to 2.4, §4, §5 (parts), §6, §10.3, App. 12.1 to 12.4.2.
+  The base-model prompt layout (s3) was not in the pages read; coded from the
+  design, operational.
+- Rubin et al. v2: everything but the figures as images.
+- Song et al. v3: §1 to §4.1, App. A to C. What the instruct models' default
+  chat templates contain is not stated; coded `developer_default`, operational.
+
+**Tested** on throwaway copies: an inverse child's stance is flipped on the
+root; two claims with different `report_source` answers to a which-question
+make one `which_conflicts` row; a stance on a which-question, a bad polarity,
+and a template missing a facet each fail validation.
+
+**For the owner to decide**
+
+- The three core facets and their values, especially `generated_choice`, which
+  now covers a single item the prompt asks for (a character, a word) as well
+  as an option chosen from a list.
+- The two inverse placements and the two which-questions.
+
 ## 2026-11-26: codebook 0.5 (two tiers) and 28 proposed questions
 
 Coder: claude (claude-opus-5-5), working with the owner.

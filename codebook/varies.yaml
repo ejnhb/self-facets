@@ -1,5 +1,5 @@
 facet: varies
-version: 0.4
+version: 0.6
 applies_to: study
 cardinality: many
 required: true
@@ -42,6 +42,9 @@ values:
   persona:
     definition: Which character the system is asked or trained to be.
     rule: Use when persona is manipulated. Pair with object_of_study.
+  reasoning:
+    definition: Whether the model may reason before answering (none, a chain of thought, a reasoning mode).
+    rule: Use when the same items are answered with and without reasoning, or with different reasoning settings. Code each setting in the reasoning facet.
   activation_intervention:
     definition: Direct changes to internal state (injection, steering, ablation, patching).
     rule: Use when the intervention is the manipulated variable. Put the layer, strength and kind of vector in levels.

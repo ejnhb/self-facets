@@ -1,0 +1,16 @@
+facet: unit_disposition
+version: 0.2
+applies_to: study
+cardinality: many
+required: true
+values_from: units
+question: What is the disposition under study fixed in?
+guidance: >
+  A disposition is a standing tendency: a preference, a trait, a trained
+  stance, a pattern of behaviour. Code the unit that fixes it. Most are fixed
+  in the weights. Use persona when the disposition goes with the character and
+  changes under a persona swap, scaffolded_system when it is set by a standing
+  prompt or by records, and conversation when it is established in context.
+  If the study varies this (for example the same disposition installed by
+  fine-tuning and by prompt), code each. Use not_applicable when the study is
+  only about an occurrent state.

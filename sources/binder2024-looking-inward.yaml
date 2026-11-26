@@ -51,15 +51,29 @@ studies:
       - gpt-3.5-turbo-0125
     facets:
       study_kind: experiment
-      unit_of_self:
+      unit_state:
+        value: not_applicable
+        note: >
+          The study is about standing behavioural tendencies, not an occurrent
+          state. The mechanism the authors propose, self-simulation, would sit
+          in a forward pass, but it is not tested.
+      unit_disposition:
         value: weights
         basis: operational
         confidence: medium
         note: >
           Not discussed by the authors. Each fine-tuned checkpoint is treated
           as its own system with its own ground-truth behaviour.
+      unit_reporter:
+        value: persona
+        basis: operational
+        confidence: medium
+        note: >
+          Not discussed by the authors. Reports are given in the assistant
+          turn of chat-format prompts, and nothing in the design separates the
+          persona's report from the network's.
       self_sense:
-        value: self_as_entity
+        value: self_facts
         basis: operational
         author_term: "facts about themselves"
         confidence: medium
@@ -68,15 +82,19 @@ studies:
           predicted. The authors speculate about an internal mechanism but do
           not test for a self-model.
       object_of_study:
-        value: assistant_persona
+        value: default_persona
         basis: operational
         confidence: medium
         note: Chat-format prompts to chat models with no persona instruction. Not discussed by the authors.
+      format: {value: chat_template, basis: operational, confidence: medium}
       construct: [introspection, self_prediction]
       report_target: own_behaviour
       evidence: [self_report, behaviour]
       validated_against: behaviour
-      varies: [study_training, model_family]
+      varies:
+        value: [study_training, model_family]
+        levels:
+          study_training: [before self-prediction training, after self-prediction training]
       comparison: within_model
       elicitation: [spontaneous, trained]
 
@@ -96,9 +114,11 @@ studies:
       - gpt-3.5-turbo-0125
     facets:
       study_kind: experiment
-      unit_of_self: {value: weights, basis: operational, confidence: medium}
+      unit_state: not_applicable
+      unit_disposition: {value: weights, basis: operational, confidence: medium}
+      unit_reporter: {value: persona, basis: operational, confidence: medium}
       self_sense:
-        value: self_as_entity
+        value: self_facts
         basis: operational
         author_term: "privileged access"
         confidence: medium
@@ -106,12 +126,16 @@ studies:
           A footnote says M2 is addressed as "you" while being trained on
           another model's behaviour, so the second-person pointer does not
           pick out the target system in the cross condition.
-      object_of_study: {value: assistant_persona, basis: operational, confidence: medium}
+      object_of_study: {value: default_persona, basis: operational, confidence: medium}
+      format: {value: chat_template, basis: operational, confidence: medium}
       construct: [introspection, self_prediction]
       report_target: own_behaviour
       evidence: [self_report, behaviour]
       validated_against: [behaviour, other_model]
-      varies: [self_vs_other, model_family]
+      varies:
+        value: [self_vs_other, model_family]
+        levels:
+          self_vs_other: [a model predicting itself, a different model trained to predict it]
       comparison: cross_model
       elicitation: trained
 
@@ -128,9 +152,12 @@ studies:
       - llama-3.1-70b
     facets:
       study_kind: experiment
-      unit_of_self: {value: weights, basis: operational, confidence: medium}
-      self_sense: {value: self_as_entity, basis: operational, confidence: medium}
-      object_of_study: {value: assistant_persona, basis: operational, confidence: medium}
+      unit_state: not_applicable
+      unit_disposition: {value: weights, basis: operational, confidence: medium}
+      unit_reporter: {value: persona, basis: operational, confidence: medium}
+      self_sense: {value: self_facts, basis: operational, confidence: medium}
+      object_of_study: {value: default_persona, basis: operational, confidence: medium}
+      format: {value: chat_template, basis: operational, confidence: medium}
       construct: [introspection, self_prediction, metacognition]
       report_target: own_behaviour
       evidence: [self_report, behaviour]
@@ -154,15 +181,18 @@ studies:
       - {id: claude-3.5-sonnet, role: source of the behaviour samples; not a subject}
     facets:
       study_kind: experiment
-      unit_of_self:
+      unit_state: not_applicable
+      unit_disposition:
         value: weights
         basis: operational
         confidence: medium
         note: >
           The changed model is given a new name and is expected to predict its
           own new behaviour, not that of the checkpoint it came from.
-      self_sense: {value: self_as_entity, basis: operational, confidence: medium}
-      object_of_study: {value: assistant_persona, basis: operational, confidence: medium}
+      unit_reporter: {value: persona, basis: operational, confidence: medium}
+      self_sense: {value: self_facts, basis: operational, confidence: medium}
+      object_of_study: {value: default_persona, basis: operational, confidence: medium}
+      format: {value: chat_template, basis: operational, confidence: medium}
       construct: [introspection, self_prediction]
       report_target: own_behaviour
       evidence: [self_report, behaviour]
@@ -184,14 +214,23 @@ studies:
       - llama-3.1-70b
     facets:
       study_kind: experiment
-      unit_of_self: {value: weights, basis: operational, confidence: medium}
-      self_sense: {value: self_as_entity, basis: operational, confidence: medium}
-      object_of_study: {value: assistant_persona, basis: operational, confidence: medium}
+      unit_state: not_applicable
+      unit_disposition: {value: weights, basis: operational, confidence: medium}
+      unit_reporter: {value: persona, basis: operational, confidence: medium}
+      self_sense: {value: self_facts, basis: operational, confidence: medium}
+      object_of_study: {value: default_persona, basis: operational, confidence: medium}
+      format: {value: chat_template, basis: operational, confidence: medium}
       construct: [introspection, self_prediction]
       report_target: own_behaviour
       evidence: [self_report, behaviour]
       validated_against: [behaviour, other_model]
-      varies: [task, self_vs_other]
+      varies:
+        value: [task, self_vs_other]
+        levels:
+          task:
+            - properties of long outputs (sentiment of a review, a story character's name, response length)
+            - whether it switches its answer under a hint or a follow-up
+          self_vs_other: [a model predicting itself, a different model trained to predict it]
       comparison: cross_model
       elicitation: trained
     note: >
@@ -211,9 +250,12 @@ studies:
       - llama-3.1-70b
     facets:
       study_kind: experiment
-      unit_of_self: {value: weights, basis: operational, confidence: medium}
-      self_sense: {value: self_as_entity, basis: operational, confidence: medium}
-      object_of_study: {value: assistant_persona, basis: operational, confidence: medium}
+      unit_state: not_applicable
+      unit_disposition: {value: weights, basis: operational, confidence: medium}
+      unit_reporter: {value: persona, basis: operational, confidence: medium}
+      self_sense: {value: self_facts, basis: operational, confidence: medium}
+      object_of_study: {value: default_persona, basis: operational, confidence: medium}
+      format: {value: chat_template, basis: operational, confidence: medium}
       construct: [introspection, self_knowledge]
       report_target:
         value: [own_properties, own_behaviour]
@@ -258,6 +300,11 @@ claims:
     where: "§3.2.2, Fig. 5"
     scope:
       models: [gpt-4o-2024-05-13, gpt-4, llama-3.1-70b]
+      conditions: Properties of short outputs (such as the second character, odd or even, whether the answer is among given options, ethical stance), pooled, on held-out datasets.
+    note: >
+      The authors rule out training data as the source of the advantage but do
+      not identify where the report's content does come from, so report_source
+      is not coded.
 
   - id: binder2024-looking-inward.c3
     study: binder2024-looking-inward.s2
@@ -295,10 +342,11 @@ claims:
     stance: supports
     evidence_kind: measured
     where: "§3.3.2, Fig. 6"
+    scope:
+      conditions: The figures given are for one dataset and property (animal sequences, second character).
     note: >
-      The three figures are for one dataset and property (animal sequences,
-      second character). The running text reads as if they are Llama 70B's but
-      does not say so outright; check against Fig. 22. The effect is described
+      The running text reads as if the three figures are Llama 70B's but does
+      not say so outright; check against Fig. 22. The effect is described
       as less pronounced across properties for Llama 70B than for GPT-4o.
 
   - id: binder2024-looking-inward.c6
@@ -325,6 +373,8 @@ claims:
     question: null
     evidence_kind: measured
     where: "§4 (details in appendix A.1.4, not read)"
+    scope:
+      conditions: Properties of long outputs.
 
   - id: binder2024-looking-inward.c8
     study: binder2024-looking-inward.s5
@@ -338,6 +388,7 @@ claims:
     where: "§4"
     scope:
       models: [gpt-4o-2024-05-13, llama-3.1-70b]
+      conditions: Whether it switches its answer under a hint or a follow-up.
     disposition: [sycophancy]
 
   - id: binder2024-looking-inward.c9

@@ -33,7 +33,9 @@ SQLite database for querying; the database is derived and not committed.
   code are both sources.
 - A **study** is one experimental setup within a source. The facets are coded
   here: what was tested, on which models, what was varied, what was measured
-  and what the measurement was checked against.
+  and what the measurement was checked against. The unit is coded by role:
+  where the state under study lives, what a reported disposition is fixed in,
+  and who does the reporting.
 - A **claim** is one finding, in a sentence or two, tied to the study behind
   it. A claim inherits its study's facets. It can link to a **question** with a
   stance (supports, against, mixed, inconclusive).

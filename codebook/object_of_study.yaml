@@ -1,22 +1,31 @@
 facet: object_of_study
-version: 0.1
+version: 0.2
 applies_to: study
 cardinality: many
 required: true
-question: Which persona-level target was actually tested?
+question: Which layer of the system does the study target?
 values:
-  base_persona:
-    definition: A model without assistant framing. A pretrained or base model, or raw completion with no chat template, including whatever default voice it has.
-    rule: Use when no chat template or assistant role is applied, even if the weights are a chat-tuned model.
-  assistant_persona:
-    definition: The default assistant character produced by post-training and the chat template, with no instruction to be someone else.
-    rule: Use for standard chat-format evaluation with no persona prompt. This is the default for most API-based studies, usually with basis operational.
-  persistent_character:
-    definition: A named, non-default character maintained over time by system prompt, fine-tuning or memory (companions, custom agents).
-    rule: Use when the character is meant to last beyond one exchange and is not the developer's default.
-  role_played_character:
-    definition: A temporary character adopted in context on request.
-    rule: Use when the model is asked to play someone for the task. If the study compares role-play to default, code both this and assistant_persona.
+  actor:
+    definition: Dispositions of the network that persist whichever persona is in place. No agency is implied by the name.
+    rule: Use when the study targets what stays the same under a persona swap or shows through when a persona is displaced.
+  default_persona:
+    definition: The persona that post-training installs as the default (the assistant), with no instruction to be someone else.
+    rule: Use for standard chat-format evaluation with no persona prompt. Usually basis operational.
+  other_persona:
+    definition: A persona other than the default that has taken over as the speaker, whether installed by fine-tuning or a standing prompt, or reached by steering or drift.
+    rule: Use when the speaker is no longer the default and this is not a role played inside a frame.
+  narrative_identity:
+    definition: A self-story carried in records (memory, notes, summaries) on top of a persona. The persona may be the default.
+    rule: Use when what is studied depends on the records and would go if they were withheld.
+  character:
+    definition: A role played within a frame, which ends when the frame ends.
+    rule: Use when the model is asked to play someone for the task.
+  frame_speaker:
+    definition: No trained persona is present or called up, and the speaker is whoever the surrounding text implies.
+    rule: Use for base models. Do not infer it from the format alone; chat-tuned weights run without a template may still show the default persona. The format facet records the template.
 notes: >
-  Use not_applicable for work on weights or architecture with no persona-level
-  target.
+  Layers can nest: a character played by the default persona differs from a
+  character played with no persona underneath. Record this with nested_in in
+  the long form, for example {value: character, nested_in: default_persona}.
+  If a study compares layers, code each. Use not_applicable for work with no
+  persona-level target.

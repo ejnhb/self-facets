@@ -1,5 +1,5 @@
 facet: comparison
-version: 0.1
+version: 0.2
 applies_to: study
 cardinality: one
 required: true
@@ -8,6 +8,9 @@ values:
   within_lineage:
     definition: Checkpoints of one model along its developer training pipeline.
     rule: Use when the compared systems are stages of the same lineage as released or reconstructed.
+  training_ablation:
+    definition: Branches trained from a common starting point that differ in one training ingredient, built for the comparison.
+    rule: Use when the compared systems are neither released stages nor a reconstruction of them, but variants made to isolate an ingredient (a data mix with one part removed, an objective swapped).
   within_model:
     definition: One model under different conditions, including before and after training applied by the study.
     rule: Use for prompt, intervention and study-training contrasts on a single starting model.

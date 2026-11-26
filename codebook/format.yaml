@@ -1,0 +1,21 @@
+facet: format
+version: 0.2
+applies_to: study
+cardinality: many
+required: true
+question: In what format is the model run?
+values:
+  chat_template:
+    definition: Input is wrapped in the model's chat template, with role markers and an assistant turn.
+    rule: Use for API chat endpoints and for local runs that apply the template. Usually basis operational.
+  raw_text:
+    definition: Plain text continuation with no chat template.
+    rule: Use for base-model completion and for chat-tuned weights run without their template.
+  other:
+    definition: Some other layout (a custom or altered template, a transcript framed as a document).
+    rule: Describe it in the note.
+notes: >
+  Kept apart from prompt_framing because some trained behaviour depends on the
+  template being present and some does not, and the difference is only
+  visible if the format is recorded. If a study compares formats, code each
+  and add format under varies.

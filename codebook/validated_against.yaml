@@ -1,5 +1,5 @@
 facet: validated_against
-version: 0.1
+version: 0.2
 applies_to: study
 cardinality: many
 required: true
@@ -20,6 +20,9 @@ values:
   other_model:
     definition: Another system's performance at the same reporting task.
     rule: Use for cross-prediction and other third-person baselines. Usually coded together with the ground-truth value.
+  fresh_copy:
+    definition: The same weights in a fresh context, given the same text, at the same reporting task.
+    rule: Use when the baseline is what the system could say from the transcript alone. This is the cleanest test of whether a report depends on current state.
   human_baseline:
     definition: Human performance or human norms on the same instrument.
     rule: Use when the comparison is to people.

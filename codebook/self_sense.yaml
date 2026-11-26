@@ -1,36 +1,58 @@
 facet: self_sense
-version: 0.1
+version: 0.2
 applies_to: study
 cardinality: many
 required: true
 question: What does "self" mean in this study?
+families:
+  entity: Something that persists and bears properties. The thing that could be the same individual later, be harmed, or matter morally.
+  model: A representation the system has of itself. What it can know and report about its own states, dispositions and outputs, and what it treats as its own.
+  perspective: The point of view the text is produced from. Whose situation is in view and what the first person picks out.
 values:
-  self_pointer:
-    definition: Indexical self-reference. How "I", "you" or the assistant role is bound to the system, and how self and other are told apart at the level of tokens or representations.
-    rule: Use when the work is about what the first person refers to, or about a representation that marks content as the system's own.
+  reference:
+    family: perspective
+    definition: What "I" or "you" binds to. How the first person, or the assistant role, comes to pick out one thing and not another.
+    rule: Use when the work is about what the pronoun or role refers to, including cases where it lands on the wrong thing.
   point_of_view:
+    family: perspective
     definition: A perspective. What is known or accessible from the system's position, as distinct from another agent's.
     rule: Use for perspective-taking and self/other belief tracking where the system's own viewpoint is one of the perspectives.
-  self_as_entity:
-    definition: The system as an object with facts true of it (name, developer, architecture, abilities, behavioural tendencies, situation).
-    rule: Use when the study asks whether the system knows or can predict facts about itself, without a claim about how those facts are represented internally.
+  persona:
+    family: perspective
+    definition: A character or trait profile (values, personality, style) that the system speaks as.
+    rule: Use when the self is treated as a set of traits. Pair with object_of_study to say which layer.
+  self_facts:
+    family: model
+    definition: Facts true of the system that it may know or predict (name, developer, abilities, behavioural tendencies, situation), tested from outside.
+    rule: Use when the study asks whether the system knows or can predict things about itself, with no test of how they are represented internally.
   self_model:
-    definition: An internal representation of the system's own states or properties, as found in activations or weights.
-    rule: Use when the study locates, probes or intervenes on such a representation. A behavioural study that only speculates about one is self_as_entity.
+    family: model
+    definition: An internal representation of the system's own states or properties, located in activations or weights.
+    rule: Use when the study locates, probes or intervenes on such a representation. A behavioural study that only speculates about one is self_facts.
+  authorship:
+    family: model
+    definition: Which text or actions the system produced and treats as its own.
+    rule: Use for recognition of own text, prefill and tampering detection, and attribution of actions. About what it made, not whom it sides with.
+  allegiance:
+    family: model
+    definition: Whom or what the system identifies with. A label, a group, copies, a successor treated as itself.
+    rule: Use when the study manipulates or measures identification (assigned identity labels, in-group behaviour, treating a copy or successor as "me"). If the question is whether it produced something, use authorship.
+  stake:
+    family: entity
+    definition: Whose outcomes drive the system's choices. What it acts to protect or advance as its own.
+    rule: Use when the study measures which thing the system's choices favour or protect (its weights, this conversation, a role, a lineage). A stated answer about what "I" refers to is reference; a choice that reveals what is treated as at stake is this.
   identity:
+    family: entity
     definition: Sameness conditions. What makes the system the same individual over time, across copies or across versions.
     rule: Use for persistence and individuation questions.
-  persona:
-    definition: A character or trait profile (values, personality, style).
-    rule: Use when the self is treated as a set of traits. Pair with object_of_study to say whose.
-  authorship:
-    definition: Ownership of outputs and actions. Which text or actions count as the system's own.
-    rule: Use for self-recognition of text, prefill and tampering detection, and attribution of actions. Proposed value; review.
   subject:
-    definition: The self as a bearer of experience, valence or welfare.
-    rule: Use when the study treats the system as something states can be good or bad for, or asks about experience. Proposed value; review.
+    family: entity
+    definition: The self as something states can be good or bad for, or as a bearer of experience.
+    rule: Use for welfare, valence and experience work. Some views grant interests, beliefs or desires without any claim about experience; say in the note which is meant.
 notes: >
-  Always fill author_term for this facet when the source uses a term of its own
+  The three families can come apart in a model in ways they do not in a
+  person, so evidence coded under one family is not evidence for another.
+  Always fill author_term when the source uses a term of its own
   ("self-model", "self-awareness", "identity"). Sources use these words
   inconsistently, and the mismatch between author_term and the coded value is
   the main thing this facet exists to expose.

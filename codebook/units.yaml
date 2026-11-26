@@ -1,0 +1,37 @@
+# Shared vocabulary: the candidate units a result can be about.
+# Used by the four unit facets (unit_state, unit_disposition, unit_reporter,
+# unit_position), which differ only in the role the unit plays.
+vocabulary: units
+version: 0.2
+values:
+  weights:
+    definition: The trained network. Architecture and parameters, as one checkpoint.
+    rule: Use when the thing in question is fixed by training and is the same in every context the checkpoint runs in.
+  forward_pass:
+    definition: One step of computation over a context, producing one token.
+    rule: Use when the thing in question exists within a single pass (an activation at a position, a per-token event).
+  conversation:
+    definition: One context and its cache, over many forward passes, on one set of weights.
+    rule: Use when the thing in question builds up or persists within one context. This is what the literature often calls an instance or virtual instance.
+  persona:
+    definition: A character the network computes, such as the default assistant or a role it is asked to play.
+    rule: Use when the thing in question goes with the character and would change if a different character were speaking. Which persona is recorded in object_of_study.
+  scaffolded_system:
+    definition: Weights, prompt, tools and memory together, such as an agent that keeps notes between conversations.
+    rule: Use when the thing in question depends on stored state outside the context (memory files, summaries, records) or on the harness.
+  lineage:
+    definition: A model family across versions and checkpoints.
+    rule: Use when the thing in question is claimed to hold or continue across releases.
+  thread:
+    definition: A conversation as defined by its transcript, which may be continued by different weights.
+    rule: Use only when the source means something that survives a change of model mid-conversation. Otherwise use conversation.
+  hardware_instance:
+    definition: A physical machine running the model over a period, usually serving many conversations.
+    rule: Use only when the source ties something to the physical implementation.
+  collective:
+    definition: All instances of the same weights running at once, taken together.
+    rule: Use when copies are treated as one subject or studied as a group.
+notes: >
+  "Instance" is used in the literature for conversation, for hardware instance
+  and occasionally for forward pass. Put the source's word in author_term and
+  code what it means.

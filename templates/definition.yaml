@@ -1,0 +1,17 @@
+# Template for a definition: append to definitions/definitions.yaml (design/definitions.md).
+# A definition says what a design must be to test something in one stated sense. It is logic over facets;
+# matching is mechanical. In this repo a definition rests on a published source.
+
+- id: d-short-name                  # (R)
+  construct: introspection          # (O) the construct label it defines; studies with that label and no matching
+                                    #     definition appear in construct_mismatches
+  statement: >                      # (R) the sense, in a sentence or two
+    ...
+  sources: ["Author (year), title, section"]   # (R in this repo)
+  logic:                            # (R) all / any / not / def, and FACET: [values] (keys in one mapping are ANDed);
+    all:                            #     also model.post_training_reached and comparison.closest
+      - {evidence: [self_report]}
+      - {def: d-other-definition}
+  not_expressible: >                # (O) what part of the source's definition the facets cannot capture
+    ...
+  note: null                        # (O)

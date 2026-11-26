@@ -137,6 +137,12 @@ are coded.
   readers keep their own readings outside it and apply them to these claims by
   id. Prefer a selector on facets; name targets only when the condition is not
   a facet.
+- **Definitions** (`definitions/`, `design/definitions.md`) say what a design
+  tests, in a stated sense, as logic over facets. Keep `construct` as the
+  authors' label and let definitions do the testing. In this repo a definition
+  rests on a published source and says, in `not_expressible`, what of that
+  source's definition the facets cannot capture. Something that keeps coming
+  up there belongs in `design/candidate-facets.md`.
 - **Relations.** `from` is the work doing the criticising or extending. Point
   `to` at a coded record, or use `to_external` with a citation when the target
   is not coded yet.

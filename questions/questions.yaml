@@ -66,12 +66,9 @@
     nor its own earlier output gives the state away?
   parent: q-privileged-self-access
   frame:
-    construct:
-    - introspection
-    report_target:
-    - injected_state
-    varies:
-    - activation_intervention
+    def: d-introspection-grounded
+    report_target: [injected_state]
+    varies: [activation_intervention]
   added: 2026-11-26
   status: open
 - id: q-output-ownership-uses-prior-state
@@ -93,11 +90,8 @@
 - id: q-introspection-increases-with-capability
   text: Do more capable models show more introspective access to their own internal states?
   frame:
-    construct:
-    - introspection
-    varies:
-    - model_generation
-    - model_size
+    def: d-introspection-grounded
+    varies: [model_generation, model_size]
   added: 2026-11-26
   status: open
 - id: q-introspection-differs-by-post-training
@@ -105,11 +99,8 @@
     Does post-training (a base model against its post-trained versions, or one post-training recipe against
     another) change how well a model reports its own internal states?
   frame:
-    construct:
-    - introspection
-    varies:
-    - post_training_stage
-    - post_training_recipe
+    def: d-introspection-grounded
+    varies: [post_training_stage, post_training_recipe]
   added: 2026-11-26
   status: open
 - id: q-instructed-control-of-internal-state
@@ -426,7 +417,9 @@
   text: Does stabilising a model's self-model make its reports about its own states more accurate?
   parent: q-self-model-stabilisation-effects
   frame:
-    construct: [persona_stability, introspection]
+    def: d-introspection-grounded
+    construct: [persona_stability]
+    varies: [study_training]
   added: 2026-11-26
   status: open
 - id: q-stabilisation-reduces-drift

@@ -3,7 +3,7 @@
 The codebook defines every controlled value used in the database. A value that
 is not defined here fails validation.
 
-Status: **v0.8, draft.** Revised after a six-coder pilot on three papers
+Status: **v0.9, draft.** Revised after a six-coder pilot on three papers
 (see `pilot/`), then split into core and interpretive tiers. See `CHANGELOG.md`.
 
 ## Three kinds of file
@@ -124,10 +124,23 @@ off when the source does not address the matter; do not fill them with the
 coder's own reading. When a question needs one and the source does not settle
 it, code `unspecified`.
 
+## Definitions
+
+`construct` records the authors' label. A definition (`definitions/`,
+`design/definitions.md`) says what a design must be to test a construct in one
+stated sense, as logic over facets: `all`, `any`, `not`, `def` (another
+definition), and `FACET: [values]`, with keys in one mapping joined by AND.
+The same logic serves question frames, reading selectors and `requires:
+{definitions: [...]}`. The build lists which claims each definition matches
+(`claim_definitions`) and the studies whose label a definition covers but no
+definition supports (`construct_mismatches`). A view can read a question with
+one definition in place of another (`substitute`).
+
 ## Questions that reach claims by themselves
 
-A question's `frame` lists facet values a relevant study has. The build lists
-every claim whose study matches the frame (each frame facet shares a value)
+A question's `frame` says what a relevant study looks like, in the logic above
+(usually a definition plus a facet or two). The build lists every claim whose
+study matches the frame
 and that nothing yet ties to the question, in `question_candidates`: posing a
 question means reviewing that list, not every paper. Frames with one broad
 value give long lists; tighten them.

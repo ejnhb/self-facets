@@ -1,5 +1,25 @@
 # Codebook changelog
 
+## 0.9 (2026-11-26, proposed)
+
+- **Definitions** (`definitions/`): named logic over facets for what a design
+  tests in one stated sense, with `construct` kept as the authors' label. One
+  so far, `d-introspection-grounded` (Lindsey 2026, criteria 1 and 2), with
+  criteria 3 and 4 recorded as not expressible.
+- **One logic for frames, selectors, `requires` and definitions** (`all`,
+  `any`, `not`, `def`, facet values, `model.post_training_reached`,
+  `comparison.closest`). Existing frames and selectors keep working: a plain
+  mapping is the AND of its facets.
+- `requires` accepts `definitions`; views accept `substitute` (read a question
+  with one definition in place of another).
+- Build: `definitions`, `claim_definitions`, `construct_mismatches`.
+- Four frames use the definition: `q-injected-state-report`,
+  `q-introspection-differs-by-post-training`,
+  `q-introspection-increases-with-capability`,
+  `q-stabilisation-improves-introspection`.
+- `design/candidate-facets.md` starts the list of things facets cannot yet say
+  (internality, metacognitive representation, injection depth).
+
 ## 0.8 (2026-11-26, proposed)
 
 - **Effects on claims:** `effect_presence` (required with `effect_of`) and

@@ -1,7 +1,8 @@
-# Definitions: a design proposal (2026-11-26, not built)
+# Definitions: design (2026-11-26; built in codebook 0.9)
 
-Status: proposal, tested on paper against the four coded sources. No record
-format or script changes. Companion to `readings.md`.
+Status: built in codebook 0.9, starting with one definition (Lindsey's
+grounding criteria). Logic is shared by definitions, frames, reading selectors
+and `requires`. The text below is the proposal as tested on paper.
 
 ## The problem
 
@@ -106,6 +107,7 @@ tests it.
 ```yaml
 - id: v-capability-privileged
   question: q-introspection-increases-with-capability
+  readings: []
   substitute: {d-introspection-grounded: d-privileged-access}
 ```
 

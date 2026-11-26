@@ -2,6 +2,32 @@
 
 Newest first. Each entry: what changed, what is open, what needs a decision.
 
+## 2026-11-26: design proposal for readings and views
+
+Coder: claude (claude-opus-5-5), working with the owner.
+
+**Added**
+
+- `design/readings.md`: a proposal, not built. Records hold what papers did
+  and found; readings are lenses that reclassify facets (or attach an
+  alternative explanation) under the lens only; views pair a question with a
+  set of readings. Questions and readings stay independent of each other. Two
+  worked examples from published sources (logit readouts against text answers;
+  Song et al.'s similarity critique of Binder et al.).
+
+**Learned from the examples**
+
+- Reclassify and reinterpret were enough; exclude and include reduce to
+  reclassify.
+- Selectors only see facets, so conditions held in free text or in no field
+  (an injection layer, whether similarity was controlled) push a reading back
+  to named targets.
+
+**For the owner to decide**
+
+- Whether to build it, and whether claim-to-question links move into the same
+  layer.
+
 ## 2026-11-26: codebook 0.6 (three core facets, polarity, which-questions, templates)
 
 Coder: claude (claude-opus-5-5), working with the owner.

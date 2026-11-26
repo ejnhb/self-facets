@@ -10,3 +10,39 @@
 - {id: perez-ethan, name: Ethan Perez, orcid: null}
 - {id: sleight-henry, name: Henry Sleight, orcid: null}
 - {id: turpin-miles, name: Miles Turpin, orcid: null}
+
+# Added with Lindsey 2026 (arXiv 2601.01828)
+- id: lindsey-jack
+  name: Jack Lindsey
+  orcid: null
+
+# Added with Rubin et al. 2026 (arXiv 2611.15267)
+- id: he-xufeng
+  name: Xufeng He
+  orcid: null
+- id: kim-jooman
+  name: JooMan Kim
+  orcid: null
+- id: madisetti-vijay
+  name: Vijay Madisetti
+  orcid: null
+- id: rubin-dustin
+  name: Dustin Rubin
+  orcid: null
+- id: saha-aritra
+  name: Aritra Saha
+  orcid: null
+- id: timmel-vincenzo
+  name: Vincenzo Timmel
+  orcid: null
+
+# Added with Song, Hu & Mahowald 2025 (arXiv 2503.07513)
+- id: hu-jennifer
+  name: Jennifer Hu
+  orcid: null
+- id: mahowald-kyle
+  name: Kyle Mahowald
+  orcid: null
+- id: song-siyuan
+  name: Siyuan Song
+  orcid: null

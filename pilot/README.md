@@ -64,10 +64,31 @@ was marked low confidence in 13 of its 18 codings.
 
 Codebook 0.3 responds to these; see `codebook/CHANGELOG.md`.
 
+**Reconciliation and check.** After codebook 0.3, one further coder per paper
+(`claude-fable-5-2`) merged the two pilot codings into a single record against
+0.3, re-reading the paper. A separate checker (`claude-opus-5-5`) that had seen
+neither the pilot codings nor the reconciler's notes then checked every claim
+against the paper. The reconciled records are in `sources/`; each paper's
+`reconciled/` folder here holds the reconciler's notes on what it decided and
+the checker's table.
+
+| Paper | Reconciled record | Checker's verdicts |
+|---|---|---|
+| 2601.01828 | 8 studies, 47 claims | 47 supported |
+| 2611.15267 | 3 studies, 15 claims | 15 supported |
+| 2503.07513 | 4 studies, 22 claims | 21 supported, 1 overstated (corrected) |
+
+The reconcilers removed or corrected about ten items in the pilot records
+that the papers did not support, mostly results visible only in figures and
+claims scoped to models the text does not name. The checkers suggested a
+further dozen wording changes, which were applied.
+
 **Limits**
 
-- Claims in these records have not been checked against the papers by a
-  third coder.
+- Reconciler and checker are both Claude models. The check is of claims
+  against the text, not of the facet codings.
+- No coder could see figures. Claims whose values sit only in a figure are
+  marked as such in the records.
 - The two coders of 2503.07513 did not have the same inputs: one read the
   authors' code repository and one could not reach it.
 - Three papers, all on introspection. Facets for persona, continuity, affect

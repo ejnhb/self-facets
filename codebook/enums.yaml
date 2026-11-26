@@ -62,6 +62,12 @@ enums:
     undisclosed: The developer has not said.
     unspecified: Not yet coded from the documentation.
 
+  model_role:
+    subject: A model whose self-reports, states or behaviour the study is about.
+    comparison: A model used as a baseline for a subject (a cross-predictor, another model's measurements).
+    judge: A model that grades or classifies responses.
+    data_source: A model that supplies training data or samples (a teacher, the source of behaviour to imitate).
+
   reading_status:
     grounded: Follows from the matched studies' own design facts.
     argued: There is a case for it that the design alone does not settle.

@@ -1,5 +1,25 @@
 # Codebook changelog
 
+## 0.8 (2026-11-26, proposed)
+
+- **Effects on claims:** `effect_presence` (required with `effect_of`) and
+  `effect_direction` (optional, ordered variables). Backfilled on Binder et
+  al.'s nine claims with `effect_of`; the other records still lack `effect_of`.
+- **Questions reach claims by themselves.** `question_candidates` lists claims
+  in frame-matching studies not yet tied to a question; `auto_stance` gives
+  "does X change Y?" questions stances from `effect_presence`. Frames are now
+  validated. On `q-self-prediction-advantage`, auto stances reproduce all five
+  hand-made links.
+- **Model roles** in studies: `subject`, `comparison`, `judge`, `data_source`
+  (`{id, roles, note}`), replacing free-text `role`. Registry `variant_of` for
+  seed variants. The build derives how closely compared models are related
+  (`study_comparisons`, `study_closest_comparison`), and readings can select on
+  `comparison.closest`.
+- **`similarity_adjustment`** (core study facet): statistical, none, or
+  not_applicable when there is no self-against-other comparison. With the
+  derived relation, `r-similarity-uncontrolled` now selects only Binder et
+  al.'s cross-prediction studies, no longer Song et al.'s own.
+
 ## 0.7 (2026-11-26, proposed)
 
 - **The unit `persona` is renamed `speaker`** (`units.yaml`, used by the four

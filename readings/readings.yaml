@@ -25,7 +25,7 @@
     A self-over-other advantage counts as evidence of privileged access only when the comparison model is about as
     similar to the reporter as the reporter is to itself.
   applies_to:
-    selector: {validated_against: [other_model], varies: [self_vs_other]}
+    selector: {varies: [self_vs_other], similarity_adjustment: [none], comparison.closest: [other, same_developer, same_family]}
   effect:
     reinterpret: >
       The advantage may reflect differences between the models rather than access to the reporter's own states.
@@ -33,5 +33,6 @@
     - "Song, Hu and Mahowald (2025), Language models fail to introspect about their knowledge of language, COLM 2025 (§1)"
   tested_by: Self against seed variants or base and instruct pairs, controlling for similarity.
   note: >
-    The selector over-matches: whether similarity was controlled is not a facet, so it also catches studies that did
-    control for it (Song et al. s2 and s3 among them).
+    Selects self-against-other studies with no statistical adjustment whose closest comparison model is no nearer than
+    the same family (the build derives the relation from the model registry). Song et al. s2 (adjusted) and s3 (seed
+    variants) fall outside it.

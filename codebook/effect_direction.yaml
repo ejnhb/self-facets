@@ -1,0 +1,21 @@
+facet: effect_direction
+version: 0.8
+applies_to: claim
+cardinality: one
+required: false
+tier: core
+question: Which way did the measured quantity move as the varied variable increased or the condition was applied?
+values:
+  increases:
+    definition: The quantity the claim reports rises with the variable (later checkpoint, more training, larger model, the intervention applied).
+    rule: Use only for an ordered variable or an applied condition, and say in the note what quantity moves if the statement leaves it unclear.
+  decreases:
+    definition: The quantity falls with the variable.
+    rule: As for increases.
+  non_monotonic:
+    definition: The quantity rises and falls across the levels.
+    rule: Use when the source reports a peak, a dip or a reversal.
+notes: >
+  Optional, and only with effect_presence present. For an unordered contrast
+  (self against other, one task against another) leave it out: the statement
+  says which side is higher.

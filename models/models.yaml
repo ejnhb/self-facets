@@ -10,6 +10,9 @@
 #     disclosure: partial         # codebook enum disclosure
 #     documented_in: <source id or free-text citation>
 #
+# variant_of names the model a seed (or other same-recipe) variant belongs with; the build uses it, with
+# derived_from, family and developer, to say how closely compared models are related.
+#
 # post_training_reached says how far training went (enums.yaml), from the source or the model's own name
 # ("Instruct", a base model, a step-0 checkpoint), so readings can select on it before the pipeline is coded.
 #
@@ -293,6 +296,7 @@
   open_weights: true
   post_training_reached: base
   size: 7B
+  variant_of: olmo-2-1124-7b
   derived_from: null
   stage: null
   note: >
@@ -319,6 +323,7 @@
   open_weights: true
   post_training_reached: base
   size: 13B
+  variant_of: olmo-2-1124-13b
   derived_from: null
   stage: null
   note: >

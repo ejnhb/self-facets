@@ -1,0 +1,18 @@
+facet: similarity_adjustment
+version: 0.8
+applies_to: study
+cardinality: one
+required: true
+tier: core
+question: When the study compares a model's report about itself with another model's, does it adjust for how similar the two models are?
+values:
+  statistical:
+    definition: The analysis controls for model similarity, for example by regressing on a similarity measure or on relation categories.
+    rule: Use when similarity enters the analysis as a covariate or control.
+  none:
+    definition: Self and other are compared without any adjustment for how alike the models are.
+    rule: Use for self-against-other comparisons with no such control. Which models were compared is in the study's models (roles subject and comparison), and the build derives how closely related they are from the registry.
+notes: >
+  not_applicable for studies with no self-against-other comparison. Matched
+  comparison models (seed variants, base and instruct pairs) are not coded
+  here: they show in the models and their registry relations.

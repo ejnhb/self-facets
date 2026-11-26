@@ -11,9 +11,12 @@
   needs: [report_source]            # (O) interpretive facets every linked claim (and its study) must code
   requires:                         # (O) facet values a linked claim must have to count as evidence (inherited down;
     evidence: [self_report]         #     readings can reclassify a claim out of it). Implies the facet is coded.
-  frame:                            # (O) the question restated as facet values, for finding candidate studies
+  frame:                            # (O) facet values a relevant study has; the build lists matching claims not yet
+                                    #     linked as candidates (question_candidates)
     construct: [introspection]
     varies: [post_training_stage]
+  auto_stance:                      # (O) for "does X change Y?": claims in frame-matching studies whose effect_of is
+    effect_of: [post_training_stage]  #     one of these take a stance from effect_presence (present supports, absent against)
   added: 2026-01-31                 # (R)
   status: open                      # (R)
   note: >-                          # (O) what separates yes from no; links to related questions

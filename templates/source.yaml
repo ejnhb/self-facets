@@ -34,9 +34,10 @@ studies:                            # one per set of results that share every fa
     where: "§3, Fig. 2"             # (R) where in the source
     design: >                       # (R) what was done, in our words: prompts, items, conditions, evaluation sets
       ...
-    models:                         # (R) ids from models/; {id, role} when a model plays a particular part
+    models:                         # (R) ids from models/; a bare id is a subject. Long form for other roles:
       - model-slug
-      - {id: other-model-slug, role: "the comparison model"}
+      - {id: other-model-slug, roles: [comparison], note: "what it is compared on"}   # enums.yaml model_role:
+      # subject | comparison | judge | data_source; a model can hold several (a judge that is also a subject)
     note: null                      # (O)
     facets:
       # Core facets: code every one (unspecified if the source does not say; not_applicable if it does not apply).
@@ -54,6 +55,7 @@ studies:                            # one per set of results that share every fa
         levels:
           task: [first task, second task]
       comparison: [within_model]    # codebook/comparison.yaml
+      similarity_adjustment: not_applicable   # codebook/similarity_adjustment.yaml (self against other models)
       elicitation: [spontaneous]    # codebook/elicitation.yaml
       # Interpretive facets: code when the source states a position, a linked question needs them, or a
       # conflict turns on them; otherwise leave them out (they read as not_yet_coded). Long form, with basis.
@@ -79,6 +81,8 @@ claims:
     evidence_kind: measured         # (R) codebook/evidence_kind.yaml
     # Links to questions are not part of the record: they go in links/<source id>.yaml (templates/links.yaml).
     effect_of: [task]               # (O) the varied variable whose effect the claim reports (one of the study's varies)
+    effect_presence: present        # (C) with effect_of: present | absent | mixed | inconclusive
+    effect_direction: increases     # (O) with present, for an ordered variable: increases | decreases | non_monotonic
     scope:                          # (O) when the claim holds for part of the study
       models: [model-slug]
       conditions: Which levels it holds for.

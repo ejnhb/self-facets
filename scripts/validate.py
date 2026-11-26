@@ -11,6 +11,7 @@ from _load import (
     LIGHT_REQUIRED,
     LONG_FORM_KEYS,
     NOT_YET_CODED,
+    RELATIONS,
     SPECIAL,
     as_list,
     facet_entry,
@@ -108,6 +109,22 @@ def validate():
             rep.err(f"question {qid}", "polarity says how a question points relative to its parent, so it needs a parent")
         if q.get("parent") in questions and questions[q["parent"]].get("kind") == "which" and kind != "which":
             rep.err(f"question {qid}", "a yes/no question cannot sit under a which-question")
+        auto = q.get("auto_stance")
+        if auto is not None:
+            if q.get("kind") == "which":
+                rep.err(f"question {qid}", "auto_stance is for yes/no questions")
+            for var in as_list((auto or {}).get("effect_of")):
+                if var not in facets["varies"]["values"]:
+                    rep.err(f"question {qid}", f"auto_stance effect_of '{var}' is not a varies value")
+            if not q.get("frame"):
+                rep.err(f"question {qid}", "auto_stance needs a frame, to say which studies' effects count")
+        for name, vals in (q.get("frame") or {}).items():
+            if name not in facets:
+                rep.err(f"question {qid}", f"frame facet '{name}' is not a facet")
+                continue
+            for v in as_list(vals):
+                if v not in facets[name]["values"]:
+                    rep.err(f"question {qid}", f"frame {name} '{v}' is not in the codebook")
         requires = q.get("requires") or {}
         if not isinstance(requires, dict):
             rep.err(f"question {qid}", "requires must map a facet to the values a claim needs to count")
@@ -143,6 +160,8 @@ def validate():
             if parent not in models:
                 rep.err(where, f"derived_from '{parent}' is not a model")
         check_enum(rep, where, "post_training_reached", model.get("post_training_reached"), enums, "post_training_reached", required=False)
+        if model.get("variant_of") is not None and model.get("variant_of") not in models:
+            rep.err(where, f"variant_of '{model.get('variant_of')}' is not a model")
         stage = model.get("stage")
         if stage is not None:
             for method in as_list(stage.get("methods")):
@@ -212,10 +231,15 @@ def validate():
 
             study_models = set()
             for raw in as_list(study.get("models")):
-                mid, _ = model_ref(raw)
+                mid, roles, _ = model_ref(raw)
                 study_models.add(mid)
                 if mid not in models:
                     rep.err(stid, f"model '{mid}' is not in models/")
+                if isinstance(raw, dict):
+                    for key in set(raw) - {"id", "roles", "note"}:
+                        rep.err(stid, f"model '{mid}': unknown key '{key}' (roles and note since codebook 0.8)")
+                for role in roles:
+                    check_enum(rep, stid, f"model '{mid}' role", role, enums, "model_role")
             study["_models"] = study_models
 
             coded = study.get("facets") or {}
@@ -295,6 +319,12 @@ def validate():
                     rep.err(cid, f"'{key}' belongs in links/{sid}.yaml now (codebook 0.7), not in the record")
             all_claims[cid] = (claim, study)
 
+            if claim.get("effect_of") and not claim.get("effect_presence"):
+                rep.err(cid, "a claim with effect_of needs effect_presence (present, absent, mixed, inconclusive)")
+            if claim.get("effect_presence") and not claim.get("effect_of"):
+                rep.err(cid, "effect_presence goes with effect_of: say which variable the claim reports the effect of")
+            if claim.get("effect_direction") and claim.get("effect_presence") != "present":
+                rep.err(cid, "effect_direction only goes with effect_presence present")
             if study is not None:
                 varied = set(facet_entry((study.get("facets") or {}).get("varies"))["value"])
                 for var in as_list(claim.get("effect_of")):
@@ -414,6 +444,11 @@ def validate():
         if bool(applies.get("selector")) == bool(applies.get("targets")):
             rep.err(where, "applies_to needs exactly one of selector (facet values) or targets (claim or study ids)")
         for name, vals in (applies.get("selector") or {}).items():
+            if name == "comparison.closest":
+                for v in as_list(vals):
+                    if v not in RELATIONS:
+                        rep.err(where, f"selector comparison.closest '{v}' is not one of {RELATIONS}")
+                continue
             if name.startswith("model."):
                 field = name[len("model."):]
                 if field not in model_fields:

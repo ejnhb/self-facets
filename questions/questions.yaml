@@ -36,6 +36,8 @@
     construct: [self_prediction, introspection]
     report_target: [own_behaviour]
     varies: [self_vs_other]
+  auto_stance:
+    effect_of: [self_vs_other]
   added: 2026-11-26
   status: open
 

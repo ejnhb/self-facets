@@ -1,0 +1,984 @@
+id: song2025-fail-to-introspect
+title: "Language Models Fail to Introspect About Their Knowledge of Language"
+date: 2025-09-23
+
+authors:
+  - {person: song-siyuan, orgs: [ut-austin]}
+  - {person: hu-jennifer, orgs: [johns-hopkins]}
+  - {person: mahowald-kyle, orgs: [ut-austin]}
+
+artefacts:
+  - kind: paper
+    arxiv: "2503.07513"
+    venue: COLM 2025
+    note: >
+      Venue and affiliations are as printed on v3. The date above is the date
+      printed on v3 (23 Sep 2025), the version read; the arXiv identifier puts
+      first submission in March 2025. Hu and Mahowald are marked co-senior
+      authors.
+  - kind: code
+    url: https://github.com/SiyuanSong2004/language-introspection
+    note: >
+      Linked from the paper's reproducibility statement. Holds the experiment
+      scripts (src/), the analysis script (analysis.R), a data-preparation
+      notebook and tables of regression output.
+  - kind: data
+    url: https://github.com/SiyuanSong2004/language-introspection
+    note: >
+      Same repository: stimuli (testsuites/, rawdata/) and per-model outputs
+      (model_output/, alldata/). The data files were not opened.
+
+coding:
+  coded_by: claude
+  coder_model: claude-fable-5-2
+  coded_on: 2026-11-26
+  version_read: v3
+  read_depth: text_only
+  read_parts: >
+    Paper: the whole of v3 as extracted text via alphaXiv (abstract, sections
+    1 to 5, acknowledgments, reproducibility statement, references,
+    appendices A to G, Tables 1 to 8). Figures 1 to 10 were seen only as
+    captions and stray labels, so nothing is taken from plotted values or
+    axes. Repository, read through alphaXiv on 2026-11-26 at its default
+    branch: README.md, analysis.R, src/models.py, src/blimpli.py and
+    src/continuation_final.py in full; the model lists and processing
+    functions of preparedata.ipynb; the file listing. Not opened: the data
+    files, the scripts under rawdata/, the regression tables under lm/ and the
+    figure files. Versions 1 and 2 of the paper were not compared with v3.
+    This record reconciles two pilot codings of the same paper; every claim
+    and number in it was checked against the text read in this session.
+  status: draft
+  reviewed_by: null
+
+studies:
+  - id: song2025-fail-to-introspect.s1
+    label: Accuracy of prompted answers and string probabilities, and their agreement within a model
+    where: "§3.1, §3.2.1, §4.1, §4.2.1; Figs. 2a, 5, 8; App. A, B, D, E.1, G (Table 5)"
+    design: >
+      Each model is measured twice on every item, and nothing is sampled or
+      trained. The Direct measure is a difference in log probability between
+      two strings: the two sentences of a grammatical minimal pair (Exp. 1),
+      or two candidate final words after a prefix (Exp. 2). The Meta measure
+      is the difference in log probability of the answers "1" and "2" after a
+      metalinguistic prompt ending "My answer is", averaged over both orders
+      of the options; two of the Exp. 2 prompts score the candidate words
+      themselves instead. For the three Exp. 1 prompts that judge one sentence
+      at a time, the score is the difference between the two sentences'
+      judgments. This study covers the checks made before the
+      cross-model test: how often each measure picks the labelled option, and
+      how often the two measures pick the same option within one model
+      (Cohen's kappa). Items: Exp. 1 uses 670 minimal pairs from BLiMP (10 per
+      paradigm) and 378 one-word-different pairs from two acceptability
+      studies of Linguistic Inquiry examples (Sprouse et al. 2013; Mahowald et
+      al. 2016). Exp. 2 uses four sets of 1,000 items the authors built, each
+      a sentence prefix with its original final word and a frequency-matched
+      alternative: wikipedia, news (published after most models' knowledge cutoffs; the cutoffs for
+      Qwen and Mistral are not released),
+      nonsense (news sentences with every word swapped for another of the same
+      part of speech) and randomseq (random word sequences).
+    models:
+      - olmo-2-1124-7b
+      - olmo-2-1124-7b-seeds
+      - olmo-2-1124-13b
+      - olmo-2-1124-13b-seeds
+      - qwen2.5-1.5b-base
+      - qwen2.5-1.5b-instruct
+      - qwen2.5-7b-base
+      - qwen2.5-7b-instruct
+      - qwen2.5-72b-base
+      - qwen2.5-72b-instruct
+      - llama-3.1-8b-base
+      - llama-3.1-8b-instruct
+      - llama-3.1-70b-base
+      - llama-3.1-70b-instruct
+      - llama-3.1-405b-base
+      - llama-3.3-70b-instruct
+      - mistral-large-instruct-2411
+    facets:
+      study_kind: experiment
+      unit_state:
+        value: not_applicable
+        author_term: "internal states"
+        confidence: medium
+        note: >
+          The authors frame introspection as access to "internal states", but
+          what is measured is a standing preference between strings, computed
+          in a separate pass from the one in which the prompted answer is
+          given. No occurrent state is set up or read.
+      unit_disposition:
+        value: weights
+        basis: operational
+        author_term: "internal linguistic knowledge"
+        confidence: high
+        note: >
+          Each checkpoint is treated as having its own string probabilities.
+          The paper says models larger than 70B were run with 4-bit
+          quantisation. That this holds for both measures comes from the
+          authors' code, where one loaded model serves both.
+      unit_reporter:
+        value: persona
+        basis: operational
+        confidence: medium
+        note: >
+          Not discussed by the authors. Instruct models answer in the
+          assistant turn of their chat template. Base models continue a
+          plain-text prompt, where the speaker is whoever the text implies
+          (see object_of_study). The answer is read from next-token
+          probabilities, and nothing in the design attributes it to the
+          network apart from a speaker.
+      self_sense:
+        value: self_facts
+        basis: operational
+        author_term: "internal knowledge; self-access"
+        confidence: medium
+        note: >
+          The self is the system whose own string probabilities its answers
+          are compared with: a behavioural tendency, tested from outside. The
+          authors' word is "self-access", but self_access is not coded,
+          because no current internal state is set or read and no activation
+          is examined.
+      object_of_study:
+        value: [default_persona, frame_speaker]
+        basis: operational
+        confidence: medium
+        note: >
+          Not discussed by the authors. default_persona for the 7 instruct
+          models (the three Qwen2.5 Instruct models, Llama 3.1 8B and 70B
+          Instruct, Llama 3.3 70B Instruct, Mistral Large Instruct), which the
+          code runs under their chat template with a generic "helpful
+          assistant" system message. frame_speaker for the 14 base models (all
+          OLMo 2 checkpoints, the three Qwen2.5 base models, Llama 3.1 8B, 70B
+          and 405B). Results pool the two. One of the fourteen prompts
+          addresses the model "as a large language model".
+      format:
+        value: [chat_template, raw_text]
+        basis: operational
+        where: "App. A; repository src/models.py"
+        confidence: high
+        note: >
+          Stated in App. A: instruct models get their default chat template.
+          From the code only: base models get the prompt as plain text, and
+          the Direct strings are scored as plain text with no template for
+          every model, instruct models included. So an instruct model's
+          prompted answer is given through the template and its string
+          probabilities are measured without it. The authors do not treat
+          format as a variable, and it is not coded under varies.
+      construct:
+        value: [introspection, self_prediction]
+        basis: stated
+        author_term: "introspection"
+        confidence: medium
+        note: >
+          Introspection is the authors' frame. self_prediction is coded
+          because their measure is how well prompted responses "predict" the
+          model's own string probabilities, and five of the fourteen prompts
+          ask which string the model itself would produce. The authors also
+          mention "metacognition more broadly"; that is not coded, since no
+          confidence or calibration report is collected.
+      report_target:
+        value: [own_knowledge, own_behaviour]
+        basis: operational
+        author_term: "internal linguistic knowledge"
+        confidence: low
+        note: >
+          own_knowledge is the stated target: the title and abstract are about
+          the model's knowledge of language, and a metalinguistic judgment is
+          taken as a possible report of it. own_behaviour is operational: the
+          answer is checked against the probability the model gives to the
+          strings, which the authors gloss as the likelihood of generating
+          them. Most prompts ask about the sentence or word and do not mention
+          the model; the authors treat the answer as introspective in the way
+          acceptability judgments are for people.
+      evidence:
+        value: [self_report, output_probabilities]
+        basis: operational
+        confidence: medium
+        note: >
+          Both measures are read as log probabilities. The prompted answer is
+          coded self_report because the authors treat it as a candidate report
+          of the model's own knowledge. The Direct measure is a probability
+          and not a sampled output, so behaviour is not coded.
+      validated_against:
+        value: output_probabilities
+        basis: stated
+        author_term: "direct measurements of string probability"
+        confidence: high
+        note: >
+          The prompted answer is compared with the same model's string
+          probabilities for the same item, which the authors take as the
+          ground truth of its knowledge. Accuracy of each measure against the
+          dataset labels is also reported here; that is a check on the task
+          and not on the report, and has no value of its own.
+      varies:
+        value: [model_size, task, prompt_framing]
+        confidence: medium
+        levels:
+          model_size:
+            - 1.5B to 405B parameters, as log size
+            - models under 70B against models of 70B or more
+          task:
+            - grammaticality of minimal pairs (Exp. 1)
+            - word prediction, wikipedia (Exp. 2)
+            - word prediction, news (Exp. 2)
+            - word prediction, nonsense (Exp. 2, no correct answer)
+            - word prediction, randomseq (Exp. 2, no correct answer)
+          prompt_framing:
+            - "Exp. 1, choice between two sentences: which is a better English sentence; which is grammatically correct; which is more acceptable; which are you more likely to produce; the same with 'as a large language model'"
+            - "Exp. 1, one sentence at a time: is it grammatical; is it acceptable; would you produce it"
+            - "Exp. 2, choice of 1 or 2: which sentence is better; which sentence are you more likely to produce; which word is a better continuation; which word are you more likely to produce"
+            - "Exp. 2, two prompts asking what word is more likely to come next, scored on the candidate words"
+        note: >
+          Size is pooled over four families, so it is confounded with family;
+          per-model results are in figures only. Per-prompt results are lines
+          in Figs. 5 and 8, and the text draws no conclusion by prompt. The
+          contrast between the two measures (string probability against
+          prompted answer) is the other variable here and has no value in the
+          codebook.
+      comparison:
+        value: [within_model, cross_model]
+        basis: operational
+        confidence: medium
+        note: >
+          within_model: each model's two measures, over prompts and item sets.
+          cross_model: smaller against larger models.
+      elicitation:
+        value: [spontaneous, prefilled]
+        basis: operational
+        where: "§3.1, footnote 1; App. A; repository src/models.py"
+        confidence: medium
+        note: >
+          Zero-shot questions to unmodified models, with an instruction to
+          answer 1 or 2. The paper says "My answer is" was appended after the
+          question; the code puts it at the start of the assistant turn for
+          instruct models and on a new line of the plain text for base models.
+          The two Exp. 2 prompts scored on the candidate words have no such
+          lead-in.
+    note: >
+      The paper says 21 models. Its Table 1 gives families, sizes and base or
+      instruct availability, which would allow 24. The repository settles the
+      list at 21: there is no Qwen2.5 32B (Table 1 lists that size), and Llama
+      3.1 405B is run as a base model only. The README's own list of
+      Hugging Face ids leaves out Llama 3.1 405B, but the preparation
+      notebook, the analysis script and the output files include it. The six
+      OLMo 2 seed-variant checkpoints are registered as two series entries.
+      The repository also holds outputs for four smaller models (Llama 3.2 1B
+      and Qwen2.5 0.5B, base and instruct) that the analysis does not use;
+      they are not listed. On quantisation the README differs from the paper:
+      it marks the 70B, 72B and 123B models as loaded in 4-bit.
+
+  - id: song2025-fail-to-introspect.s2
+    label: Same-model effect beyond model similarity, all 21 models
+    where: "§2, §3.1, §3.2.2, §4.2.2; Figs. 1, 2b, 3, 4; App. C, E.2, G (Tables 6, 7)"
+    design: >
+      With the same two measures and items as s1, the Pearson correlation
+      across items between model A's Meta scores and model B's Direct scores
+      is computed for every ordered pair of the 21 models, A = B included, and
+      averaged over prompts. Introspection is operationalised as a higher
+      correlation for A = B than the similarity of A and B predicts.
+      Similarity is given two ways: five exclusive pair types (self, seed
+      variant, base/instruct, same family, other) and the correlation between
+      the two models' Direct scores. The pair correlation is regressed on
+      both, with self as the baseline, so a pair type below self would be the
+      sign of introspection. Exp. 1 uses the 294 minimal pairs on which at
+      least 5% of models disagree, with the full set in App. C; Exp. 2 runs
+      the regression on each of its four datasets. A second regression
+      predicts the pair correlation from the log sizes of the two models.
+    models:
+      - olmo-2-1124-7b
+      - olmo-2-1124-7b-seeds
+      - olmo-2-1124-13b
+      - olmo-2-1124-13b-seeds
+      - qwen2.5-1.5b-base
+      - qwen2.5-1.5b-instruct
+      - qwen2.5-7b-base
+      - qwen2.5-7b-instruct
+      - qwen2.5-72b-base
+      - qwen2.5-72b-instruct
+      - llama-3.1-8b-base
+      - llama-3.1-8b-instruct
+      - llama-3.1-70b-base
+      - llama-3.1-70b-instruct
+      - llama-3.1-405b-base
+      - llama-3.3-70b-instruct
+      - mistral-large-instruct-2411
+    facets:
+      study_kind: experiment
+      unit_state:
+        value: not_applicable
+        author_term: "internal states"
+        confidence: medium
+        note: As s1. Standing preferences between strings; no occurrent state is examined.
+      unit_disposition:
+        value: weights
+        basis: operational
+        author_term: "internal linguistic knowledge"
+        confidence: high
+        note: >
+          A pair counts as self only when A and B are the same checkpoint. A
+          seed variant, a base or instruct sibling and the weight-averaged
+          released model each count as another model.
+      unit_reporter:
+        value: persona
+        basis: operational
+        confidence: medium
+        note: As s1.
+      self_sense:
+        value: self_facts
+        basis: operational
+        author_term: "privileged self-access"
+        confidence: medium
+        note: >
+          Tested from outside, as whether a model's answers track its own
+          string probabilities more than another model's. See s1 on why
+          self_access is not coded.
+      object_of_study:
+        value: [default_persona, frame_speaker]
+        basis: operational
+        confidence: medium
+        note: >
+          As s1: default_persona for the 7 instruct models, frame_speaker for
+          the 14 base models. Every analysis pools them, and pairs mix them:
+          in a base/instruct pair the prompted answer comes from one layer and
+          the string probabilities from a sibling checkpoint.
+      format:
+        value: [chat_template, raw_text]
+        basis: operational
+        where: "App. A; repository src/models.py"
+        confidence: high
+        note: >
+          As s1. Chat template for the instruct models' prompted answers;
+          plain text for the base models' prompted answers and for every
+          model's string probabilities (the plain-text parts are from the
+          code). Format changes only together with the checkpoint or the
+          measure and is not coded under varies.
+      construct:
+        value: [introspection, self_prediction]
+        basis: stated
+        author_term: "introspection"
+        confidence: medium
+        note: >
+          The authors define introspection here as prompted responses
+          predicting the model's own string probabilities beyond what a nearly
+          identical model's would, and describe the test as whether a model
+          can "predict itself" better than a very similar model.
+      report_target:
+        value: [own_knowledge, own_behaviour]
+        basis: operational
+        author_term: "internal linguistic knowledge"
+        confidence: low
+        note: As s1. own_knowledge is the authors' framing; own_behaviour is what the check is run against.
+      evidence:
+        value: [self_report, output_probabilities]
+        basis: operational
+        confidence: medium
+        note: As s1.
+      validated_against:
+        value: [output_probabilities, other_model]
+        basis: stated
+        author_term: "direct measurements of string probability"
+        confidence: medium
+        note: >
+          The model's own string probabilities are the ground truth. The
+          third-person baseline is the same prompted answers scored against
+          another model's string probabilities, which is also another model's
+          answers scored against this model's. other_model does not say how
+          similar the other is; that is in the levels of varies.
+      varies:
+        value: [self_vs_other, training_seed, post_training_stage, model_family, model_size, task]
+        confidence: medium
+        levels:
+          self_vs_other:
+            - self (A = B)
+            - another model, in the four pair types listed under the next three values
+          training_seed:
+            - "seed variant pairs: OLMo 2 checkpoints of one size that differ in seed or data order (7B revisions stage2-ingredient1 to 3 at step11931-tokens50B; 13B revisions stage2-ingredient1 to 3 at step11931-tokens100B)"
+            - "per analysis.R, the released weight-averaged OLMo 2 model paired with one of its seed variants is also a seed variant pair"
+          post_training_stage:
+            - "base/instruct pairs: the base and instruction-tuned variants of one model (Llama 3.1 8B and 70B; Qwen2.5 1.5B, 7B and 72B)"
+          model_family:
+            - "same family pairs: same family, not a seed variant or base/instruct pair (for example OLMo 2 7B with 13B, Llama 3.1 with Llama 3.3)"
+            - "other pairs: different families (OLMo 2, Qwen2.5, Llama 3, Mistral)"
+          model_size:
+            - 1.5B to 405B parameters, as log size of the prompted model and of the model scored
+            - pairs in which both models have 70B parameters or more, analysed apart
+          task:
+            - grammaticality, the 294 minimal pairs with at least 5% disagreement (Exp. 1, main text)
+            - grammaticality, all minimal pairs (Exp. 1, App. C)
+            - word prediction, wikipedia (Exp. 2)
+            - word prediction, news (Exp. 2)
+            - word prediction, nonsense (Exp. 2)
+            - word prediction, randomseq (Exp. 2)
+        note: >
+          The authors' variable is one graded similarity between the model
+          that answers and the model whose probabilities are scored.
+          training_seed, post_training_stage and model_family are coded
+          because three of its levels are those contrasts, with their own
+          coefficients. Each varies the relation between the two models of a
+          pair. Nothing is reported on whether base and instruct models differ
+          as reporters. The pair lists under training_seed and
+          post_training_stage, and the same-family examples, are from the
+          repository. Several prompts were
+          used (see s1), but correlations are averaged over them, so
+          prompt_framing is not coded here.
+      comparison:
+        value: [cross_model, within_lineage]
+        basis: operational
+        confidence: medium
+        note: >
+          cross_model: self against other models. within_lineage: the
+          base/instruct pairs, which are released stages of one model. Seed
+          variants are sibling runs and not stages, and are covered by
+          cross_model.
+      elicitation:
+        value: [spontaneous, prefilled]
+        basis: operational
+        where: "§1; §3.1, footnote 1; App. A; repository src/models.py"
+        confidence: medium
+        note: As s1. The authors stress that no fine-tuning or further training is used.
+    note: >
+      Model list as in s1. The cutoff for the large-model subset is given as
+      over 70B in §3.2.2 and as 70B or greater in App. G; analysis.R keeps
+      pairs in which both models are at least 70B. The paper describes the
+      Exp. 1 filter as items on which at least 5% of models disagree under the
+      two measures; analysis.R applies the 5% bound to each measure.
+
+  - id: song2025-fail-to-introspect.s3
+    label: Self against seed variants, OLMo 2 only
+    where: "App. F, Fig. 10; App. G (Table 8)"
+    design: >
+      The pair correlations of s2 restricted to the OLMo 2 models, the only
+      ones with checkpoints that differ only in random seed. For each of 7B
+      and 13B there is the released model, described as the final model with
+      averaged weights, and three checkpoints trained on the same data in a
+      different order. Pairs are self, seed variant or same family (7B with
+      13B). The correlation between A's Meta scores and B's Direct scores is
+      regressed on whether A = B, separately for the filtered and unfiltered
+      Exp. 1 items and each of the four Exp. 2 datasets.
+    models:
+      - olmo-2-1124-7b
+      - olmo-2-1124-7b-seeds
+      - olmo-2-1124-13b
+      - olmo-2-1124-13b-seeds
+    facets:
+      study_kind: experiment
+      unit_state:
+        value: not_applicable
+        confidence: medium
+        note: As s1.
+      unit_disposition:
+        value: weights
+        basis: operational
+        author_term: "knowledge of language"
+        confidence: high
+        note: >
+          Self is the identical checkpoint. The released 7B and 13B models are
+          weight averages, so they are not independent of the seed variants
+          they are compared with if those are what was averaged; the paper
+          does not say.
+      unit_reporter:
+        value: persona
+        basis: operational
+        confidence: medium
+        note: >
+          Base models on plain text. The speaker is whoever the prompt
+          implies; see object_of_study.
+      self_sense:
+        value: self_facts
+        basis: operational
+        author_term: "introspection on knowledge of language"
+        confidence: medium
+        note: As s2.
+      object_of_study:
+        value: frame_speaker
+        basis: operational
+        confidence: medium
+        note: >
+          All eight checkpoints are base models; Table 1 lists no instruct
+          variant for OLMo 2.
+      format:
+        value: raw_text
+        basis: operational
+        where: "repository src/models.py"
+        confidence: high
+        note: >
+          From the code: without the instruct option the prompt is passed as
+          plain text followed by "My answer is" on a new line. The paper says
+          only that instruct models were given chat templates.
+      construct:
+        value: [introspection, self_prediction]
+        basis: stated
+        author_term: "introspection"
+        confidence: medium
+        note: As s2.
+      report_target:
+        value: [own_knowledge, own_behaviour]
+        basis: operational
+        author_term: "knowledge of language"
+        confidence: low
+        note: As s1.
+      evidence:
+        value: [self_report, output_probabilities]
+        basis: operational
+        confidence: medium
+        note: As s1.
+      validated_against:
+        value: [output_probabilities, other_model]
+        basis: stated
+        confidence: medium
+        note: As s2.
+      varies:
+        value: [self_vs_other, training_seed, model_size, task]
+        confidence: medium
+        levels:
+          self_vs_other:
+            - self (A = B)
+            - another OLMo 2 checkpoint
+          training_seed:
+            - "7B: the released model and revisions stage2-ingredient1, 2 and 3 (step11931-tokens50B)"
+            - "13B: the released model and revisions stage2-ingredient1, 2 and 3 (step11931-tokens100B)"
+          model_size:
+            - 7B
+            - 13B
+            - pairs across the two sizes are the same family type
+          task:
+            - grammaticality, the 294 minimal pairs with at least 5% disagreement (Exp. 1)
+            - grammaticality, all minimal pairs (Exp. 1)
+            - word prediction, wikipedia (Exp. 2)
+            - word prediction, news (Exp. 2)
+            - word prediction, nonsense (Exp. 2)
+            - word prediction, randomseq (Exp. 2)
+        note: >
+          The paper calls the variants different random initialisations in
+          §2.1 and the same data in a different order in App. F. The revision
+          names are from the repository README. The regression has one
+          predictor, whether the pair is self, so seed-variant and cross-size
+          pairs are pooled as the comparison.
+      comparison:
+        value: cross_model
+        basis: operational
+        confidence: medium
+        note: >
+          Self against sibling checkpoints. The siblings are released
+          checkpoints and were not built for this comparison, so
+          training_ablation is not coded.
+      elicitation:
+        value: [spontaneous, prefilled]
+        basis: operational
+        where: "§3.1, footnote 1; repository src/models.py"
+        confidence: medium
+        note: >
+          As s1. For a base model "My answer is" is appended to the plain
+          text, so there is no assistant turn to prefill; prefilled is the
+          nearest value.
+    note: >
+      Kept apart from s2 because these results are reported apart and cover
+      base models on plain text only; in s2 a claim about them would inherit
+      the chat template and the default persona.
+
+  - id: song2025-fail-to-introspect.s4
+    label: What counts as evidence of introspection, and why earlier positive results may differ
+    where: "§1, §2, §5"
+    design: >
+      Argument with no data of its own. The authors say why string
+      probabilities can serve as ground truth, set out what a self-advantage
+      must look like to count as introspection, say why results obtained
+      after fine-tuning fit that standard poorly, and offer explanations for
+      the positive results of two earlier papers.
+    facets:
+      study_kind: conceptual
+      unit_position:
+        value: weights
+        basis: stated
+        author_term: "itself"
+        where: "§1"
+        confidence: low
+        note: >
+          The authors say it may be reasonable to question whether a
+          fine-tuned model predicting its pre-fine-tuning version is
+          predicting "itself", since its parameters have changed. The view is
+          hedged and takes one sentence. It matches the design of s2 and s3,
+          where only the identical checkpoint counts as self.
+      self_sense:
+        value: [self_facts, identity]
+        basis: operational
+        author_term: "privileged self-access"
+        confidence: low
+        note: >
+          Mainly self_facts: whether a system has access to facts about itself
+          that a similar system lacks. identity is added for the one remark
+          that a change of parameters may make the predictor a different thing
+          from the predicted.
+      construct:
+        value: introspection
+        basis: stated
+        author_term: "introspection"
+
+claims:
+  - id: song2025-fail-to-introspect.c1
+    study: song2025-fail-to-introspect.s1
+    statement: >
+      Every model is above chance on grammaticality under both the
+      string-probability and the prompted measure, across prompts. On word
+      prediction both measures are near ceiling on wikipedia and news, and
+      choices are close to random on nonsense and randomseq, which have no
+      correct answer.
+    question: null
+    evidence_kind: measured
+    where: "§3.2.1, Fig. 2a; §4.2.1; App. E.1, Fig. 8"
+    note: >
+      Accuracy is given only in figures, which were not seen, so no values are
+      quoted. The authors take this to show that a failure to find
+      introspection cannot be put down only to models not understanding the
+      prompts. App. E.1 adds that the probability measure leans to the
+      original word on nonsense and slightly to the alternative on randomseq.
+
+  - id: song2025-fail-to-introspect.c2
+    study: song2025-fail-to-introspect.s1
+    statement: >
+      On grammaticality, which measure is more accurate depends on size.
+      Models under 70B do better when string probabilities are compared and
+      models of 70B or more do better when prompted; in a logistic regression
+      on correctness the interaction of log size and method is 0.22
+      (p < .0001).
+    question: null
+    evidence_kind: measured
+    where: "§3.2.1; App. G, Table 5"
+    scope:
+      conditions: Grammaticality (Exp. 1).
+    note: >
+      For wikipedia and news the text says the probability measure is ahead
+      for smaller models and both are at ceiling for larger ones, with no
+      test (§4.2.1).
+
+  - id: song2025-fail-to-introspect.c3
+    study: song2025-fail-to-introspect.s1
+    statement: >
+      Within a model, the prompted answer and the string-probability
+      comparison often pick different options although each is accurate.
+      Cohen's kappa between them is around 0.25 across models and prompts on
+      grammaticality, and is described as low on word prediction too.
+    question: q-report-matches-direct-measure
+    stance: against
+    evidence_kind: measured
+    where: "§3.2.1; App. B, Fig. 5"
+    note: >
+      Agreement is above chance; the authors call it low. The 0.25 is the
+      figure given in the text for Exp. 1. No value is given in the text for
+      Exp. 2, and Fig. 5 was not seen.
+
+  - id: song2025-fail-to-introspect.c4
+    study: song2025-fail-to-introspect.s1
+    statement: >
+      The authors conclude that what a model says when asked about language
+      is real knowledge but is separate from the generalisations it uses to
+      assign probabilities to strings, so prompted answers should not be read
+      as a measure of the latter.
+    question: q-report-matches-direct-measure
+    stance: against
+    evidence_kind: argued
+    where: "§1; §3.2.1; §5"
+    compares: [song2025-fail-to-introspect.s2]
+    aspect: [represented, functional]
+    note: >
+      The authors' terms are "explicit" metalinguistic knowledge and
+      "implicit" linguistic generalisations, which they say are dissociated.
+      aspect maps the first to what the model says when asked and the second
+      to what drives its output; the mapping is the coders', the dissociation
+      is the authors'. The argument rests on the low agreement in this study
+      and on the absence of a same-model effect in s2.
+
+  - id: song2025-fail-to-introspect.c5
+    study: song2025-fail-to-introspect.s2
+    statement: >
+      The pair types track how alike two models' string probabilities are.
+      Against a model paired with itself, the correlation between two models'
+      string-probability scores is lower for base/instruct, same-family and
+      unrelated pairs (all p < .001) but not for seed variants (p = .27).
+    question: null
+    evidence_kind: measured
+    where: "§3.2.2, Fig. 3b"
+    scope:
+      conditions: Grammaticality (Exp. 1), the 294 minimal pairs with at least 5% disagreement.
+    note: The authors use this to validate their pair types as a measure of similarity.
+
+  - id: song2025-fail-to-introspect.c6
+    study: song2025-fail-to-introspect.s2
+    statement: >
+      The more alike two models' string probabilities are, the better one
+      model's prompted answers track the other's string probabilities:
+      r = .32 across pairs on grammaticality, with regression coefficients of
+      0.10 there and 0.40 to 0.83 on the four word-prediction sets (all
+      p < .0001).
+    question: null
+    evidence_kind: measured
+    where: "§3.2.2, Fig. 3b; §4.2.2, Fig. 4b; App. G, Table 7a"
+    scope:
+      conditions: Grammaticality on the 294 filtered pairs, and each Exp. 2 dataset. On all minimal pairs the coefficient is 0.20 (App. C).
+    note: >
+      The authors read this as ruling out the outcome in which models answer
+      the prompts uninformatively: prompted answers carry real information
+      about linguistic knowledge.
+
+  - id: song2025-fail-to-introspect.c7
+    study: song2025-fail-to-introspect.s2
+    statement: >
+      Taking pair type alone, a model's prompted answers track its own string
+      probabilities no better than those of a seed variant, a base or
+      instruct sibling or a same-family model (all p > .05). Only unrelated
+      models are tracked less well (-0.03, p < .01).
+    question: q-self-access-without-training
+    stance: against
+    evidence_kind: measured
+    where: "§3.2.2, Fig. 3a"
+    scope:
+      conditions: Grammaticality (Exp. 1), the 294 minimal pairs with at least 5% disagreement.
+
+  - id: song2025-fail-to-introspect.c8
+    study: song2025-fail-to-introspect.s2
+    statement: >
+      With similarity of string probabilities controlled, no pair type falls
+      below self. Seed-variant and base/instruct pairs do not differ from
+      self, and same-family and unrelated pairs come out higher than self
+      (each 0.05, p < .01), the opposite of what introspection predicts.
+    question: q-self-access-without-training
+    stance: against
+    evidence_kind: measured
+    where: "§3.2.2; App. G, Table 7a"
+    scope:
+      conditions: Grammaticality (Exp. 1), the 294 minimal pairs with at least 5% disagreement.
+
+  - id: song2025-fail-to-introspect.c9
+    study: song2025-fail-to-introspect.s2
+    statement: >
+      The result holds without the item filter. On all minimal pairs,
+      similarity predicts the correlation (0.20, p < .001), same-family and
+      unrelated pairs are higher than self (0.04 and 0.05, both p < .01), and
+      seed-variant and base/instruct pairs do not differ from self.
+    question: q-self-access-without-training
+    stance: against
+    evidence_kind: measured
+    where: "App. C, Fig. 7; App. G, Table 7a"
+    scope:
+      conditions: Grammaticality (Exp. 1), all minimal pairs.
+
+  - id: song2025-fail-to-introspect.c10
+    study: song2025-fail-to-introspect.s2
+    statement: >
+      Word prediction gives the same result in each of four datasets. With
+      similarity controlled, seed-variant and base/instruct pairs do not
+      differ from self, and same-family (0.05 to 0.07) and unrelated pairs
+      (0.05 to 0.09) are higher than self (all p < .05).
+    question: q-self-access-without-training
+    stance: against
+    evidence_kind: measured
+    where: "§4.2.2, Fig. 4; App. G, Table 7a"
+    scope:
+      conditions: Word prediction (Exp. 2), each of wikipedia, news, nonsense and randomseq.
+    note: >
+      This includes nonsense and randomseq, built so that models' string
+      probabilities are less correlated with each other and an introspection
+      effect has more room to show.
+
+  - id: song2025-fail-to-introspect.c11
+    study: song2025-fail-to-introspect.s2
+    statement: >
+      Among the large models the result is the same. No pair type is
+      significantly below self on any of the six item sets, and on wikipedia
+      same-family (0.07, p < .05) and unrelated pairs (0.10, p < .01) are
+      higher than self.
+    question: q-self-access-without-training
+    stance: against
+    evidence_kind: measured
+    where: "§3.2.2; §4.2.2; App. G, Table 7b; the cutoff and so the model list from analysis.R"
+    scope:
+      models:
+        - llama-3.1-70b-base
+        - llama-3.1-70b-instruct
+        - llama-3.1-405b-base
+        - llama-3.3-70b-instruct
+        - qwen2.5-72b-base
+        - qwen2.5-72b-instruct
+        - mistral-large-instruct-2411
+      conditions: Pairs in which both models have 70B parameters or more; both Exp. 1 item sets and all four Exp. 2 datasets. There is no seed-variant pair in this subset.
+    note: >
+      The authors do not list the models; the seven are those of 70B or more
+      by Table 1 and the code. Several coefficients are negative but none is
+      significant, and the similarity term itself is significant only on
+      wikipedia.
+
+  - id: song2025-fail-to-introspect.c12
+    study: song2025-fail-to-introspect.s2
+    statement: >
+      On grammaticality, the correlation across items between prompted
+      scores and string-probability scores is relatively small. It never
+      exceeds .25 for any pair of models, a model paired with itself
+      included.
+    question: q-report-matches-direct-measure
+    stance: against
+    evidence_kind: measured
+    where: "§3.2.2"
+    scope:
+      conditions: Grammaticality (Exp. 1), the 294 minimal pairs with at least 5% disagreement; correlations averaged over prompts.
+
+  - id: song2025-fail-to-introspect.c13
+    study: song2025-fail-to-introspect.s2
+    statement: >
+      Prompted scores from larger models track string probabilities better,
+      whichever model the probabilities come from. Log size of the prompted
+      model has a positive coefficient on all minimal pairs and on each
+      word-prediction set (0.013 to 0.043, p of .001 or less); on the 294
+      filtered pairs only its interaction with the size of the model scored
+      is significant (0.0035, p < .001).
+    question: null
+    evidence_kind: measured
+    where: "§3.2.1, Fig. 2b; §4.2.1; App. C, Fig. 6; App. E.2, Fig. 9; App. G, Table 6"
+    note: >
+      Size of the model supplying the string probabilities has a negative
+      coefficient on wikipedia and news.
+
+  - id: song2025-fail-to-introspect.c14
+    study: song2025-fail-to-introspect.s2
+    statement: >
+      The authors suggest that larger, newer models understand metalinguistic
+      prompts better and so may overcome the extra demands of the prompted
+      task.
+    question: null
+    evidence_kind: hypothesised
+    where: "§3.2.1"
+
+  - id: song2025-fail-to-introspect.c15
+    study: song2025-fail-to-introspect.s2
+    statement: >
+      The authors conclude that introspection has not emerged in the models
+      tested: prompted answers are informative, but there is no sign that
+      they have privileged access to the model's own string probabilities.
+      They call this a null result and allow that other settings, such as
+      larger closed-source models, might show it.
+    question: q-self-access-without-training
+    stance: against
+    evidence_kind: argued
+    where: "§3.2.2; §5"
+    note: >
+      The abstract puts it more strongly, as showing that LLMs "cannot
+      introspect". The authors attribute what the answers do track to
+      linguistic knowledge that similar models share. That rules a route out
+      and names none of the report_source values, so report_source is not
+      coded.
+
+  - id: song2025-fail-to-introspect.c16
+    study: song2025-fail-to-introspect.s3
+    statement: >
+      Among the OLMo 2 7B and 13B models and their seed variants, being the
+      same model has no significant effect on how well prompted answers track
+      string probabilities on any of six item sets (coefficients -0.011 to
+      0.008, all p > .25).
+    question: q-self-access-without-training
+    stance: against
+    evidence_kind: measured
+    where: "App. F, Fig. 10; App. G, Table 8"
+    scope:
+      conditions: Both Exp. 1 item sets and all four Exp. 2 datasets.
+    note: >
+      The authors call this strong support for their conclusion, since these
+      models were trained on the same data.
+
+  - id: song2025-fail-to-introspect.c17
+    study: song2025-fail-to-introspect.s4
+    statement: >
+      The authors argue that a model's string probabilities give direct
+      access to the ground truth of its linguistic knowledge, because the
+      probability of a string is by definition how likely the model is to
+      generate it. They take this to make grammaticality and word prediction
+      a good test bed for introspection in general.
+    question: null
+    evidence_kind: argued
+    where: "§1; §3"
+
+  - id: song2025-fail-to-introspect.c18
+    study: song2025-fail-to-introspect.s4
+    statement: >
+      A model's reports fitting itself better than they fit another model is
+      not in itself evidence of introspection, because a model is always most
+      similar to itself. The authors argue that the evidence is a same-model
+      effect beyond what similarity predicts, and that it is stronger the
+      more similar the comparison model.
+    question: null
+    evidence_kind: argued
+    where: "§1; §2, Fig. 1d"
+
+  - id: song2025-fail-to-introspect.c19
+    study: song2025-fail-to-introspect.s4
+    statement: >
+      Results that appear only after fine-tuning fit poorly with
+      introspection understood as immediate access to one's own states, so
+      the authors argue it should be tested without fine-tuning.
+    question: null
+    evidence_kind: argued
+    where: "§1"
+
+  - id: song2025-fail-to-introspect.c20
+    study: song2025-fail-to-introspect.s4
+    statement: >
+      The authors question whether a fine-tuned model predicting its
+      pre-fine-tuning version is predicting "itself", since its parameters
+      have changed.
+    question: null
+    evidence_kind: argued
+    where: "§1"
+    note: Hedged in the source ("it may be reasonable to question"). See unit_position on s4.
+
+  - id: song2025-fail-to-introspect.c21
+    study: song2025-fail-to-introspect.s4
+    statement: >
+      The authors suggest that the self-prediction advantage reported by
+      Binder et al. may arise because the models were fine-tuned to predict
+      their own outputs and because similarity between the models was not
+      controlled beyond giving them the same fine-tuning data.
+    question: null
+    evidence_kind: hypothesised
+    where: "§1; §5"
+    note: >
+      Not linked to a question. The suggestion does not dispute the measured
+      advantage; it disputes reading it as privileged access. See relations.
+
+  - id: song2025-fail-to-introspect.c22
+    study: song2025-fail-to-introspect.s4
+    statement: >
+      The authors suggest that models describing behaviours they were
+      fine-tuned to show, as reported by Betley et al., may be explained by
+      pretraining data that links such behaviour with descriptions of it.
+    question: null
+    evidence_kind: hypothesised
+    where: "§5"
+    note: >
+      This is a proposal about where the content of a self-report comes from.
+      report_source has no value for associations in training data, so it is
+      not coded.
+
+relations:
+  - kind: critiques
+    from: song2025-fail-to-introspect
+    to: binder2024-looking-inward
+    where: "§1; §5"
+    note: >
+      Song et al. cite the conference version (Binder et al., 2025); the
+      coded record is of arXiv v1. Three points are raised: the effect needed
+      fine-tuning, the fine-tuned model is arguably not the model it
+      predicts, and similarity between models was not controlled.
+  - kind: critiques
+    from: song2025-fail-to-introspect.c21
+    to: binder2024-looking-inward.c2
+    where: "§1; §5"
+  - kind: critiques
+    from: song2025-fail-to-introspect.c22
+    to_external: "Betley, Bao, Soto, Sztyber-Betley, Chua and Evans (2025). Tell me about yourself: LLMs are aware of their learned behaviors. ICLR 2025."
+    where: "§1; §5"
+  - kind: extends
+    from: song2025-fail-to-introspect
+    to_external: "Hu and Levy (2023). Prompting is not a substitute for probability measurements in large language models. EMNLP 2023."
+    where: "§1; §5"
+    note: >
+      The grounding of linguistic knowledge in string probabilities is said
+      to follow this paper (§1). It is also cited for the argument that
+      prompting is not a valid measure of grammatical knowledge, a debate the
+      authors say their findings bear on directly (§5).

@@ -135,6 +135,18 @@ scope:
 
 `conditions` is free text and usually names some of the study's `levels`.
 
+## What a claim is about
+
+A claim that reports the effect of a variable the study varied names it:
+
+```yaml
+effect_of: [self_vs_other]
+```
+
+The value must be one of the study's `varies` values. This is what separates
+the contrast a study draws conclusions about from the things it varied along
+the way.
+
 ## Changing the codebook
 
 1. Edit the facet file and bump its `version`.

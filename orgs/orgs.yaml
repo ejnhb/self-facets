@@ -55,3 +55,34 @@
 - id: uc-san-diego
   name: UC San Diego
   kind: university
+
+# Added with Rubin et al. 2026 (arXiv 2611.15267)
+- id: allen-ai
+  name: Allen Institute for AI
+  kind: nonprofit
+  note: >
+    Rubin et al. 2026 give only the hub namespace allen-ai and cite "Team Olmo". Name and kind were not
+    taken from a source; check before relying on them.
+- id: georgia-tech
+  name: Georgia Institute of Technology
+  kind: university
+
+# Added with Song, Hu & Mahowald 2025 (arXiv 2503.07513)
+- id: johns-hopkins
+  name: Johns Hopkins University
+  kind: university
+- id: mistral-ai
+  name: Mistral AI
+  kind: company
+  note: >
+    Song et al. (2025) give only the Hugging Face organisation "mistralai". Kind not verified.
+- id: qwen-team
+  name: Qwen Team
+  kind: company
+  note: >
+    Named as Song et al. (2025) cite it ("Qwen Team"; Hugging Face organisation "Qwen"). That source does
+    not name a parent company, so none is recorded. Kind not verified; merge with the parent's entry when
+    a source names it.
+- id: ut-austin
+  name: The University of Texas at Austin
+  kind: university

@@ -2,6 +2,79 @@
 
 Newest first. Each entry: what changed, what is open, what needs a decision.
 
+## 2026-11-26: first three records from the pilot
+
+Coder: claude (claude-fable-5-2), working with the owner. Per paper: one
+reconciling coder (claude-fable-5-2) and one blind checker (claude-opus-5-5).
+
+**Added**
+
+- `sources/lindsey2026-emergent-introspective-awareness.yaml` (8 studies, 47
+  claims), `sources/rubin2026-closer-look-introspection.yaml` (3 studies, 15
+  claims), `sources/song2025-fail-to-introspect.yaml` (4 studies, 22 claims),
+  with their people, orgs, models and questions.
+- Nine questions, five of them under `q-privileged-self-access`.
+- The reconcilers' notes and the checkers' tables, under `pilot/`.
+
+**Checked**
+
+- Every claim in the three records was checked against the paper text by a
+  coder who had not seen the coding: 83 of 84 supported, 1 overstated and
+  corrected. The checkers' wording suggestions were applied.
+
+**Decisions made in the merge, for the owner to confirm**
+
+- Two reconcilers independently created `q-injected-state-report`; one wording
+  was kept.
+- `q-report-matches-probe` was moved from under `q-privileged-self-access` to
+  under `q-report-matches-direct-measure`.
+- The Allen Institute's org id is `allen-ai`.
+- `unit_disposition` on Rubin's probe-only and no-prompt studies is `weights`
+  at low confidence, against both pilot coders' `not_applicable`.
+
+**Learned**
+
+- The Binder and Song records now conflict under the parent question, and the
+  facet difference includes trained against spontaneous elicitation, chat
+  template against raw text, and behaviour against output probabilities.
+- "Which studies of introspection vary training stage or recipe?" returns six
+  studies. One of them (Song s2) codes `post_training_stage` because base and
+  instruct pairs have their own coefficient, not because it tests the effect
+  of post-training.
+
+**Rules added after review with the owner**
+
+- Read the paper and its code together where both exist.
+- Look at the figures: the arXiv PDF can be downloaded and its pages read as
+  images, which the pilot coders did not do. The three pilot records are
+  `text_only` and should have their figure-dependent claims revisited.
+
+**Added after review with the owner**
+
+- `effect_of` on claims, and `shared_facets` on the conflicts view. The owner's
+  view is that showing every conflict and filtering by facet is right, so
+  nothing is hidden; the new column only allows sorting.
+
+**Open**
+
+- `effect_of` is coded on Binder et al. only. The Lindsey, Rubin and Song
+  records need it, and need a pass over their figure-dependent claims now
+  that figures can be read. Both are held until the owner says to go.
+- Whether a representational property with no behaviour counts as a capacity
+  for `unit_disposition`.
+- The line between `forward_pass` and `conversation` for an injected state
+  that is read back after further tokens.
+- No value names the self as regulator, for studies of control over internal
+  states.
+- The splitting rule needs a tie-break when results are reported apart but
+  the only conclusion drawn is a comparison with another study.
+- The post-training question exists for Lindsey but Rubin's related claims
+  are not linked to it.
+- Binder et al. is still coded from the main text only and has not had a
+  blind check. Its `llama-3.1-70b` entry may be the same model as the new
+  `llama-3.1-70b-instruct`.
+- Org kinds for the new orgs are unverified.
+
 ## 2026-11-26: first pilot and codebook 0.3
 
 Coder: claude (claude-fable-5-2), working with the owner. Six blind coders

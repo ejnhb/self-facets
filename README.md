@@ -60,19 +60,20 @@ python scripts/build.py         # write build/self-facets.sqlite
 python scripts/query.py "SELECT id, title FROM sources"
 ```
 
-Find studies that could bear on "does introspection differ by post-training
-stage?":
+Find findings on "does introspection differ by post-training stage?":
 
 ```sql
-SELECT DISTINCT a.study
-FROM study_facets a JOIN study_facets b ON b.study = a.study
-WHERE a.facet = 'construct' AND a.value = 'introspection'
-  AND b.facet = 'varies'    AND b.value = 'post_training_stage';
+SELECT c.id, c.statement
+FROM claims c
+JOIN claim_effects e ON e.claim = c.id AND e.variable = 'post_training_stage'
+JOIN study_facets f ON f.study = c.study
+WHERE f.facet = 'construct' AND f.value = 'introspection';
 ```
 
 See where conflicting claims differ:
 
 ```sql
+SELECT * FROM conflicts ORDER BY shared_facets DESC;
 SELECT * FROM conflict_facet_diff;
 ```
 

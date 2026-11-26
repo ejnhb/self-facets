@@ -61,6 +61,8 @@ CREATE TABLE claims (
 -- Every question a claim takes a stance on: its main one and any others.
 CREATE TABLE claim_questions (claim TEXT, question TEXT, stance TEXT, main INTEGER);
 CREATE TABLE claim_compares (claim TEXT, study TEXT);
+-- The variables whose effect a claim reports (a subset of its study's varies).
+CREATE TABLE claim_effects (claim TEXT, variable TEXT);
 CREATE TABLE claim_models (claim TEXT, model TEXT, scoped INTEGER);
 -- Optional claim facets (disposition, report_source, origin, integration, aspect).
 CREATE TABLE claim_codes (claim TEXT, facet TEXT, value TEXT);
@@ -74,10 +76,15 @@ FROM claims c JOIN study_facets f ON f.study = c.study;
 
 -- Pairs of claims that take opposite stances on the same question, or on
 -- questions under the same parent. `question` is the shared top-level question.
+-- `shared_facets` counts the facet values the two claims' studies have in
+-- common; sort by it to see the most comparable pairs first.
 CREATE VIEW conflicts AS
 SELECT ra.root AS question, a.claim AS supports, b.claim AS against,
        a.question AS supports_question, b.question AS against_question,
-       ca.scope_conditions AS supports_conditions, cb.scope_conditions AS against_conditions
+       ca.scope_conditions AS supports_conditions, cb.scope_conditions AS against_conditions,
+       (SELECT COUNT(*) FROM study_facets f JOIN study_facets g
+          ON g.facet = f.facet AND g.value = f.value
+        WHERE f.study = ca.study AND g.study = cb.study) AS shared_facets
 FROM claim_questions a
 JOIN question_roots ra ON ra.question = a.question
 JOIN claim_questions b ON b.stance = 'against'
@@ -237,6 +244,8 @@ def build(out_path):
                 db.execute("INSERT INTO claim_questions VALUES (?,?,?,0)", (cid, link["question"], link["stance"]))
             for other in as_list(claim.get("compares")):
                 db.execute("INSERT INTO claim_compares VALUES (?,?)", (cid, other))
+            for var in as_list(claim.get("effect_of")):
+                db.execute("INSERT INTO claim_effects VALUES (?,?)", (cid, var))
             scoped = as_list((claim.get("scope") or {}).get("models"))
             for mid in scoped or study_models.get(claim["study"], []):
                 db.execute("INSERT INTO claim_models VALUES (?,?,?)", (cid, mid, int(bool(scoped))))

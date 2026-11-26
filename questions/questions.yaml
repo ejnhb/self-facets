@@ -44,3 +44,137 @@
     varies: [study_training, task]
   added: 2026-11-26
   status: open
+
+# Added with Lindsey 2026 (arXiv 2601.01828)
+- id: q-injected-state-report
+  text: >-
+    Can a model report a state that an experimenter has placed in its activations, when neither the prompt
+    nor its own earlier output gives the state away?
+  parent: q-privileged-self-access
+  frame:
+    construct:
+    - introspection
+    report_target:
+    - injected_state
+    varies:
+    - activation_intervention
+  added: 2026-11-26
+  status: open
+- id: q-output-ownership-uses-prior-state
+  text: >-
+    When a model judges whether an earlier output in its own turn was its own, does the judgment depend
+    on its internal states from before that output, beyond what the transcript shows?
+  parent: q-privileged-self-access
+  frame:
+    construct:
+    - introspection
+    - agency_ownership
+    - self_recognition
+    report_target:
+    - own_outputs
+    varies:
+    - activation_intervention
+  added: 2026-11-26
+  status: open
+- id: q-introspection-increases-with-capability
+  text: Do more capable models show more introspective access to their own internal states?
+  frame:
+    construct:
+    - introspection
+    varies:
+    - model_generation
+    - model_size
+  added: 2026-11-26
+  status: open
+- id: q-introspection-differs-by-post-training
+  text: >-
+    Does post-training (a base model against its post-trained versions, or one post-training recipe against
+    another) change how well a model reports its own internal states?
+  frame:
+    construct:
+    - introspection
+    varies:
+    - post_training_stage
+    - post_training_recipe
+  added: 2026-11-26
+  status: open
+- id: q-instructed-control-of-internal-state
+  text: >-
+    Can a model change how strongly it internally represents a concept when instructed or given an incentive
+    to, apart from what it outputs?
+  frame:
+    construct:
+    - self_regulation
+    varies:
+    - prompt_framing
+  added: 2026-11-26
+  status: open
+
+# Added with Rubin et al. 2026 (arXiv 2611.15267)
+- id: q-report-matches-probe
+  text: >-
+    Do models report an internal state as accurately as a probe trained on their own activations decodes
+    it?
+  parent: q-report-matches-direct-measure
+  frame:
+    construct:
+    - introspection
+    evidence:
+    - self_report
+    - internals
+    validated_against:
+    - probe
+  added: 2026-11-26
+  status: open
+- id: q-introspection-success-generalises
+  text: >-
+    Does success at one kind of report about an internal state (such as locating an injected perturbation)
+    show a general ability to report on the model's own computation?
+  parent: q-privileged-self-access
+  frame:
+    construct:
+    - introspection
+    report_target:
+    - injected_state
+    - own_internal_state
+    - own_computation
+  added: 2026-11-26
+  status: open
+
+# Added with Song, Hu & Mahowald 2025 (arXiv 2503.07513)
+- id: q-self-access-without-training
+  text: >-
+    Without any training on self-reports, do a model's reports fit its own behaviour or internal quantities
+    better than they fit another model's, beyond what the similarity between the two models explains?
+  parent: q-privileged-self-access
+  frame:
+    construct:
+    - introspection
+    - self_prediction
+    varies:
+    - self_vs_other
+    elicitation:
+    - spontaneous
+    - prompted
+    - prefilled
+  added: 2026-11-26
+  status: open
+- id: q-report-matches-direct-measure
+  text: >-
+    Do a model's prompted reports agree closely with a direct measurement of the same model on the same
+    items (its output probabilities, its behaviour, a reading of its activations)?
+  frame:
+    construct:
+    - introspection
+    evidence:
+    - self_report
+    validated_against:
+    - output_probabilities
+    - behaviour
+    - internals
+    - probe
+  added: 2026-11-26
+  status: open
+  note: >
+    Has no parent. Agreement between a report and a measurement of the same model can come from knowledge
+    that any similar model shares, so yes here does not count towards q-privileged-self-access.

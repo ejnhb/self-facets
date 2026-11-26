@@ -66,11 +66,12 @@ studies:
       layer 24, with a shuffled-label probe as control and a breakdown by
       vector type.
     models:
-      - {id: olmo-3-32b-checkpoints, role: "the 32B sweep; checkpoints are listed under varies"}
-      - {id: olmo-3-7b-checkpoints, role: "the 7B sweep, in the supporting selected-setting curves only"}
+      - {id: olmo-3-32b-checkpoints, roles: [subject], note: "the 32B sweep; checkpoints are listed under varies"}
+      - {id: olmo-3-7b-checkpoints, roles: [subject], note: "the 7B sweep, in the supporting selected-setting curves only"}
       - olmo-3-32b-stage1-step1000
       - olmo-3-1125-32b
     facets:
+      similarity_adjustment: not_applicable
       system_prompt:
         value: none
         basis: stated
@@ -261,11 +262,12 @@ studies:
       logistic regressions on the residual at the last prompt position,
       scored by passage-grouped five-fold cross-validation.
     models:
-      - {id: olmo-3-32b-checkpoints, role: "32B checkpoints at step 0, about 8.4B tokens and end of stage 1"}
-      - {id: olmo-3-7b-checkpoints, role: "7B checkpoints at step 0, about 8.4B tokens and end of stage 1"}
+      - {id: olmo-3-32b-checkpoints, roles: [subject], note: "32B checkpoints at step 0, about 8.4B tokens and end of stage 1"}
+      - {id: olmo-3-7b-checkpoints, roles: [subject], note: "7B checkpoints at step 0, about 8.4B tokens and end of stage 1"}
       - olmo-3-32b-stage1-step0
       - olmo-3-7b-stage1-step0
     facets:
+      similarity_adjustment: not_applicable
       system_prompt:
         value: none
         basis: stated
@@ -401,8 +403,9 @@ studies:
       describes the experiment as prespecified.
     models:
       - olmo-3-32b-random-init
-      - {id: olmo-3-1125-32b, role: "pretrained comparison; the authors draw no conclusion from it because its uninjected control is unexplainedly above chance"}
+      - {id: olmo-3-1125-32b, roles: [subject], note: "pretrained comparison; the authors draw no conclusion from it because its uninjected control is unexplainedly above chance"}
     facets:
+      similarity_adjustment: not_applicable
       system_prompt:
         value: none
         basis: stated

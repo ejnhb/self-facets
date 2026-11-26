@@ -3,7 +3,7 @@
 The codebook defines every controlled value used in the database. A value that
 is not defined here fails validation.
 
-Status: **v0.7, draft.** Revised after a six-coder pilot on three papers
+Status: **v0.8, draft.** Revised after a six-coder pilot on three papers
 (see `pilot/`), then split into core and interpretive tiers. See `CHANGELOG.md`.
 
 ## Three kinds of file
@@ -93,6 +93,7 @@ Study facets:
 | `reasoning` | core | Could the model reason before the scored answer? |
 | `system_prompt` | core | What system prompt was it run under? |
 | `report_readout` | core | How is the self-report read out? |
+| `similarity_adjustment` | core | Does a self-against-other comparison adjust for model similarity? |
 | `unit_state` | interpretive | Where does the state under study live? |
 | `unit_disposition` | interpretive | What is the disposition under study fixed in? |
 | `unit_reporter` | interpretive | Who does the reporting? |
@@ -107,6 +108,8 @@ Claim facets:
 | `evidence_kind` | core | What kind of support does the source give? |
 | `stance` | core | How does a claim bear on a question? (coded on the link, in `links/`) |
 | `disposition` | core | Which trained stance is the claim about? (optional) |
+| `effect_presence` | core | Did the variable in `effect_of` make a difference? (with `effect_of`) |
+| `effect_direction` | core | Which way did the measure move? (optional, with `present`) |
 | `report_source` | interpretive | Where does the report's content come from? |
 | `origin` | interpretive | Where does the disposition come from? |
 | `integration` | interpretive | How deeply is the stance held? |
@@ -120,6 +123,38 @@ The interpretive claim facets record what a source argues or tests. Leave them
 off when the source does not address the matter; do not fill them with the
 coder's own reading. When a question needs one and the source does not settle
 it, code `unspecified`.
+
+## Questions that reach claims by themselves
+
+A question's `frame` lists facet values a relevant study has. The build lists
+every claim whose study matches the frame (each frame facet shares a value)
+and that nothing yet ties to the question, in `question_candidates`: posing a
+question means reviewing that list, not every paper. Frames with one broad
+value give long lists; tighten them.
+
+A question shaped "does X change Y?" can take stances without links:
+
+```yaml
+- id: q-self-prediction-advantage
+  auto_stance:
+    effect_of: [self_vs_other]
+```
+
+Every claim in a frame-matching study whose `effect_of` names one of these
+variables takes the stance its `effect_presence` gives (present supports,
+absent against, mixed and inconclusive as such). A hand-made link for the same
+claim and question wins. These rows carry `origin: auto` in `claim_questions`.
+
+## Models in a study
+
+A bare model id in a study is a `subject`. Other parts use the long form,
+`{id, roles, note}`, with roles from `enums.yaml` `model_role`: `subject`,
+`comparison` (a baseline for a subject), `judge` (grades responses) and
+`data_source` (supplies training data or samples). The build pairs every
+subject with every comparison model and says how closely the registry relates
+them (`study_comparisons`, `study_closest_comparison`: same, variant, derived,
+same family, same developer, other), from `variant_of`, `derived_from`,
+`family` and `developer`. A reading can select on it (`comparison.closest`).
 
 ## Facet file format
 

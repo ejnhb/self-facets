@@ -15,6 +15,7 @@ from pathlib import Path
 from _load import (
     LIGHT_REQUIRED,
     NOT_YET_CODED,
+    RELATIONS,
     ROOT,
     as_list,
     facet_entry,
@@ -23,6 +24,7 @@ from _load import (
     load_list_dir,
     load_sources,
     model_ref,
+    relation,
 )
 from validate import validate
 
@@ -55,7 +57,14 @@ CREATE TABLE artefacts (source TEXT, kind TEXT, arxiv TEXT, url TEXT, venue TEXT
 CREATE TABLE authorship (source TEXT, position INTEGER, person TEXT);
 CREATE TABLE affiliations (source TEXT, person TEXT, org TEXT);
 CREATE TABLE studies (id TEXT PRIMARY KEY, source TEXT, label TEXT, design TEXT, where_ TEXT, note TEXT);
-CREATE TABLE study_models (study TEXT, model TEXT, role TEXT);
+-- One row per model and role (subject, comparison, judge, data_source).
+CREATE TABLE study_models (study TEXT, model TEXT, role TEXT, note TEXT);
+-- Every subject and comparison pair in a study, with how closely the registry says they are related, and the
+-- closest such relation per study (same > variant > derived > same_family > same_developer > other).
+CREATE TABLE study_comparisons (study TEXT, subject TEXT, comparison TEXT, relation TEXT);
+CREATE TABLE study_closest_comparison (study TEXT PRIMARY KEY, relation TEXT);
+-- Claims whose study matches a question's frame but which no link or auto_stance yet ties to it.
+CREATE TABLE question_candidates (question TEXT, claim TEXT);
 CREATE TABLE study_facets (
     study TEXT, facet TEXT, value TEXT, basis TEXT, author_term TEXT,
     confidence TEXT, nested_in TEXT, where_ TEXT, note TEXT
@@ -67,7 +76,7 @@ CREATE TABLE claims (
 );
 -- Links (links/): every yes/no question a claim takes a stance on. `counted` is 0 when the claim fails a
 -- `requires` of the question or a question above it, so it is not evidence there even with no reading applied.
-CREATE TABLE claim_questions (claim TEXT, question TEXT, stance TEXT, counted INTEGER, note TEXT);
+CREATE TABLE claim_questions (claim TEXT, question TEXT, stance TEXT, counted INTEGER, note TEXT, origin TEXT);
 -- Readings (readings/) and views (views/): see design/readings.md.
 CREATE TABLE readings (id TEXT PRIMARY KEY, status TEXT, statement TEXT, reinterpret TEXT, tested_by TEXT);
 CREATE TABLE reading_matches (reading TEXT, claim TEXT);
@@ -225,7 +234,8 @@ def build(out_path):
             root = qs[root]["parent"]
         db.execute("INSERT INTO question_roots VALUES (?,?,?)", (qid, root, sign))
 
-    claims_mem = {}
+    claims_mem, closest_by_study = {}, {}
+    registry = {m["id"]: m for _, m in load_list_dir("models")}
     for _, src in load_sources():
         sid = src["id"]
         coding = src.get("coding") or {}
@@ -259,9 +269,24 @@ def build(out_path):
             )
             study_models[stid] = []
             for raw in as_list(study.get("models")):
-                mid, role = model_ref(raw)
-                study_models[stid].append(mid)
-                db.execute("INSERT INTO study_models VALUES (?,?,?)", (stid, mid, role))
+                mid, roles, mnote = model_ref(raw)
+                if "subject" in roles:
+                    study_models[stid].append(mid)
+                for role in roles:
+                    db.execute("INSERT INTO study_models VALUES (?,?,?,?)", (stid, mid, role, text(mnote)))
+            subjects = [model_ref(r)[0] for r in as_list(study.get("models")) if "subject" in model_ref(r)[1]]
+            comparisons = [model_ref(r)[0] for r in as_list(study.get("models")) if "comparison" in model_ref(r)[1]]
+            rels = []
+            for a in subjects:
+                for b in comparisons:
+                    if a != b:
+                        rel = relation(a, b, registry)
+                        rels.append(rel)
+                        db.execute("INSERT INTO study_comparisons VALUES (?,?,?,?)", (stid, a, b, rel))
+            if rels:
+                closest = min(rels, key=RELATIONS.index)
+                closest_by_study[stid] = closest
+                db.execute("INSERT INTO study_closest_comparison VALUES (?,?)", (stid, closest))
             for name, raw in (study.get("facets") or {}).items():
                 entry = facet_entry(raw)
                 for value in entry["value"]:
@@ -351,6 +376,10 @@ def build(out_path):
         values = record_values(cid)
         for name, allowed in (applies.get("selector") or {}).items():
             allowed = set(as_list(allowed))
+            if name == "comparison.closest":
+                if closest_by_study.get(claim["study"]) not in allowed:
+                    return False
+                continue
             if name.startswith("model."):
                 if not models or not all(model_reach.get(m) in allowed for m in models):
                     return False
@@ -399,19 +428,47 @@ def build(out_path):
             if matches(r, cid):
                 db.execute("INSERT INTO reading_matches VALUES (?,?)", (rid, cid))
 
+    def in_frame(cid, qid):
+        frame = qs[qid].get("frame") or {}
+        if not frame:
+            return False
+        values = record_values(cid)
+        return all(values.get(name, set()) & set(as_list(vals)) for name, vals in frame.items())
+
     links = []
     for _, data in load_links():
         for link in as_list(data.get("links")):
-            links.append(link)
-            cid, qid = link["claim"], link["question"]
-            q = qs[qid]
-            if q.get("kind", "yesno") == "which":
-                values, _, _ = lens(cid, [])
-                for value in sorted(values.get(q["answer_facet"], set())):
-                    db.execute("INSERT INTO claim_answers VALUES (?,?,?)", (cid, qid, value))
-            else:
-                ok, _ = counts(cid, qid, [])
-                db.execute("INSERT INTO claim_questions VALUES (?,?,?,?,?)", (cid, qid, link.get("stance"), int(ok), text(link.get("note"))))
+            links.append(dict(link, origin="link"))
+    # auto_stance: "does X change Y?" questions take a stance from effect_presence on claims in frame-matching
+    # studies whose effect_of names X. A hand-made link for the same pair wins.
+    linked_pairs = {(l["claim"], l["question"]) for l in links}
+    to_stance = {"present": "supports", "absent": "against", "mixed": "mixed", "inconclusive": "inconclusive"}
+    for qid, q in qs.items():
+        auto = q.get("auto_stance")
+        if not auto:
+            continue
+        for cid, (claim, _, _) in claims_mem.items():
+            if (cid, qid) in linked_pairs or not (set(as_list(claim.get("effect_of"))) & set(as_list(auto.get("effect_of")))):
+                continue
+            if claim.get("effect_presence") and in_frame(cid, qid):
+                links.append({"claim": cid, "question": qid, "stance": to_stance[claim["effect_presence"]],
+                              "note": "from effect_presence (auto_stance)", "origin": "auto"})
+    for link in links:
+        cid, qid = link["claim"], link["question"]
+        q = qs[qid]
+        if q.get("kind", "yesno") == "which":
+            values, _, _ = lens(cid, [])
+            for value in sorted(values.get(q["answer_facet"], set())):
+                db.execute("INSERT INTO claim_answers VALUES (?,?,?)", (cid, qid, value))
+        else:
+            ok, _ = counts(cid, qid, [])
+            db.execute("INSERT INTO claim_questions VALUES (?,?,?,?,?,?)",
+                       (cid, qid, link.get("stance"), int(ok), text(link.get("note")), link["origin"]))
+    tied = {(l["claim"], l["question"]) for l in links}
+    for qid in qs:
+        for cid in claims_mem:
+            if (cid, qid) not in tied and in_frame(cid, qid):
+                db.execute("INSERT INTO question_candidates VALUES (?,?)", (qid, cid))
 
     for _, v in load_list_dir("views"):
         vid, vq, rids = v["id"], v["question"], as_list(v.get("readings"))

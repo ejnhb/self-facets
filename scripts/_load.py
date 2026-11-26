@@ -95,7 +95,28 @@ def facet_entry(raw):
 
 
 def model_ref(raw):
-    """Normalise a study's model reference to (id, role)."""
+    """Normalise a study's model reference to (id, roles, note). A bare id is a subject."""
     if isinstance(raw, dict):
-        return raw.get("id"), raw.get("role")
-    return raw, None
+        return raw.get("id"), as_list(raw.get("roles")) or ["subject"], raw.get("note")
+    return raw, ["subject"], None
+
+
+# How closely two registered models are related, closest first (build: study_comparisons).
+RELATIONS = ["same", "variant", "derived", "same_family", "same_developer", "other"]
+
+
+def relation(a, b, models):
+    """The relation between two model ids, from the registry's variant_of, derived_from, family and developer."""
+    if a == b:
+        return "same"
+    ma, mb = models.get(a, {}), models.get(b, {})
+    if ma.get("variant_of") == b or mb.get("variant_of") == a or (
+            ma.get("variant_of") and ma.get("variant_of") == mb.get("variant_of")):
+        return "variant"
+    if b in as_list(ma.get("derived_from")) or a in as_list(mb.get("derived_from")):
+        return "derived"
+    if ma.get("family") and ma.get("family") == mb.get("family"):
+        return "same_family"
+    if ma.get("developer") and ma.get("developer") == mb.get("developer"):
+        return "same_developer"
+    return "other"

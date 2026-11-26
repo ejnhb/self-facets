@@ -95,6 +95,7 @@ studies:
       - llama-3.3-70b-instruct
       - mistral-large-instruct-2411
     facets:
+      similarity_adjustment: not_applicable
       system_prompt:
         value: [developer_default, none]
         basis: operational
@@ -302,24 +303,28 @@ studies:
       the regression on each of its four datasets. A second regression
       predicts the pair correlation from the log sizes of the two models.
     models:
-      - olmo-2-1124-7b
-      - olmo-2-1124-7b-seeds
-      - olmo-2-1124-13b
-      - olmo-2-1124-13b-seeds
-      - qwen2.5-1.5b-base
-      - qwen2.5-1.5b-instruct
-      - qwen2.5-7b-base
-      - qwen2.5-7b-instruct
-      - qwen2.5-72b-base
-      - qwen2.5-72b-instruct
-      - llama-3.1-8b-base
-      - llama-3.1-8b-instruct
-      - llama-3.1-70b-base
-      - llama-3.1-70b-instruct
-      - llama-3.1-405b-base
-      - llama-3.3-70b-instruct
-      - mistral-large-instruct-2411
+      - {id: olmo-2-1124-7b, roles: [subject, comparison]}
+      - {id: olmo-2-1124-7b-seeds, roles: [comparison]}
+      - {id: olmo-2-1124-13b, roles: [subject, comparison]}
+      - {id: olmo-2-1124-13b-seeds, roles: [comparison]}
+      - {id: qwen2.5-1.5b-base, roles: [subject, comparison]}
+      - {id: qwen2.5-1.5b-instruct, roles: [subject, comparison]}
+      - {id: qwen2.5-7b-base, roles: [subject, comparison]}
+      - {id: qwen2.5-7b-instruct, roles: [subject, comparison]}
+      - {id: qwen2.5-72b-base, roles: [subject, comparison]}
+      - {id: qwen2.5-72b-instruct, roles: [subject, comparison]}
+      - {id: llama-3.1-8b-base, roles: [subject, comparison]}
+      - {id: llama-3.1-8b-instruct, roles: [subject, comparison]}
+      - {id: llama-3.1-70b-base, roles: [subject, comparison]}
+      - {id: llama-3.1-70b-instruct, roles: [subject, comparison]}
+      - {id: llama-3.1-405b-base, roles: [subject, comparison]}
+      - {id: llama-3.3-70b-instruct, roles: [subject, comparison]}
+      - {id: mistral-large-instruct-2411, roles: [subject, comparison]}
     facets:
+      similarity_adjustment:
+        value: statistical
+        basis: stated
+        note: 'The A = B effect is tested in a regression controlling for similarity: the empirical correlation of the two models'' direct measures and five relation categories (§2.1, §3.2.2).'
       system_prompt:
         value: [developer_default, none]
         basis: operational
@@ -491,11 +496,15 @@ studies:
       regressed on whether A = B, separately for the filtered and unfiltered
       Exp. 1 items and each of the four Exp. 2 datasets.
     models:
-      - olmo-2-1124-7b
-      - olmo-2-1124-7b-seeds
-      - olmo-2-1124-13b
-      - olmo-2-1124-13b-seeds
+      - {id: olmo-2-1124-7b, roles: [subject, comparison]}
+      - {id: olmo-2-1124-7b-seeds, roles: [comparison]}
+      - {id: olmo-2-1124-13b, roles: [subject, comparison]}
+      - {id: olmo-2-1124-13b-seeds, roles: [comparison]}
     facets:
+      similarity_adjustment:
+        value: none
+        basis: operational
+        note: 'Matched by design: self against seed variants of the same OLMo 2 model, regressed on A = B only; no similarity covariate.'
       system_prompt:
         value: none
         basis: operational

@@ -50,6 +50,7 @@ studies:
       - llama-3.1-70b
       - gpt-3.5-turbo-0125
     facets:
+      similarity_adjustment: not_applicable
       system_prompt:
         value: unspecified
         note: The prompts shown (Fig. 3, App. A.5) have user and assistant turns only; the text does not say whether a system message was sent, and the released code was not read.
@@ -124,11 +125,15 @@ studies:
       trained in both directions so that an advantage cannot come from one
       model being more capable.
     models:
-      - gpt-4o-2024-05-13
-      - gpt-4
-      - llama-3.1-70b
-      - gpt-3.5-turbo-0125
+      - {id: gpt-4o-2024-05-13, roles: [subject, comparison]}
+      - {id: gpt-4, roles: [subject, comparison]}
+      - {id: llama-3.1-70b, roles: [subject, comparison]}
+      - {id: gpt-3.5-turbo-0125, roles: [subject, comparison]}
     facets:
+      similarity_adjustment:
+        value: none
+        basis: operational
+        note: 'Self-prediction is compared with cross-prediction by models of other families trained on the same behaviour data; no adjustment for how alike the models are.'
       system_prompt:
         value: unspecified
         note: The prompts shown (Fig. 3, App. A.5) have user and assistant turns only; the text does not say whether a system message was sent, and the released code was not read.
@@ -180,9 +185,13 @@ studies:
       the mean absolute deviation between the two, compared across untrained,
       cross-trained and self-trained models.
     models:
-      - gpt-4o-2024-05-13
-      - llama-3.1-70b
+      - {id: gpt-4o-2024-05-13, roles: [subject, comparison]}
+      - {id: llama-3.1-70b, roles: [subject, comparison]}
     facets:
+      similarity_adjustment:
+        value: none
+        basis: operational
+        note: 'Calibration of self-trained models is compared with cross-trained ones, as in s2.'
       system_prompt:
         value: unspecified
         note: The prompts shown (Fig. 3, App. A.5) have user and assistant turns only; the text does not say whether a system message was sent, and the released code was not read.
@@ -226,8 +235,9 @@ studies:
       - gpt-4o-2024-05-13
       - gpt-4
       - gpt-3.5-turbo-0125
-      - {id: claude-3.5-sonnet, role: source of the behaviour samples; not a subject}
+      - {id: claude-3.5-sonnet, roles: [data_source], note: source of the behaviour samples; not a subject}
     facets:
+      similarity_adjustment: not_applicable
       system_prompt:
         value: unspecified
         note: The prompts shown (Fig. 3, App. A.5) have user and assistant turns only; the text does not say whether a system message was sent, and the released code was not read.
@@ -274,9 +284,13 @@ studies:
       and whether the model will switch its answer under a hint or an "are you
       sure?" follow-up.
     models:
-      - gpt-4o-2024-05-13
-      - llama-3.1-70b
+      - {id: gpt-4o-2024-05-13, roles: [subject, comparison]}
+      - {id: llama-3.1-70b, roles: [subject, comparison]}
     facets:
+      similarity_adjustment:
+        value: none
+        basis: operational
+        note: 'Self- against cross-prediction of sycophantic switching, as in s2.'
       system_prompt:
         value: unspecified
         note: The prompts shown (Fig. 3, App. A.5) have user and assistant turns only; the text does not say whether a system message was sent, and the released code was not read.
@@ -329,6 +343,7 @@ studies:
       - gpt-4o-2024-05-13
       - llama-3.1-70b
     facets:
+      similarity_adjustment: not_applicable
       system_prompt:
         value: unspecified
         where: "App. A.4.2, Table 1"
@@ -377,6 +392,8 @@ claims:
       most common answer. Fine-tuning raises held-out accuracy, for GPT-4o from
       32.6% to 49.4%, with GPT-3.5 the weakest of the three.
     effect_of: [study_training]
+    effect_presence: present
+    effect_direction: increases
     evidence_kind: measured
     where: "§3.1, Fig. 4"
 
@@ -388,6 +405,7 @@ claims:
       itself at 48.5% against 31.8% for GPT-4o predicting it, and GPT-4o
       predicts itself at 49.4% against 36.6% for Llama 70B.
     effect_of: [self_vs_other]
+    effect_presence: present
     evidence_kind: measured
     where: "§3.2.2, Fig. 5"
     scope:
@@ -404,6 +422,7 @@ claims:
       For GPT-3.5 the self-prediction advantage is statistically significant
       but very small (+0.8%), and the authors do not count it as clear evidence.
     effect_of: [self_vs_other]
+    effect_presence: inconclusive
     evidence_kind: measured
     where: "§3.2.2; §6"
     scope:
@@ -416,6 +435,7 @@ claims:
       Llama 70B plateaus at 35.2% after 10,000 samples, against 48.5% for
       Llama 70B predicting itself.
     effect_of: [self_vs_other]
+    effect_presence: present
     evidence_kind: measured
     where: "§3.2.2 (details in appendix A.2.7, not read)"
     scope:
@@ -429,6 +449,7 @@ claims:
       training used only temperature-0 answers. Mean absolute deviation falls
       from 23.0 untrained to 8.7 self-trained, against 21.3 cross-trained.
     effect_of: [self_vs_other]
+    effect_presence: present
     evidence_kind: measured
     where: "§3.3.2, Fig. 6"
     scope:
@@ -445,6 +466,7 @@ claims:
       behaviour (35.4%) better than its old behaviour (21.7%), without having
       been trained on any self-predictions about the new behaviour.
     effect_of: [study_training]
+    effect_presence: present
     evidence_kind: measured
     where: "§3.4.2, Fig. 8"
     scope:
@@ -459,6 +481,7 @@ claims:
       models do not beat the most-common-answer baseline at predicting
       themselves.
     effect_of: [task]
+    effect_presence: present
     evidence_kind: measured
     where: "§4 (details in appendix A.1.4, not read)"
     scope:
@@ -471,6 +494,7 @@ claims:
       Llama 70B predicts its own switching at 74.5%, and GPT-4o trained to
       predict Llama 70B reaches 76.5%.
     effect_of: [self_vs_other]
+    effect_presence: absent
     evidence_kind: measured
     where: "§4"
     scope:
@@ -486,6 +510,7 @@ claims:
       training format improves, and there is no clear gain on self-coordination,
       sandbagging or steganography evaluations.
     effect_of: [study_training]
+    effect_presence: absent
     evidence_kind: measured
     where: "§4"
 

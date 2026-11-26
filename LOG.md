@@ -2,6 +2,38 @@
 
 Newest first. Each entry: what changed, what is open, what needs a decision.
 
+## 2026-11-26: codebook 0.8 (effects, auto stances and candidates, model roles)
+
+Coder: claude (claude-opus-5-5), working with the owner.
+
+**Changed**
+
+- `effect_presence` and `effect_direction` on claims; backfilled on Binder et
+  al. c1 to c9 from the claims as coded.
+- `question_candidates` and `auto_stance` in the build; frames validated.
+  `q-self-prediction-advantage` gains `auto_stance: effect_of [self_vs_other]`.
+- Model roles in studies (Binder et al. s2, s3, s5 and Song et al. s2, s3 now
+  mark comparison models; Lindsey et al.'s Claude Sonnet 4 is subject and
+  judge; Binder et al.'s Claude 3.5 Sonnet is data_source). `variant_of` on the
+  two OLMo 2 seed series.
+- `similarity_adjustment` on the 19 non-conceptual studies (Song et al. s2
+  statistical; Binder et al. s2, s3, s5 and Song et al. s3 none; the rest
+  not_applicable).
+
+**Checks**
+
+- Auto stances on `q-self-prediction-advantage` agree with all five hand-made
+  links (c2, c3, c4, c5, c8). Conflicts unchanged at 159.
+- The similarity reading now matches Binder et al. s2, s3 and s5 only.
+
+**Open**
+
+- Candidate lists are long where frames are one broad value (87 for
+  `q-privileged-self-access`). Frames need tightening, or a rule that a frame
+  listing several values of one facet means all of them.
+- `effect_of` and `effect_presence` are still missing on the Lindsey, Rubin and
+  Song records, so auto stances only reach Binder et al. for now.
+
 ## 2026-11-26: codebook 0.7 (speaker; links, readings and views built)
 
 Coder: claude (claude-opus-5-5), working with the owner.

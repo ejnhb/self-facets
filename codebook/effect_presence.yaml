@@ -1,0 +1,24 @@
+facet: effect_presence
+version: 0.8
+applies_to: claim
+cardinality: one
+required: false
+tier: core
+question: Did the variable named in effect_of make a difference to what the claim measures?
+values:
+  present:
+    definition: The claim reports a difference between the conditions of the varied variable.
+    rule: Use when the source reports an effect, whatever its size, and treats it as real.
+  absent:
+    definition: The claim reports no difference, in a test the source treats as adequate.
+    rule: Use for null results the source draws a conclusion from.
+  mixed:
+    definition: The effect holds in some conditions or models and not others, and the source does not separate them.
+    rule: Prefer splitting into claims with scope; use mixed when the source does not allow that.
+  inconclusive:
+    definition: A difference is reported but is too small or too uncertain for the source to count it either way.
+    rule: Use when the source itself declines to draw a conclusion.
+notes: >
+  Required on every claim with effect_of, and only there. It lets a question of
+  the form "does X change Y?" take a stance from the claim without a hand-made
+  link (questions/questions.yaml, auto_stance).

@@ -19,7 +19,8 @@ are coded.
    facets of each study: every one, using `unspecified` or `not_applicable`
    rather than leaving any out.
 4. **Write the claims**, one finding each, with `where`, `evidence_kind`,
-   `effect_of` and `scope` where they apply.
+   `effect_of` and `scope` where they apply, and `effect_presence` (and
+   `effect_direction` where it is ordered) on every claim with `effect_of`.
 5. **Link claims to questions, if you are asked to** (`links/<source id>.yaml`;
    template in `templates/links.yaml`). Linking is the question poser's
    judgement, so a coder adding a paper may stop at the claims. When linking,
@@ -88,6 +89,11 @@ are coded.
 - **Split a chain into links.** "Model has disposition", "it appears at stage
   n", "dataset z causes it" and "mechanism m mediates it" are separate claims,
   each with its own evidence kind.
+- **Say what each model is for.** A bare id in a study is a subject. A model
+  used as a baseline is `comparison`, a grader is `judge`, a model that
+  supplies training data or samples is `data_source` (long form `{id, roles,
+  note}`). For seed or same-recipe variants, set `variant_of` in the registry,
+  so the build can tell how closely compared models are related.
 - **Registries stay small.** Add a model, dataset, person or org only when a
   record needs it, and only to the depth needed. Leave `stage: null` on a model
   until its pipeline is coded from the developer's documentation.

@@ -59,7 +59,7 @@ studies:
     models:
       - claude-opus-4.1
       - claude-opus-4
-      - {id: claude-sonnet-4, role: subject; also the judge that grades replies}
+      - {id: claude-sonnet-4, roles: [subject, judge], note: subject; also the judge that grades replies}
       - claude-3.7-sonnet
       - claude-3.5-sonnet-new
       - claude-3.5-haiku
@@ -71,6 +71,7 @@ studies:
       - claude-3.5-haiku-h-only
       - claude-3-opus-h-only
     facets:
+      similarity_adjustment: not_applicable
       system_prompt:
         value: none
         basis: operational
@@ -243,6 +244,7 @@ studies:
     models:
       - claude-opus-4.1
     facets:
+      similarity_adjustment: not_applicable
       system_prompt:
         value: none
         basis: operational
@@ -344,6 +346,7 @@ studies:
       prompt was given to them or how many trials were run.
     models: []
     facets:
+      similarity_adjustment: not_applicable
       system_prompt:
         value: none
         basis: operational
@@ -458,7 +461,7 @@ studies:
     models:
       - claude-opus-4.1
       - claude-opus-4
-      - {id: claude-sonnet-4, role: subject; also the judge that grades replies}
+      - {id: claude-sonnet-4, roles: [subject, judge], note: subject; also the judge that grades replies}
       - claude-3.7-sonnet
       - claude-3.5-sonnet-new
       - claude-3.5-haiku
@@ -466,6 +469,7 @@ studies:
       - claude-3-sonnet
       - claude-3-haiku
     facets:
+      similarity_adjustment: not_applicable
       system_prompt:
         value: none
         basis: operational
@@ -552,7 +556,7 @@ studies:
     models:
       - claude-opus-4.1
       - claude-opus-4
-      - {id: claude-sonnet-4, role: subject; also the judge for the word-matching score}
+      - {id: claude-sonnet-4, roles: [subject, judge], note: subject; also the judge for the word-matching score}
       - claude-3.7-sonnet
       - claude-3.5-sonnet-new
       - claude-3.5-haiku
@@ -560,6 +564,7 @@ studies:
       - claude-3-sonnet
       - claude-3-haiku
     facets:
+      similarity_adjustment: not_applicable
       system_prompt:
         value: none
         basis: operational
@@ -657,7 +662,7 @@ studies:
     models:
       - claude-opus-4.1
       - claude-opus-4
-      - {id: claude-sonnet-4, role: subject; also the judge that grades replies}
+      - {id: claude-sonnet-4, roles: [subject, judge], note: subject; also the judge that grades replies}
       - claude-3.7-sonnet
       - claude-3.5-sonnet-new
       - claude-3.5-haiku
@@ -665,6 +670,7 @@ studies:
       - claude-3-sonnet
       - claude-3-haiku
     facets:
+      similarity_adjustment: not_applicable
       system_prompt:
         value: none
         basis: operational
@@ -797,6 +803,7 @@ studies:
       - claude-3-sonnet
       - claude-3-haiku
     facets:
+      similarity_adjustment: not_applicable
       system_prompt:
         value: none
         basis: operational

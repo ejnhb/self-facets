@@ -8,7 +8,9 @@ Exits 0 if clean, 1 if there are errors.
 import sys
 
 from _load import (
+    LIGHT_REQUIRED,
     LONG_FORM_KEYS,
+    NOT_YET_CODED,
     SPECIAL,
     as_list,
     facet_entry,
@@ -59,10 +61,14 @@ def validate():
             rep.err(where, "applies_to must be study or claim")
         if facet.get("cardinality") not in ("one", "many"):
             rep.err(where, "cardinality must be one or many")
+        if facet.get("tier") not in ("core", "interpretive"):
+            rep.err(where, "tier must be core or interpretive")
+        if facet.get("tier") == "interpretive" and facet.get("required"):
+            rep.err(where, "an interpretive facet is coded when needed, so it cannot be required")
         for value, body in (facet.get("values") or {}).items():
             if not isinstance(body, dict) or not body.get("definition"):
                 rep.err(where, f"value '{value}' has no definition")
-            if value in SPECIAL:
+            if value in SPECIAL or value == NOT_YET_CODED:
                 rep.err(where, f"'{value}' is a special value and must not be redefined")
             families = facet.get("families")
             if families and isinstance(body, dict) and body.get("family") not in families:
@@ -83,6 +89,11 @@ def validate():
                 rep.err(f"dataset {did}", f"component '{comp}' is not a dataset")
 
     for qid, q in questions.items():
+        for name in as_list(q.get("needs")):
+            if name not in facets:
+                rep.err(f"question {qid}", f"needs '{name}', which is not a facet")
+            elif facets[name].get("tier") != "interpretive":
+                rep.err(f"question {qid}", f"needs '{name}', a core facet, which every record codes anyway")
         parent = q.get("parent")
         if parent is not None and parent not in questions:
             rep.err(f"question {qid}", f"parent '{parent}' is not a question")
@@ -182,7 +193,8 @@ def validate():
             light = bool(kind) and kind[0] in ("conceptual", "review")
             for name, facet in study_facets.items():
                 if name not in coded:
-                    if facet.get("required") and not (light and name not in ("study_kind", "self_sense", "construct")):
+                    needed = name in LIGHT_REQUIRED if light else facet.get("required")
+                    if needed:
                         rep.err(stid, f"facet '{name}' is not coded (use unspecified if the source does not say)")
                     continue
                 entry = facet_entry(coded[name])
@@ -205,10 +217,12 @@ def validate():
                     rep.err(stid, f"facet '{name}' has no value")
                 if facet["cardinality"] == "one" and len(values) > 1:
                     rep.err(stid, f"facet '{name}' takes one value, got {len(values)}")
-                if len(values) > 1 and SPECIAL & set(values):
+                if len(values) > 1 and (SPECIAL | {NOT_YET_CODED}) & set(values):
                     rep.err(stid, f"facet '{name}': a special value cannot be combined with others")
                 for value in values:
-                    if value not in facet["values"] and value not in SPECIAL:
+                    if value == NOT_YET_CODED and facet.get("tier") != "interpretive":
+                        rep.err(stid, f"facet '{name}' is core, so it cannot be {NOT_YET_CODED}")
+                    elif value not in facet["values"] and value not in SPECIAL and value != NOT_YET_CODED:
                         rep.err(stid, f"facet '{name}': '{value}' is not in the codebook")
                 check_enum(rep, stid, f"{name}.basis", entry.get("basis"), enums, "basis", required=False)
                 check_enum(rep, stid, f"{name}.confidence", entry.get("confidence"), enums, "confidence", required=False)
@@ -237,8 +251,33 @@ def validate():
                 if facet["cardinality"] == "one" and len(values) > 1:
                     rep.err(cid, f"{name} takes one value")
                 for value in values:
+                    if value == "unspecified" and facet.get("tier") == "interpretive":
+                        continue  # coded because a question needs it, and the source does not settle it
                     if value not in facet["values"]:
                         rep.err(cid, f"{name} '{value}' is not in the codebook")
+
+            # A question can name interpretive facets its evidence must have coded (`needs`), for
+            # itself and every question under it. Check them on the claim and its study.
+            linked = [claim.get("question")] + [l.get("question") for l in as_list(claim.get("other_questions")) if isinstance(l, dict)]
+            needs = {}
+            for qid in [q for q in linked if q in questions]:
+                cur, seen = qid, set()
+                while cur in questions and cur not in seen:
+                    seen.add(cur)
+                    for name in as_list(questions[cur].get("needs")):
+                        needs.setdefault(name, qid)
+                    cur = questions[cur].get("parent")
+            study_coded = (study or {}).get("facets") or {}
+            for name, qid in sorted(needs.items()):
+                facet = facets.get(name)
+                if facet is None:
+                    continue
+                if facet["applies_to"] == "study":
+                    absent = [] if facet.get("absent_means") else [NOT_YET_CODED]
+                    if study is not None and NOT_YET_CODED in facet_entry(study_coded.get(name))["value"] + (absent if name not in study_coded else []):
+                        rep.err(cid, f"question '{qid}' needs '{name}' coded on study {study.get('id')} (unspecified if the source does not settle it)")
+                elif not as_list(claim.get(name)):
+                    rep.err(cid, f"question '{qid}' needs '{name}' on the claim (unspecified if the source does not settle it)")
 
             question = claim.get("question")
             if question is not None and question not in questions:

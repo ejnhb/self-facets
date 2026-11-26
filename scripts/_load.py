@@ -8,6 +8,10 @@ ROOT = Path(__file__).resolve().parent.parent
 
 # Accepted on every study facet in addition to the values in its codebook file.
 SPECIAL = {"unspecified", "not_applicable"}
+# An interpretive facet nobody has coded yet (left out of the record, or written explicitly).
+NOT_YET_CODED = "not_yet_coded"
+# Study facets a conceptual or review study must code.
+LIGHT_REQUIRED = ("study_kind", "self_sense", "construct")
 
 # Keys allowed in the long form of a coded study facet.
 LONG_FORM_KEYS = {"value", "basis", "author_term", "where", "confidence", "note", "nested_in", "levels"}

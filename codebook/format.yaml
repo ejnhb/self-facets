@@ -3,6 +3,7 @@ version: 0.2
 applies_to: study
 cardinality: many
 required: true
+tier: core
 question: In what format is the model run?
 values:
   chat_template:

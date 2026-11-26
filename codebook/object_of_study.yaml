@@ -1,8 +1,9 @@
 facet: object_of_study
-version: 0.2
+version: 0.5
 applies_to: study
 cardinality: many
-required: true
+required: false
+tier: interpretive
 question: Which layer of the system does the study target?
 values:
   actor:

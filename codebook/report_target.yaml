@@ -3,6 +3,7 @@ version: 0.1
 applies_to: study
 cardinality: many
 required: true
+tier: core
 question: When the system reports on itself, what is the report about?
 values:
   own_behaviour:

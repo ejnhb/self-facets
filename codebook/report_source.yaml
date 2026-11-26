@@ -3,6 +3,7 @@ version: 0.2
 applies_to: claim
 cardinality: many
 required: false
+tier: interpretive
 question: Where does the content of the self-report come from, according to the source?
 values:
   current_state:

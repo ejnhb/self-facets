@@ -1,8 +1,9 @@
 facet: self_sense
-version: 0.3
+version: 0.5
 applies_to: study
 cardinality: many
-required: true
+required: false
+tier: interpretive
 question: What does "self" mean in this study?
 families:
   entity: Something that persists and bears properties. The thing that could be the same individual later, be harmed, or matter morally.

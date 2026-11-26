@@ -3,6 +3,7 @@ version: 0.3
 applies_to: claim
 cardinality: many
 required: false
+tier: interpretive
 question: Where does the source say the disposition or capacity comes from?
 values:
   architecture:

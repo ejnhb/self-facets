@@ -3,6 +3,7 @@ version: 0.1
 applies_to: claim
 cardinality: one
 required: false
+tier: core
 question: How does this claim bear on the question it is linked to?
 values:
   supports:

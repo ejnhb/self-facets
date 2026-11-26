@@ -18,9 +18,15 @@ are coded.
   `read_parts` truthfully. A machine-generated summary is `summary_only`, not
   `full_text`. If a detail sits in an appendix you did not read, say so in the
   claim's `where` or `note`.
-- **Every required facet is coded on every study.** Use `unspecified` when the
-  source does not say and the design does not settle it, and `not_applicable`
-  when the facet does not apply. Never leave one out to mean either.
+- **Every required core facet is coded on every study.** Use `unspecified`
+  when the source does not say and the design does not settle it, and
+  `not_applicable` when the facet does not apply. Never leave one out to mean
+  either.
+- **Interpretive facets are coded when needed** (`codebook/README.md`, "Two
+  tiers"): when the source states a position on the matter, when a claim links
+  to a question that `needs` the facet, or when a conflict turns on it.
+  Otherwise leave them out; they read as `not_yet_coded`. When you do code
+  one, code it fully, with `basis` and a note.
 - **Say whether a coding is stated or operational.** If the authors did not say
   it and you inferred it from the design, set `basis: operational`.
 - **Keep the author's term.** When the source has its own word for the self or
@@ -54,9 +60,10 @@ are coded.
 - **A conflict that differs only on task means the question is too coarse.**
   Read the two claims' conditions, then split the question or add one about
   what moderates the effect.
-- **Optional claim facets record the source's view, not yours.** Code
+- **Interpretive claim facets record the source's view, not yours.** Code
   `report_source`, `origin`, `integration` and `aspect` only when the source
-  argues or tests the matter.
+  argues or tests the matter, or as `unspecified` when a linked question needs
+  them and the source does not settle it.
 - **Split a chain into links.** "Model has disposition", "it appears at stage
   n", "dataset z causes it" and "mechanism m mediates it" are separate claims,
   each with its own evidence kind.

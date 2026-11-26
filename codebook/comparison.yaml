@@ -3,6 +3,7 @@ version: 0.3
 applies_to: study
 cardinality: many
 required: true
+tier: core
 question: What comparisons does the study make?
 values:
   within_lineage:

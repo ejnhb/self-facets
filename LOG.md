@@ -2,6 +2,58 @@
 
 Newest first. Each entry: what changed, what is open, what needs a decision.
 
+## 2026-11-26: codebook 0.5 (two tiers) and 28 proposed questions
+
+Coder: claude (claude-opus-5-5), working with the owner.
+
+**Changed**
+
+- Facets are split into a core tier, coded on every study, and an
+  interpretive tier, coded when a source states a position, a linked question
+  `needs` the facet, or a conflict turns on it (`codebook/README.md`, "Two
+  tiers"; `CHANGELOG.md` 0.5). The five interpretive study facets that were
+  required no longer are. No record changed: every existing coding stays.
+- New special value `not_yet_coded`. The build stores it for interpretive study
+  facets left out of a record. There are none today: every existing study
+  codes them, and on the two conceptual studies the uncoded ones read as
+  `not_applicable`, as before. `unit_position` keeps "absent means no
+  position" (`absent_means`).
+- Questions can list `needs`, inherited by every question under them.
+  `validate.py` checks them on each linked claim and its study; the build adds
+  a `question_needs` table; `shared_facets` no longer counts `not_yet_coded`.
+  Tested on a throwaway copy: a claim linked to a question needing
+  `report_source` and `unit_reporter` fails until both are coded, and
+  `unspecified` passes.
+
+**Added**
+
+- 28 questions in 12 trees, for the questions the first users expect to look
+  up: where self-reports come from, report against representation, experience
+  denials (policy, refusal machinery, training data, before post-training),
+  frames and personas, report against behaviour, development through training,
+  stabilising the self-model, continuity through carried state, stated
+  uncertainty, consent across framing. Every top-level question names its
+  `needs` except the last two, which need nothing beyond core facets. None has
+  a claim linked yet.
+
+**For the owner to decide**
+
+- The tier split and `needs`.
+- The 28 questions: wording, parents, and `needs`. Three are deliberately
+  separate trees because "yes" to one counts against another
+  (`q-denial-precedes-post-training` against `q-denial-is-post-training-policy`;
+  `q-report-diverges-from-representation` against
+  `q-report-matches-direct-measure`).
+- `q-self-representation-changes-in-midtraining` uses `post_training_recipe`
+  and `pretraining_progress` in its frame; `varies` has no value for a
+  mid-training contrast.
+
+**Open**
+
+- The first test: code a paper against the new questions at the core tier
+  only, then deepen just the facets the questions need, and see whether that
+  answers the question and how long each pass takes.
+
 ## 2026-11-26: first three records from the pilot
 
 Coder: claude (claude-fable-5-2), working with the owner. Per paper: one

@@ -1,8 +1,9 @@
 facet: unit_disposition
-version: 0.3
+version: 0.5
 applies_to: study
 cardinality: many
-required: true
+required: false
+tier: interpretive
 values_from: units
 question: What is the disposition under study fixed in?
 guidance: >

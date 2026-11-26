@@ -1,5 +1,5 @@
 facet: varies
-version: 0.6
+version: "0.10"
 applies_to: study
 cardinality: many
 required: true
@@ -17,7 +17,10 @@ values:
     rule: Use when otherwise identical training runs are compared.
   pretraining_progress:
     definition: Position along pretraining (checkpoints by tokens or steps).
-    rule: Use for studies that track something through pretraining.
+    rule: Use for studies that track something through pretraining. A step-0 checkpoint of the same run belongs here.
+  initialisation:
+    definition: Untrained networks with random weights compared with trained ones, where the untrained networks are not checkpoints of the trained model's own run.
+    rule: Use when the authors initialise networks themselves (or compare random architectures with a released model). Put the initialisation scheme and number of networks in levels.
   model_family:
     definition: Which model, across developers or families.
     rule: Use when several unrelated models are tested and compared.

@@ -1,5 +1,5 @@
 facet: comparison
-version: 0.3
+version: "0.10"
 applies_to: study
 cardinality: many
 required: true
@@ -17,7 +17,7 @@ values:
     rule: Use for prompt, intervention and study-training contrasts on a single starting model.
   cross_model:
     definition: Different models compared with each other.
-    rule: Use when the contrast is between models, including self against other.
+    rule: Use when the contrast is between models, including self against other. Two sizes of one family are different models, so a size contrast is cross_model; checkpoints along one size's run are within_lineage. Random networks set against a trained model are cross_model too.
   single_condition:
     definition: No comparison.
     rule: Use with varies none.

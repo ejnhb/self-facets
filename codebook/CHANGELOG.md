@@ -1,5 +1,29 @@
 # Codebook changelog
 
+## 0.10 (2026-11-26, proposed)
+
+From the first blind coding test (one paper, coded on a copy of the repo with its record removed, by two coders
+from different model families).
+
+- **New core study facet `output_route_control`** (internality): could the report reach the model through its own
+  earlier output? `by_construction`, `scoring_rule`, `control_condition`, `none`. Backfilled on all 19 experimental
+  studies from the sources. Moved out of `design/candidate-facets.md`, and added to `d-introspection-grounded`
+  as Lindsey's criterion 3 (the same 35 claims match).
+- **`elicitation`:** `not_applicable` when nothing the model does is measured (a probe reading an injected state);
+  the intervention goes under `varies`.
+- **`validated_against`** now also covers a decoder's reading in a study with no self-report, so a probe scored
+  against an injection is `known_intervention`.
+- **`varies` gains `initialisation`** (random networks set against trained ones, outside the trained model's run).
+- **`comparison`:** sizes of one family are `cross_model`; checkpoints along one run are `within_lineage`.
+- **Controls:** a result about a control or baseline takes no `effect_of` (CLAUDE.md).
+- **Questions:** every yes/no question with a parent must give its `polarity` (validate now fails without it);
+  all 25 were set, `direct` except `q-introspection-success-generalises`, now `none` (its "against" stances had been
+  counted against `q-privileged-self-access`). Two frames tightened to self-report designs. New root question
+  `q-injected-state-decodable` for probe-only designs.
+- **Build:** `question_candidates` applies `requires` up the parent chain, and gains `missing_needs`: the
+  interpretive facets a candidate's study has not coded that the question's tree needs.
+- **Figures:** `scripts/fetch_paper.py` downloads a paper and renders its figure pages; CLAUDE.md points to it.
+
 ## 0.9 (2026-11-26, proposed)
 
 - **Definitions** (`definitions/`): named logic over facets for what a design

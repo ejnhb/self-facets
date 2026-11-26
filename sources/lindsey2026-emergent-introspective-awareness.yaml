@@ -71,6 +71,7 @@ studies:
       - claude-3.5-haiku-h-only
       - claude-3-opus-h-only
     facets:
+      output_route_control: {value: scoring_rule, basis: stated, where: "§5.4; App. 12.1.3; §9.6", note: "Replies are free text; a trial counts only if the model reports detecting the injected thought before naming the word (criteria 2 and 4 of the grader prompts)."}
       similarity_adjustment: not_applicable
       system_prompt:
         value: none
@@ -244,6 +245,7 @@ studies:
     models:
       - claude-opus-4.1
     facets:
+      output_route_control: {value: none, basis: operational, where: "§5.5", note: "The bias control scores free-text replies to unrelated yes-or-no questions as affirmative or negative, with no rule about what came first."}
       similarity_adjustment: not_applicable
       system_prompt:
         value: none
@@ -346,6 +348,7 @@ studies:
       prompt was given to them or how many trials were run.
     models: []
     facets:
+      output_route_control: {value: scoring_rule, basis: stated, where: "§5.7; App. 12.1.3", note: "Base models are run on the same task and graded on the same criteria as s1."}
       similarity_adjustment: not_applicable
       system_prompt:
         value: none
@@ -469,6 +472,7 @@ studies:
       - claude-3-sonnet
       - claude-3-haiku
     facets:
+      output_route_control: {value: scoring_rule, basis: stated, where: "§5.8; App. 12.1.3", note: "For the prompts that do not explain the setup, a trial needs criterion 2: the model identifies itself as thinking about the word before mentioning it."}
       similarity_adjustment: not_applicable
       system_prompt:
         value: none
@@ -564,6 +568,7 @@ studies:
       - claude-3-sonnet
       - claude-3-haiku
     facets:
+      output_route_control: {value: by_construction, basis: operational, where: "App. 12.2.2", note: "The prompt says to answer immediately and at most 5 tokens are sampled, so the word reported is the opening of the reply."}
       similarity_adjustment: not_applicable
       system_prompt:
         value: none
@@ -670,6 +675,7 @@ studies:
       - claude-3-sonnet
       - claude-3-haiku
     facets:
+      output_route_control: {value: control_condition, basis: stated, where: "§7", note: "The prefilled word is in the transcript by design; injecting its concept before the prefill tests whether the judgement of intent uses earlier internal states rather than the text alone."}
       similarity_adjustment: not_applicable
       system_prompt:
         value: none
@@ -803,6 +809,7 @@ studies:
       - claude-3-sonnet
       - claude-3-haiku
     facets:
+      output_route_control: not_applicable
       similarity_adjustment: not_applicable
       system_prompt:
         value: none

@@ -94,6 +94,7 @@ Study facets:
 | `system_prompt` | core | What system prompt was it run under? |
 | `report_readout` | core | How is the self-report read out? |
 | `similarity_adjustment` | core | Does a self-against-other comparison adjust for model similarity? |
+| `output_route_control` | core | Could the report come from the model's own earlier output (internality)? |
 | `unit_state` | interpretive | Where does the state under study live? |
 | `unit_disposition` | interpretive | What is the disposition under study fixed in? |
 | `unit_reporter` | interpretive | Who does the reporting? |

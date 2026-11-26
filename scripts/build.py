@@ -65,7 +65,10 @@ CREATE TABLE study_models (study TEXT, model TEXT, role TEXT, note TEXT);
 CREATE TABLE study_comparisons (study TEXT, subject TEXT, comparison TEXT, relation TEXT);
 CREATE TABLE study_closest_comparison (study TEXT PRIMARY KEY, relation TEXT);
 -- Claims whose study matches a question's frame but which no link or auto_stance yet ties to it.
-CREATE TABLE question_candidates (question TEXT, claim TEXT);
+-- Claims not yet linked to a question that fit its frame and meet its (and its ancestors') requires. missing_needs
+-- lists the interpretive facets the question's tree needs that the claim's study has not coded: candidates worth
+-- re-reading for them, for example when a question has few hits.
+CREATE TABLE question_candidates (question TEXT, claim TEXT, missing_needs TEXT);
 CREATE TABLE study_facets (
     study TEXT, facet TEXT, value TEXT, basis TEXT, author_term TEXT,
     confidence TEXT, nested_in TEXT, where_ TEXT, note TEXT
@@ -503,9 +506,12 @@ def build(out_path):
                        (cid, qid, link.get("stance"), int(ok), text(link.get("note")), link["origin"]))
     tied = {(l["claim"], l["question"]) for l in links}
     for qid in qs:
+        tree_needs = sorted({n for anc in chain(qid) for n in as_list(qs[anc].get("needs"))})
         for cid in claims_mem:
-            if (cid, qid) not in tied and in_frame(cid, qid):
-                db.execute("INSERT INTO question_candidates VALUES (?,?)", (qid, cid))
+            if (cid, qid) not in tied and in_frame(cid, qid) and counts(cid, qid, [])[0]:
+                vals = record_values(cid)
+                missing = [n for n in tree_needs if vals.get(n, set()) <= {NOT_YET_CODED}]
+                db.execute("INSERT INTO question_candidates VALUES (?,?,?)", (qid, cid, ", ".join(missing) or None))
 
     for _, v in load_list_dir("views"):
         vid, vq, rids = v["id"], v["question"], as_list(v.get("readings"))

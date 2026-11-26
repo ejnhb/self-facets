@@ -7,15 +7,18 @@
   construct: introspection
   statement: >
     The self-report describes an internal state and is checked against that state by a means that can establish a
-    causal link (an intervention set by the experimenter, a reading of the internals, or a probe).
+    causal link (an intervention set by the experimenter, a reading of the internals, or a probe), and the design
+    rules out the report reaching the model through its own earlier output.
   sources:
-    - "Lindsey (2026), Emergent introspective awareness in large language models, arXiv 2601.01828, §3 (criterion 1, accuracy; criterion 2, grounding)"
+    - "Lindsey (2026), Emergent introspective awareness in large language models, arXiv 2601.01828, §3 (criterion 1, accuracy; criterion 2, grounding; criterion 3, internality)"
   logic:
     all:
       - {evidence: [self_report]}
       - {report_target: [own_internal_state, injected_state, own_computation]}
       - {validated_against: [known_intervention, internals, probe]}
+      - {output_route_control: [by_construction, scoring_rule, control_condition]}
   not_expressible: >
-    Criterion 3, internality: the state's influence on the report must not route through the model's own sampled
-    outputs. Criterion 4, metacognitive representation: the report must come from a representation of the state, not a
-    direct translation of it. Neither is a facet; see design/candidate-facets.md.
+    Criterion 4, metacognitive representation: the report must come from a representation of the state, not a
+    direct translation of it. It is not a facet; see design/candidate-facets.md. Criterion 3 (internality) is
+    output_route_control since codebook 0.10; whether a scoring rule or a control condition fully meets it is the
+    source's judgement, coded as stated.

@@ -1,0 +1,29 @@
+facet: output_route_control
+version: "0.10"
+applies_to: study
+cardinality: one
+required: true
+tier: core
+question: Does the design rule out the report reaching the model through its own earlier output?
+values:
+  by_construction:
+    definition: Nothing the model generated before the scored report could carry the state, because the report is read before any text about it is produced.
+    rule: Use when the answer is read from logits or probabilities at the prompt, or is the first thing generated with no reasoning before it, and no earlier turn of the model's own bears on the state.
+  scoring_rule:
+    definition: Text may be generated before the report, but a report counts only if it could not have been inferred from that text.
+    rule: Use when the grading excludes reports that follow the model's own earlier mention (for example, a detection counts only if it comes before the injected word is said). Point to the grading criteria in where.
+  control_condition:
+    definition: The model's own earlier output is in the context by design, and a contrast shows whether the report depends on internal state beyond it.
+    rule: Use when the report is about an output in the transcript and a condition changes only the internal state behind it (an injection before a prefilled word, a fresh copy given the same text).
+  none:
+    definition: Text generated before the report could carry the state, and the design neither excludes it nor scores around it.
+    rule: Use for free-text reports with no rule about what came first, and for multi-turn designs where earlier answers about the state stay in context.
+notes: >
+  Lindsey et al. (2026) call this internality: the state must cause the report
+  without routing through the model's own sampled outputs. It is coded from
+  the methods and the grading prompts. by_construction usually goes with
+  reasoning none and a logit, probability or first-token readout, but a
+  first-token readout after an earlier turn about the state is none. Use
+  not_applicable when there is no report (probe-only or no-prompt studies),
+  and unspecified when the source does not say how replies were read or
+  scored.

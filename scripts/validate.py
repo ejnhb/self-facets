@@ -153,6 +153,8 @@ def validate():
         polarity = q.get("polarity", "direct")
         if polarity not in ("direct", "inverse", "none"):
             rep.err(f"question {qid}", f"polarity '{polarity}' must be direct, inverse or none")
+        if kind == "yesno" and q.get("parent") and "polarity" not in q:
+            rep.err(f"question {qid}", "a yes/no question with a parent needs a polarity (direct, inverse or none), so its stances are not counted on the parent by default")
         if "polarity" in q and not q.get("parent"):
             rep.err(f"question {qid}", "polarity says how a question points relative to its parent, so it needs a parent")
         if q.get("parent") in questions and questions[q["parent"]].get("kind") == "which" and kind != "which":

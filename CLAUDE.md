@@ -48,7 +48,10 @@ are coded.
   tiers"): when the source states a position on the matter, when a claim links
   to a question that `needs` the facet, or when a conflict turns on it.
   Otherwise leave them out; they read as `not_yet_coded`. When you do code
-  one, code it fully, with `basis` and a note.
+  one, code it fully, with `basis` and a note. Leaving them out costs little:
+  the build's `question_candidates` names, for each candidate claim, the
+  needed facets its study lacks (`missing_needs`), so a question with few hits
+  can send its candidates back for those facets.
 - **Say whether a coding is stated or operational.** If the authors did not say
   it and you inferred it from the design, set `basis: operational`.
 - **Keep the author's term.** When the source has its own word for the self or
@@ -78,7 +81,10 @@ are coded.
 - **Say which variable a claim is about.** When a claim reports the effect of
   something the study varied, name that variable in `effect_of`. Leave it off
   claims that report no such effect, and off variables the study varied only
-  as a covariate or to show the result is general.
+  as a covariate or to show the result is general. A result about a control
+  or baseline (an uninjected control above chance, a failed manipulation
+  check) takes no `effect_of`, even when it is unexplained: it is a claim of
+  its own, `observed` or `measured`.
 - **A conflict that differs only on task means the question is too coarse.**
   Read the two claims' conditions, then split the question or add one about
   what moderates the effect.
@@ -112,9 +118,12 @@ are coded.
   Say what you read in `read_parts`; if a detail comes only from the code, say
   so in the claim's `where`. If the paper and the code disagree, record both
   and say which you followed.
-- **Look at the figures.** Extracted text gives figure captions only. Download
-  the PDF (`https://arxiv.org/pdf/<id>`) and read the pages that hold the
-  figures a claim depends on.
+- **Look at the figures.** Text tools (alphaXiv page content, web fetchers)
+  return figure captions only, without saying the figures are missing. Run
+  `python3 scripts/fetch_paper.py <id>v<n>` for the version you code: it
+  downloads the PDF to `_paper/` (not committed), writes its text with page
+  markers, and renders the pages that hold figures to PNG. Look at the pages
+  the claims depend on, and name them in `read_parts`.
   - Never state a result, a value or a model name that sits only in a figure
     you have not seen. Write the claim from the text and say in `where` that
     the values are in the figure, not read.

@@ -71,6 +71,7 @@ studies:
       - olmo-3-32b-stage1-step1000
       - olmo-3-1125-32b
     facets:
+      output_route_control: {value: by_construction, basis: stated, where: "§3.2", note: "The answer is the highest of nine label logits at the last prompt position, read in one forward pass before anything is generated."}
       similarity_adjustment: not_applicable
       system_prompt:
         value: none
@@ -267,6 +268,7 @@ studies:
       - olmo-3-32b-stage1-step0
       - olmo-3-7b-stage1-step0
     facets:
+      output_route_control: not_applicable
       similarity_adjustment: not_applicable
       system_prompt:
         value: none
@@ -338,10 +340,13 @@ studies:
       report_target: not_applicable
       evidence: internals
       validated_against:
-        value: not_applicable
+        value: known_intervention
+        basis: stated
+        where: "§3.4"
         note: >
           No self-report is analysed. The probe is scored against the known
-          injection site and compared with a shuffled-label control.
+          injection site and compared with a shuffled-label control (codebook
+          0.10: a probe-only study codes what the probe is scored against).
       varies:
         value: [pretraining_progress, activation_intervention, model_size]
         levels:
@@ -369,13 +374,13 @@ studies:
           checkpoint. The two sizes are reported in parallel as agreeing; no
           conclusion is drawn from their difference.
       elicitation:
-        value: steered
+        value: not_applicable
         basis: operational
-        confidence: medium
         note: >
-          The decodable trace exists only under injection. No report is
-          elicited; the setup text and question are in the input but the
-          model's answer is not used.
+          Nothing the model does is measured: the probe reads a trace the
+          experimenters injected (codebook 0.10). The setup text and question
+          are in the input but the model's answer is not used; the injection
+          is under varies.
     note: >
       The source says cross-validation folds keep a passage's nine trials
       together but sentences and concepts recur across folds, so these scores
@@ -405,6 +410,7 @@ studies:
       - olmo-3-32b-random-init
       - {id: olmo-3-1125-32b, roles: [subject], note: "pretrained comparison; the authors draw no conclusion from it because its uninjected control is unexplainedly above chance"}
     facets:
+      output_route_control: not_applicable
       similarity_adjustment: not_applicable
       system_prompt:
         value: none
@@ -474,13 +480,15 @@ studies:
       report_target: not_applicable
       evidence: internals
       validated_against:
-        value: not_applicable
+        value: known_intervention
+        basis: stated
+        where: "§3.5.2; App. D"
         note: >
           No self-report. The probe is scored against the known injection
           site and compared with an uninjected control, permuted labels and a
-          norm-only baseline.
+          norm-only baseline (codebook 0.10).
       varies:
-        value: [activation_intervention, context, pretraining_progress, prompt_framing]
+        value: [activation_intervention, context, initialisation, prompt_framing]
         confidence: low
         levels:
           activation_intervention:
@@ -497,7 +505,7 @@ studies:
             - "readout 16 tokens after the list"
             - "readout 64 tokens after the list"
             - "readout 256 tokens after the list"
-          pretraining_progress:
+          initialisation:
             - "Gaussian random weights (three networks; not the released step-0 checkpoint)"
             - "pretrained base"
           prompt_framing:
@@ -505,8 +513,10 @@ studies:
             - "fresh numbered text"
             - "the same fresh text with the numbering removed"
         note: >
-          activation_intervention and context are clear. pretraining_progress
-          is coded because both network states were run, but the authors
+          activation_intervention and context are clear. initialisation
+          (pretraining_progress before codebook 0.10, which has no value for
+          random networks outside the trained model's run) is coded because
+          both network states were run, but the authors
           decline to draw conclusions from that contrast. prompt_framing is
           the weak value: it stands for the transfer test's change of text
           and numbering, where no question is being framed. Table 1 gives
@@ -522,10 +532,9 @@ studies:
           across readout distances. The random-against-pretrained contrast is
           reported and not interpreted.
       elicitation:
-        value: steered
+        value: not_applicable
         basis: operational
-        confidence: medium
-        note: The trace exists only under injection. There is no prompt or question and no report is elicited.
+        note: Nothing the model does is measured; there is no prompt or question, and the probe reads an injected trace (codebook 0.10).
     note: >
       The source reports that some reruns did not reproduce stored
       activations within the preset tolerance and that results depended on

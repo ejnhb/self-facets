@@ -65,7 +65,7 @@ good test.
 
 | Definition | Source | As facet logic | Not expressible |
 |---|---|---|---|
-| `d-introspection-grounded` | Lindsey §3, criteria 1 and 2; close to Comşa and Shanahan's, as Lindsey describes it | self-report, about an internal state, checked against a known intervention, internals or a probe | internality, metacognitive representation |
+| `d-introspection-grounded` | Lindsey §3, criteria 1 to 3; close to Comşa and Shanahan's, as Lindsey describes it | self-report, about an internal state, checked against a known intervention, internals or a probe, with `output_route_control` ruling out its own earlier output (0.10) | metacognitive representation |
 | `d-privileged-access` | Binder et al. (2024, §2): facts not derivable from training data, tested by cross-prediction; Lindsey §9.6 quotes a privileged-access definition from Song et al. | self-report, varies self against other, checked against another model or a fresh copy | "equal or lower computational cost" |
 | `d-privileged-beyond-similarity` | Song, Hu and Mahowald (2025, §2) | `d-privileged-access` and (similarity adjusted statistically, or closest comparison a variant or derived model) | |
 | `d-self-modelling` | Lindsey §9.6's term for Binder et al.'s case | `d-privileged-access` and a report about own behaviour or knowledge | |

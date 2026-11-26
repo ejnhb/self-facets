@@ -29,7 +29,23 @@ are coded.
   matter and a `where` pointer. Quote at most a short phrase.
 - **One study per setup.** A claim inherits every facet of its study, so
   bundling different sub-experiments into one study makes conflicts look like
-  they differ on things they do not. Split when the facets would differ.
+  they differ on things they do not. The test: would any claim in the study
+  inherit a facet value that is wrong for it? If so, split.
+  - Different topics (construct, report target, validation, elicitation, what
+    is varied) are different studies.
+  - Different models are not. List them all on one study, and narrow a claim
+    to some of them with `scope.models`.
+  - Split by model only when the model changes a facet, for example one run as
+    a base model and another through a chat template.
+- **Record the conditions.** `varies` names a variable; put the conditions
+  actually used in its `levels`. When a claim holds for only some of them, say
+  which in `scope.conditions`.
+- **A conflict that differs only on task means the question is too coarse.**
+  Read the two claims' conditions, then split the question or add one about
+  what moderates the effect.
+- **Optional claim facets record the source's view, not yours.** Code
+  `report_source`, `origin`, `integration` and `aspect` only when the source
+  argues or tests the matter.
 - **Split a chain into links.** "Model has disposition", "it appears at stage
   n", "dataset z causes it" and "mechanism m mediates it" are separate claims,
   each with its own evidence kind.
@@ -58,6 +74,11 @@ and flag it in `LOG.md` for the owner to confirm.
 Nothing in this repo may refer to a reader: no reading status, no personal
 notes, no opinions about a paper's quality beyond what `evidence_kind` and
 `note` are for. Those go in the owner's private overlay.
+
+This repo is public. Do not copy unpublished material into it: no results,
+names, examples or wording from the owner's private notes or other private
+repos, even when those are available in the session. Use them to understand a
+request, and write records and definitions from published sources.
 
 ## End of session
 

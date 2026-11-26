@@ -1,5 +1,5 @@
 facet: varies
-version: 0.1
+version: 0.2
 applies_to: study
 cardinality: many
 required: true
@@ -24,8 +24,14 @@ values:
     definition: Training applied by the study's authors (fine-tuning, LoRA, RL), compared with not applying it or with a different version of it.
     rule: Use when the authors change the weights as part of the design.
   prompt_framing:
-    definition: Wording, instructions, system prompt or chat template.
-    rule: Use when the same question is asked under different framings.
+    definition: Wording, instructions or system prompt.
+    rule: Use when the same question is asked under different framings. A change of chat template is format, not this.
+  format:
+    definition: Whether and how a chat template is applied.
+    rule: Use when the same weights are run with and without the template, or under an altered one. Code the formats used in the format facet.
+  precision:
+    definition: Numerical precision or quantisation of the weights.
+    rule: Use when the same model is compared at different precisions.
   persona:
     definition: Which character the system is asked or trained to be.
     rule: Use when persona is manipulated. Pair with object_of_study.
@@ -50,3 +56,10 @@ values:
 notes: >
   This is the facet that makes a question answerable by filter. A study
   only counts as direct evidence on "does X differ by Y" if Y is coded here.
+  The value names the variable. Record the conditions actually used in levels,
+  in the long form, as free text:
+    varies:
+      value: [task, model_size]
+      levels:
+        task: [second character of the output, whether it switches its answer]
+  A claim that holds for only some levels says which in scope.conditions.

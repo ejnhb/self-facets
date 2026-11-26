@@ -1,5 +1,5 @@
 facet: evidence
-version: 0.1
+version: 0.2
 applies_to: study
 cardinality: many
 required: true
@@ -11,6 +11,12 @@ values:
   behaviour:
     definition: What the system does on tasks that are not about itself.
     rule: Use for object-level outputs, choices and actions.
+  reasoning_trace:
+    definition: The system's visible reasoning before its answer.
+    rule: Use when chain of thought or a thinking trace is analysed as data in its own right, apart from the final answer.
+  output_probabilities:
+    definition: Token probabilities or logits for an answer, read directly.
+    rule: Use when the measurement is the probability the model assigns, as opposed to what it states. The probability of "yes" and a stated "60%" are different measurements.
   internals:
     definition: Activations, weights, attention patterns, or interventions on them.
     rule: Use when the study reads or writes internal state.

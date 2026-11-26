@@ -1,0 +1,15 @@
+facet: unit_state
+version: 0.2
+applies_to: study
+cardinality: many
+required: true
+values_from: units
+question: Where does the state under study live?
+guidance: >
+  A state is something occurrent: an injected concept, an active
+  representation, a mood induced in context, a belief formed during the
+  conversation. Code the unit it exists in. A single-position activation is
+  forward_pass. Something that builds across turns or sits in the cache is
+  conversation. Something held in memory files is scaffolded_system.
+  If the study is about standing dispositions and no occurrent state is
+  examined, use not_applicable and code unit_disposition.

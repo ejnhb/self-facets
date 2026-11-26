@@ -8,6 +8,7 @@ Exits 0 if clean, 1 if there are errors.
 import sys
 
 from _load import (
+    LONG_FORM_KEYS,
     SPECIAL,
     as_list,
     facet_entry,
@@ -63,6 +64,9 @@ def validate():
                 rep.err(where, f"value '{value}' has no definition")
             if value in SPECIAL:
                 rep.err(where, f"'{value}' is a special value and must not be redefined")
+            families = facet.get("families")
+            if families and isinstance(body, dict) and body.get("family") not in families:
+                rep.err(where, f"value '{value}' needs a family from {sorted(families)}")
 
     orgs = index(rep, load_list_dir("orgs"), "org")
     people = index(rep, load_list_dir("people"), "person")
@@ -169,6 +173,20 @@ def validate():
                     continue
                 entry = facet_entry(coded[name])
                 values = entry["value"]
+                for key in set(entry) - LONG_FORM_KEYS:
+                    rep.err(stid, f"facet '{name}': unknown key '{key}'")
+                for outer in as_list(entry.get("nested_in")):
+                    if outer not in facet["values"]:
+                        rep.err(stid, f"facet '{name}': nested_in '{outer}' is not in the codebook")
+                levels = entry.get("levels") or {}
+                if not isinstance(levels, dict):
+                    rep.err(stid, f"facet '{name}': levels must map a coded value to a list of conditions")
+                    levels = {}
+                for key, items in levels.items():
+                    if key not in values:
+                        rep.err(stid, f"facet '{name}': levels given for '{key}', which is not one of the coded values")
+                    if not all(isinstance(x, str) for x in as_list(items)):
+                        rep.err(stid, f"facet '{name}': levels for '{key}' must be text")
                 if not values:
                     rep.err(stid, f"facet '{name}' has no value")
                 if facet["cardinality"] == "one" and len(values) > 1:
@@ -216,7 +234,12 @@ def validate():
             if question is None and claim.get("stance"):
                 rep.err(cid, "stance given without a question")
 
-            for mid in as_list((claim.get("scope") or {}).get("models")):
+            scope = claim.get("scope") or {}
+            for key in set(scope) - {"models", "conditions"}:
+                rep.err(cid, f"scope: unknown key '{key}'")
+            if "conditions" in scope and not isinstance(scope["conditions"], str):
+                rep.err(cid, "scope.conditions must be text")
+            for mid in as_list(scope.get("models")):
                 if mid not in models:
                     rep.err(cid, f"scope model '{mid}' is not in models/")
                 elif study is not None and mid not in study["_models"]:

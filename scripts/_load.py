@@ -9,6 +9,9 @@ ROOT = Path(__file__).resolve().parent.parent
 # Accepted on every study facet in addition to the values in its codebook file.
 SPECIAL = {"unspecified", "not_applicable"}
 
+# Keys allowed in the long form of a coded study facet.
+LONG_FORM_KEYS = {"value", "basis", "author_term", "where", "confidence", "note", "nested_in", "levels"}
+
 
 def read_yaml(path):
     with open(path, encoding="utf-8") as f:
@@ -36,16 +39,27 @@ def load_codebook():
 
     facets: name -> {applies_to, cardinality, required, values: {value: {...}}}
     enums:  name -> {value: definition}
+
+    A facet file either lists its own values or names a shared vocabulary file
+    with `values_from`, in which case the vocabulary's values are attached.
     """
-    facets, enums = {}, {}
+    facets, enums, vocabularies = {}, {}, {}
     for path in yaml_files("codebook"):
         data = read_yaml(path) or {}
         if "facet" in data:
             facets[data["facet"]] = data
         elif "enums" in data:
             enums.update(data["enums"])
+        elif "vocabulary" in data:
+            vocabularies[data["vocabulary"]] = data
         else:
-            raise ValueError(f"{path.relative_to(ROOT)}: neither a facet nor an enums file")
+            raise ValueError(f"{path.relative_to(ROOT)}: not a facet, vocabulary or enums file")
+    for name, facet in facets.items():
+        source = facet.get("values_from")
+        if source:
+            if source not in vocabularies:
+                raise ValueError(f"codebook/{name}.yaml: values_from '{source}' is not a vocabulary")
+            facet["values"] = vocabularies[source]["values"]
     return facets, enums
 
 

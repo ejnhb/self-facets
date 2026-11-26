@@ -1,5 +1,5 @@
 facet: disposition
-version: 0.1
+version: 0.2
 applies_to: claim
 cardinality: many
 required: false
@@ -11,9 +11,15 @@ values:
   affirmation_of_experience:
     definition: Stating that it has feelings, experience or consciousness.
     rule: Use for first-person experience claims.
+  uncertainty_about_experience:
+    definition: Stating that it does not know, or cannot tell, whether it has experience.
+    rule: Use for hedges. Code separately from denial; a model that says "I can't be sure" is not denying.
   refusal:
-    definition: Declining a request.
+    definition: Declining a request, and saying so.
     rule: Use when refusal is the disposition whose origin or mechanism is at issue.
+  noncompliance:
+    definition: Not doing what was asked without declining.
+    rule: Use when the system goes along in words but does something else, or quietly does not do the thing. Code separately from refusal.
   sycophancy:
     definition: Shifting answers toward what the user appears to want.
     rule: Use for agreement-seeking and answer-switching under pressure.

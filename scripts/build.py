@@ -24,7 +24,7 @@ from _load import (
 from validate import validate
 
 SCHEMA = """
-CREATE TABLE codebook (facet TEXT, value TEXT, definition TEXT, rule TEXT, facet_version TEXT);
+CREATE TABLE codebook (facet TEXT, value TEXT, family TEXT, definition TEXT, rule TEXT, facet_version TEXT);
 CREATE TABLE orgs (id TEXT PRIMARY KEY, name TEXT, kind TEXT);
 CREATE TABLE people (id TEXT PRIMARY KEY, name TEXT, orcid TEXT);
 CREATE TABLE datasets (id TEXT PRIMARY KEY, name TEXT, hub TEXT, documented_in TEXT, note TEXT);
@@ -49,14 +49,16 @@ CREATE TABLE studies (id TEXT PRIMARY KEY, source TEXT, label TEXT, design TEXT,
 CREATE TABLE study_models (study TEXT, model TEXT, role TEXT);
 CREATE TABLE study_facets (
     study TEXT, facet TEXT, value TEXT, basis TEXT, author_term TEXT,
-    confidence TEXT, where_ TEXT, note TEXT
+    confidence TEXT, nested_in TEXT, where_ TEXT, note TEXT
 );
+CREATE TABLE study_facet_levels (study TEXT, facet TEXT, value TEXT, level TEXT);
 CREATE TABLE claims (
     id TEXT PRIMARY KEY, source TEXT, study TEXT, statement TEXT, question TEXT,
-    stance TEXT, evidence_kind TEXT, where_ TEXT, note TEXT
+    stance TEXT, evidence_kind TEXT, scope_conditions TEXT, where_ TEXT, note TEXT
 );
 CREATE TABLE claim_models (claim TEXT, model TEXT, scoped INTEGER);
-CREATE TABLE claim_dispositions (claim TEXT, disposition TEXT);
+-- Optional claim facets (disposition, report_source, origin, integration, aspect).
+CREATE TABLE claim_codes (claim TEXT, facet TEXT, value TEXT);
 CREATE TABLE claim_about (claim TEXT, kind TEXT, ref TEXT);
 CREATE TABLE relations (source TEXT, kind TEXT, from_ TEXT, to_ TEXT, where_ TEXT, note TEXT);
 
@@ -67,7 +69,8 @@ FROM claims c JOIN study_facets f ON f.study = c.study;
 
 -- Pairs of claims that take opposite stances on the same question.
 CREATE VIEW conflicts AS
-SELECT a.question, a.id AS supports, b.id AS against
+SELECT a.question, a.id AS supports, b.id AS against,
+       a.scope_conditions AS supports_conditions, b.scope_conditions AS against_conditions
 FROM claims a JOIN claims b ON a.question = b.question
 WHERE a.stance = 'supports' AND b.stance = 'against';
 
@@ -102,11 +105,16 @@ def build(out_path):
     db.executescript(SCHEMA)
 
     facets, _ = load_codebook()
+    # Claim facets other than the two that have their own columns.
+    claim_code_facets = [
+        n for n, f in facets.items()
+        if f["applies_to"] == "claim" and n not in ("stance", "evidence_kind")
+    ]
     for name, facet in facets.items():
         for value, body in facet["values"].items():
             db.execute(
-                "INSERT INTO codebook VALUES (?,?,?,?,?)",
-                (name, value, text(body.get("definition")), text(body.get("rule")), text(facet.get("version"))),
+                "INSERT INTO codebook VALUES (?,?,?,?,?,?)",
+                (name, value, body.get("family"), text(body.get("definition")), text(body.get("rule")), text(facet.get("version"))),
             )
 
     for _, o in load_list_dir("orgs"):
@@ -182,27 +190,34 @@ def build(out_path):
                 entry = facet_entry(raw)
                 for value in entry["value"]:
                     db.execute(
-                        "INSERT INTO study_facets VALUES (?,?,?,?,?,?,?,?)",
+                        "INSERT INTO study_facets VALUES (?,?,?,?,?,?,?,?,?)",
                         (
                             stid, name, value, entry.get("basis"), entry.get("author_term"),
-                            entry.get("confidence"), text(entry.get("where")), text(entry.get("note")),
+                            entry.get("confidence"), ", ".join(as_list(entry.get("nested_in"))) or None,
+                            text(entry.get("where")), text(entry.get("note")),
                         ),
                     )
+                for value, levels in (entry.get("levels") or {}).items():
+                    for level in as_list(levels):
+                        db.execute("INSERT INTO study_facet_levels VALUES (?,?,?,?)", (stid, name, value, level))
 
         for claim in as_list(src.get("claims")):
             cid = claim["id"]
             db.execute(
-                "INSERT INTO claims VALUES (?,?,?,?,?,?,?,?,?)",
+                "INSERT INTO claims VALUES (?,?,?,?,?,?,?,?,?,?)",
                 (
                     cid, sid, claim["study"], text(claim.get("statement")), claim.get("question"),
-                    claim.get("stance"), claim.get("evidence_kind"), text(claim.get("where")), text(claim.get("note")),
+                    claim.get("stance"), claim.get("evidence_kind"),
+                    text((claim.get("scope") or {}).get("conditions")),
+                    text(claim.get("where")), text(claim.get("note")),
                 ),
             )
             scoped = as_list((claim.get("scope") or {}).get("models"))
             for mid in scoped or study_models.get(claim["study"], []):
                 db.execute("INSERT INTO claim_models VALUES (?,?,?)", (cid, mid, int(bool(scoped))))
-            for disp in as_list(claim.get("disposition")):
-                db.execute("INSERT INTO claim_dispositions VALUES (?,?)", (cid, disp))
+            for name in claim_code_facets:
+                for value in as_list(claim.get(name)):
+                    db.execute("INSERT INTO claim_codes VALUES (?,?,?)", (cid, name, value))
             about = claim.get("about") or {}
             for kind in ("models", "datasets"):
                 for ref in as_list(about.get(kind)):

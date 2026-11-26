@@ -1,0 +1,34 @@
+facet: origin
+version: 0.2
+applies_to: claim
+cardinality: many
+required: false
+question: Where does the source say the disposition or capacity comes from?
+values:
+  pretraining:
+    definition: Present in the pretrained model.
+    rule: Use when the source finds it before any post-training.
+  midtraining:
+    definition: Arrives with documents added during or after pretraining, before post-training proper.
+    rule: Use for targeted document mixes and synthetic pretraining data.
+  sft:
+    definition: Arrives with supervised fine-tuning.
+    rule: Use when the source places it at the SFT stage.
+  preference_optimisation:
+    definition: Arrives with DPO or a related offline preference method.
+    rule: Name the method in the note.
+  rl:
+    definition: Arrives with reinforcement learning of any kind.
+    rule: Name the kind in the note.
+  study_training:
+    definition: Installed by training the study's authors applied.
+    rule: Use for fine-tuning done as part of the experiment.
+  context:
+    definition: Not from training. Supplied by the prompt, the conversation or records.
+    rule: Use when the disposition holds only while the context supplies it.
+notes: >
+  Optional. Use on claims of the form "this comes from that". Point at the
+  specific checkpoint or dataset with the claim's about field. Record how the
+  source knows (checkpoint comparison, ablation, reading the data) through
+  evidence_kind, and keep "it appears at stage n" and "dataset z causes it" as
+  separate claims.

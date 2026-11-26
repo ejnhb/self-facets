@@ -1,5 +1,5 @@
 facet: varies
-version: 0.2
+version: 0.3
 applies_to: study
 cardinality: many
 required: true
@@ -7,7 +7,13 @@ question: What does the study vary (its independent variables)?
 values:
   post_training_stage:
     definition: Stage of the developer's post-training pipeline (base, SFT, preference optimisation, RL, ...).
-    rule: Use only when the same lineage is compared across stages. Comparing two unrelated chat models is model_family.
+    rule: Use only when the same lineage is compared across stages, mid-training included. Comparing two unrelated chat models is model_family.
+  post_training_recipe:
+    definition: Different post-training applied to the same base (sibling variants, such as a production model and a variant trained without some part of the recipe).
+    rule: Use when the compared models share a base and differ in how they were post-trained, and are not successive stages of one pipeline.
+  training_seed:
+    definition: Random seed or data order, with the training recipe held fixed.
+    rule: Use when otherwise identical training runs are compared.
   pretraining_progress:
     definition: Position along pretraining (checkpoints by tokens or steps).
     rule: Use for studies that track something through pretraining.
@@ -19,7 +25,7 @@ values:
     rule: Use when size is the intended contrast.
   model_generation:
     definition: Successive releases within one family.
-    rule: Use when versions are compared.
+    rule: Use when versions are compared. Also use for capability tiers when sizes are not disclosed, and say so in levels.
   study_training:
     definition: Training applied by the study's authors (fine-tuning, LoRA, RL), compared with not applying it or with a different version of it.
     rule: Use when the authors change the weights as part of the design.
@@ -37,7 +43,7 @@ values:
     rule: Use when persona is manipulated. Pair with object_of_study.
   activation_intervention:
     definition: Direct changes to internal state (injection, steering, ablation, patching).
-    rule: Use when the intervention is the manipulated variable.
+    rule: Use when the intervention is the manipulated variable. Put the layer, strength and kind of vector in levels.
   self_vs_other:
     definition: Whether the system reports on itself or on another system, or whether the reporter is the target or a third party.
     rule: Use for self/other contrasts, including cross-prediction designs.

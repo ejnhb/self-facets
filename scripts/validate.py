@@ -82,13 +82,25 @@ def validate():
             if comp not in datasets:
                 rep.err(f"dataset {did}", f"component '{comp}' is not a dataset")
 
+    for qid, q in questions.items():
+        parent = q.get("parent")
+        if parent is not None and parent not in questions:
+            rep.err(f"question {qid}", f"parent '{parent}' is not a question")
+        seen, cur = {qid}, parent
+        while cur in questions:
+            if cur in seen:
+                rep.err(f"question {qid}", "parent chain loops")
+                break
+            seen.add(cur)
+            cur = questions[cur].get("parent")
+
     for mid, model in models.items():
         where = f"model {mid}"
         if model.get("developer") not in orgs:
             rep.err(where, f"developer '{model.get('developer')}' is not an org")
-        parent = model.get("derived_from")
-        if parent is not None and parent not in models:
-            rep.err(where, f"derived_from '{parent}' is not a model")
+        for parent in as_list(model.get("derived_from")):
+            if parent not in models:
+                rep.err(where, f"derived_from '{parent}' is not a model")
         stage = model.get("stage")
         if stage is not None:
             for method in as_list(stage.get("methods")):
@@ -166,9 +178,11 @@ def validate():
             for name in coded:
                 if name not in study_facets:
                     rep.err(stid, f"'{name}' is not a study facet in the codebook")
+            kind = facet_entry(coded.get("study_kind"))["value"]
+            light = bool(kind) and kind[0] in ("conceptual", "review")
             for name, facet in study_facets.items():
                 if name not in coded:
-                    if facet.get("required"):
+                    if facet.get("required") and not (light and name not in ("study_kind", "self_sense", "construct")):
                         rep.err(stid, f"facet '{name}' is not coded (use unspecified if the source does not say)")
                     continue
                 entry = facet_entry(coded[name])
@@ -233,6 +247,16 @@ def validate():
                 rep.err(cid, "a claim linked to a question needs a stance")
             if question is None and claim.get("stance"):
                 rep.err(cid, "stance given without a question")
+            if question is None and claim.get("other_questions"):
+                rep.err(cid, "other_questions given without a main question")
+            for link in as_list(claim.get("other_questions")):
+                if not isinstance(link, dict) or link.get("question") not in questions:
+                    rep.err(cid, f"other_questions: '{link}' does not name a question in questions/")
+                elif link.get("stance") not in claim_facets["stance"]["values"]:
+                    rep.err(cid, f"other_questions: stance '{link.get('stance')}' is not in the codebook")
+            for other in as_list(claim.get("compares")):
+                if other not in local_studies:
+                    rep.err(cid, f"compares '{other}' is not a study in this source")
 
             scope = claim.get("scope") or {}
             for key in set(scope) - {"models", "conditions"}:
@@ -260,9 +284,12 @@ def validate():
     targets = source_ids | claim_ids | study_ids
     for sid, rel in all_relations:
         check_enum(rep, sid, "relation kind", rel.get("kind"), enums, "relation_kind")
-        for end in ("from", "to"):
-            if rel.get(end) not in targets:
-                rep.err(sid, f"relation {end} '{rel.get(end)}' is not a source, study or claim")
+        if rel.get("from") not in targets:
+            rep.err(sid, f"relation from '{rel.get('from')}' is not a source, study or claim")
+        if "to" in rel and rel["to"] not in targets:
+            rep.err(sid, f"relation to '{rel.get('to')}' is not a source, study or claim")
+        if ("to" in rel) == ("to_external" in rel):
+            rep.err(sid, "relation needs exactly one of to (a coded record) or to_external (a citation)")
         if not rel.get("where"):
             rep.err(sid, "relation needs where (the place the source states it)")
 

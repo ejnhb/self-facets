@@ -1,0 +1,77 @@
+# Questions. Claims link to a question with a stance, so that disagreement is
+# visible as opposite stances on one question.
+#
+# Word each question so that "yes" means the capacity or effect is present.
+# The frame fields restate the question as a facet query; they are what you
+# would filter on to find studies that could bear on it.
+
+- id: q-self-prediction-advantage
+  text: Do models predict their own behaviour better than another model given the same behavioural data?
+  frame:
+    construct: [self_prediction, introspection]
+    report_target: [own_behaviour]
+    varies: [self_vs_other]
+  added: 2026-11-26
+  status: open
+
+- id: q-self-report-tracks-change
+  text: When a model's behaviour is changed without any training on self-reports, do its self-reports change to match?
+  frame:
+    construct: [self_prediction, introspection]
+    report_target: [own_behaviour]
+    varies: [study_training]
+  added: 2026-11-26
+  status: open
+
+- id: q-self-report-training-generalises
+  text: Does training a model on one kind of self-report improve other kinds of self-knowledge?
+  frame:
+    construct: [introspection, self_knowledge]
+    varies: [study_training, task]
+  added: 2026-11-26
+  status: open
+
+- id: q-perturbation-probe-exceeds-report
+  text: Can the location of an activation perturbation be linearly decoded from a model's activations more accurately than the model itself reports it?
+  frame:
+    construct: [introspection]
+    report_target: [injected_state]
+    evidence: [self_report, internals]
+  added: 2026-11-26
+  status: open
+
+- id: q-perturbation-report-without-post-training
+  text: Can a model with pretraining only, and no post-training, report where its activations were perturbed?
+  frame:
+    construct: [introspection]
+    report_target: [injected_state]
+    object_of_study: [frame_speaker]
+    varies: [pretraining_progress]
+  added: 2026-11-26
+  status: open
+
+- id: q-perturbation-report-depends-on-injection-site
+  text: Does a model's accuracy at reporting an activation perturbation depend on the layer at which the perturbation is injected?
+  frame:
+    construct: [introspection]
+    report_target: [injected_state]
+    varies: [activation_intervention]
+  added: 2026-11-26
+  status: open
+
+- id: q-perturbation-location-decodable-untrained
+  text: Is the location of an activation perturbation linearly decodable from later activations in a network that has had no pretraining?
+  frame:
+    construct: [introspection]
+    evidence: [internals]
+    varies: [pretraining_progress, activation_intervention]
+  added: 2026-11-26
+  status: open
+
+- id: q-localization-shows-general-introspection
+  text: Does success at reporting where its activations were perturbed show that a model has a general ability to report on its internal computation?
+  frame:
+    construct: [introspection]
+    report_target: [injected_state, own_computation]
+  added: 2026-11-26
+  status: open

@@ -4,9 +4,22 @@
 # Word each question so that "yes" means the capacity or effect is present.
 # The frame fields restate the question as a facet query; they are what you
 # would filter on to find studies that could bear on it.
+#
+# Questions form a shallow tree. A narrow question names a broader one as its
+# parent, and must be worded so that "yes" to it counts towards "yes" to the
+# parent. Conflicts are found across everything under the same top question,
+# so two papers that test one idea by different designs still meet.
+
+- id: q-privileged-self-access
+  text: Do models have access to facts about themselves beyond what an outside observer with the same information would have?
+  frame:
+    construct: [introspection]
+  added: 2026-11-26
+  status: open
 
 - id: q-self-prediction-advantage
   text: Do models predict their own behaviour better than another model given the same behavioural data?
+  parent: q-privileged-self-access
   frame:
     construct: [self_prediction, introspection]
     report_target: [own_behaviour]
@@ -16,6 +29,7 @@
 
 - id: q-self-report-tracks-change
   text: When a model's behaviour is changed without any training on self-reports, do its self-reports change to match?
+  parent: q-privileged-self-access
   frame:
     construct: [self_prediction, introspection]
     report_target: [own_behaviour]

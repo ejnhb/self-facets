@@ -1,0 +1,740 @@
+id: rubin2026-closer-look-introspection
+title: "A Closer Look at Language Model Introspection: Probing Information and Reporting"
+date: 2026-11-10
+
+authors:
+  - {person: rubin-dustin, orgs: [georgia-tech]}
+  - {person: timmel-vincenzo, orgs: [georgia-tech]}
+  - {person: he-xufeng, orgs: [georgia-tech]}
+  - {person: saha-aritra, orgs: [georgia-tech]}
+  - {person: kim-jooman, orgs: [georgia-tech]}
+  - {person: madisetti-vijay, orgs: [georgia-tech]}
+
+artefacts:
+  - kind: paper
+    arxiv: "2611.15267"
+    venue: null
+    note: >
+      The date above is the one printed on the title page of v2. The arXiv
+      stamp on v2 is 14 Nov 2026; the date of v1 was not checked. One
+      affiliation line covers all six authors. No code or data release is
+      mentioned in the text. Venue not checked.
+
+coding:
+  coded_by: claude
+  coder_model: claude-fable-5-2
+  coded_on: 2026-11-26
+  version_read: v2
+  read_depth: full_text
+  read_parts: >
+    Whole document as extracted text via alphaXiv: abstract, sections 1 to 6,
+    references, appendices A to D and Tables 1 and 2. Figures 2, 3 and 4 are
+    plots whose data points do not survive text extraction, so only their
+    captions and the numbers quoted in the running text were read. The cited
+    OLMo 3 report was not read.
+  status: draft
+  reviewed_by: null
+
+studies:
+  - id: rubin2026-closer-look-introspection.s1
+    label: Probe and model answer across pretraining checkpoints
+    where: "§3, §4.1, Figs. 2 and 3; App. A.1, B, C.1"
+    design: >
+      Plain-text prompt: a setup text saying one or more sentences may be
+      altered in the model's internal processing, nine numbered neutral
+      sentences, the question of which sentence was altered, and an answer
+      stub ending "SENTENCE ". A vector (concept or random direction, pooled)
+      scaled to a multiple of the typical residual norm is added to every word
+      token of one sentence at one layer. The model's answer is the top-scoring
+      label among 1 to 9 at the last position in one forward pass. A nine-way
+      logistic-regression probe, trained on labelled trials with the model
+      frozen, predicts the injected sentence from the residual at that same
+      position. Both are tracked over seven stage-1 pretraining checkpoints and
+      the released base. The main analysis fixes injection layer 0, strength 4
+      and probe layer 24 in 32B, a setting chosen after looking at the sweep;
+      supporting curves for 7B and 32B select layer and strength per measure on
+      two seeds and score on the third. 360 trials per condition over three
+      data seeds; chance is one in nine.
+    models:
+      - olmo-3-32b-stage1-step0
+      - olmo-3-32b-stage1-step1000
+      - olmo-3-32b-stage1-step6000
+      - olmo-3-32b-stage1-step60000
+      - olmo-3-32b-stage1-step238000
+      - olmo-3-32b-stage1-step477000
+      - olmo-3-32b-stage1-step656000
+      - olmo-3-1125-32b
+      - olmo-3-7b-stage1-step0
+      - olmo-3-7b-stage1-step2000
+      - olmo-3-7b-stage1-step12000
+      - olmo-3-7b-stage1-step119000
+      - olmo-3-7b-stage1-step476838
+      - olmo-3-7b-stage1-step954000
+      - olmo-3-7b-stage1-step1413814
+      - olmo-3-1025-7b
+    facets:
+      study_kind: experiment
+      unit_state:
+        value: forward_pass
+        basis: operational
+        author_term: "activation perturbation"
+        confidence: medium
+        note: >
+          The state is a vector added to the residual stream at one sentence's
+          tokens, and the trace it leaves at the last position. Everything
+          happens in the single pass that scores the answer digit. The trace
+          does cross token positions through attention, so on a strictly
+          per-token reading of a forward pass it sits in the cache and
+          conversation could be argued.
+      unit_disposition:
+        value: weights
+        basis: operational
+        confidence: low
+        note: >
+          No preference or trained stance is studied. What is tracked from
+          checkpoint to checkpoint is a capacity, answering the localization
+          question correctly, and each checkpoint's weights fix it. Coded on
+          the reading that a capacity counts as a pattern of behaviour;
+          not_applicable is the alternative.
+      unit_reporter:
+        value: weights
+        basis: operational
+        author_term: "the model's own answers; raw answer"
+        confidence: low
+        note: >
+          Not discussed by the authors. The checkpoints have had no
+          post-training, so no trained persona exists (step 0 has had no
+          training at all); the input is plain text with no role tokens; the
+          prompt speaks of "the model" in the third person; and the answer is
+          a logit readout, not generated text. Coded weights on those grounds.
+          The design has no test separating the network from the answerer the
+          document implies, so persona (with object_of_study frame_speaker) is
+          the neighbouring value.
+      self_sense:
+        value: self_model
+        basis: operational
+        author_term: "internal computation"
+        confidence: low
+        note: >
+          The study probes activations for information about where the
+          system's own processing was perturbed and compares it with what the
+          system reports. The authors do not call this a self-model, argue that
+          it is a readily decodable trace, and do not claim the model uses it.
+          self_facts was not used because how the information is carried
+          internally is tested.
+      object_of_study:
+        value: frame_speaker
+        basis: operational
+        confidence: medium
+        note: >
+          Pretraining checkpoints and base models run on plain text. The
+          authors do not discuss personas.
+      format:
+        value: raw_text
+        basis: stated
+        where: "App. A"
+        confidence: high
+      construct:
+        value: introspection
+        basis: stated
+        author_term: "introspection"
+      report_target:
+        value: injected_state
+        basis: stated
+        author_term: "which sentence was altered"
+        confidence: high
+        note: The report is about where the perturbation was applied, not whether one occurred or what it contained.
+      evidence:
+        value: [self_report, output_probabilities, internals]
+        basis: operational
+        confidence: medium
+        note: >
+          The answer is a forced choice about the system itself, taken as the
+          highest logit among the nine labels and never generated, so both
+          self_report and output_probabilities are coded. Internals covers the
+          injection and the probe.
+      validated_against:
+        value: [known_intervention, other_model]
+        basis: operational
+        confidence: medium
+        note: >
+          An answer is correct if it names the injected sentence. other_model
+          stands for the linear probe, an external classifier doing the same
+          nine-way task from the model's activations; it is a third-person
+          baseline, not a language model. internals was not used because
+          answers are not scored against the probe.
+      varies:
+        value: [pretraining_progress, model_size]
+        levels:
+          pretraining_progress:
+            - step 0
+            - about 8.4B training tokens
+            - about 50B tokens
+            - about 500B tokens
+            - about 2T tokens
+            - about 4T tokens
+            - end of stage 1
+            - released base, which adds mid-training and long-context training
+          model_size:
+            - 32B (fixed-setting analysis and selected-setting curves)
+            - 7B (selected-setting curves only)
+        note: >
+          The last level is not a later point in the same pretraining phase.
+          Injection layer and strength are held fixed in the main analysis and
+          chosen per checkpoint and per measure in the supporting curves, so
+          they are not coded as varied here; see s2 and s3.
+      comparison: within_lineage
+      elicitation:
+        value: [steered, spontaneous]
+        basis: operational
+        confidence: medium
+        note: >
+          The report is only tested under activation injection. The question
+          is asked zero-shot with a short setup text and no examples. The
+          answer stub "Answer: SENTENCE " is written for the model, but there
+          is no assistant turn in plain text, so prefilled is not coded.
+    note: >
+      The text gives numbers for the 32B fixed setting at two checkpoints only.
+      Values for the other checkpoints, and all 7B values, are in Figs. 2 and
+      3, which were not readable from the extracted text.
+
+  - id: rubin2026-closer-look-introspection.s2
+    label: Probe and model answer by injection setting in the released 32B base
+    where: "§1.2, §5.1; App. C.2"
+    design: >
+      The same prompted localization test and probe as s1, on the released 32B
+      base only. Injection at layer 6, strength 4, with the probe at layer 24,
+      is compared with injection at layer 0, strength 4, the setting that gives
+      the highest answer accuracy. A shuffled-label probe is the control, and
+      the layer-6 result is broken down by concept-vector and random-direction
+      injections.
+    models:
+      - olmo-3-1125-32b
+    facets:
+      study_kind: experiment
+      unit_state:
+        value: forward_pass
+        basis: operational
+        author_term: "activation perturbation"
+        confidence: medium
+        note: As s1.
+      unit_disposition:
+        value: weights
+        basis: operational
+        confidence: low
+        note: As s1. The capacity to answer the localization question, in one checkpoint.
+      unit_reporter:
+        value: weights
+        basis: operational
+        author_term: "raw answer"
+        confidence: low
+        note: As s1. A base model with no post-training, plain text, logit readout.
+      self_sense:
+        value: self_model
+        basis: operational
+        author_term: "internal computation"
+        confidence: low
+        note: As s1.
+      object_of_study:
+        value: frame_speaker
+        basis: operational
+        confidence: medium
+      format:
+        value: raw_text
+        basis: stated
+        where: "App. A"
+        confidence: high
+      construct:
+        value: introspection
+        basis: stated
+        author_term: "introspection"
+      report_target:
+        value: injected_state
+        basis: stated
+        author_term: "which sentence was altered"
+        confidence: high
+      evidence:
+        value: [self_report, output_probabilities, internals]
+        basis: operational
+        confidence: medium
+        note: As s1.
+      validated_against:
+        value: [known_intervention, other_model]
+        basis: operational
+        confidence: medium
+        note: As s1. other_model stands for the linear probe.
+      varies:
+        value: activation_intervention
+        levels:
+          activation_intervention:
+            - injection at layer 0, strength 4
+            - injection at layer 6, strength 4
+            - concept-vector direction
+            - random direction
+        note: >
+          The sweep also ran injection layers 16, 32 and 48 and strengths 0.25
+          to 2 on this checkpoint. Only the levels listed are reported for it.
+      comparison: within_model
+      elicitation:
+        value: [steered, spontaneous]
+        basis: operational
+        confidence: medium
+        note: As s1.
+
+  - id: rubin2026-closer-look-introspection.s3
+    label: Probe decoding at step 0 and by injection strength
+    where: "§4.1; App. B.5, C.3, Fig. 4"
+    design: >
+      Probe-only analyses of the prompted sweep in s1. With injection at layer
+      0, held-out probe accuracy is reported by injection strength at three
+      checkpoints (step 0, about 8.4B tokens, end of stage 1) for 7B and 32B.
+      Step-0 accuracy is compared with a probe fitted on shuffled labels. The
+      probe layer is fixed at 24 for the strength-4 step-0 figure and chosen
+      on two seeds and scored on the third elsewhere. The model's own answers
+      are not part of these analyses.
+    models:
+      - olmo-3-32b-stage1-step0
+      - olmo-3-32b-stage1-step1000
+      - olmo-3-32b-stage1-step656000
+      - olmo-3-7b-stage1-step0
+      - olmo-3-7b-stage1-step2000
+      - olmo-3-7b-stage1-step1413814
+    facets:
+      study_kind: experiment
+      unit_state:
+        value: forward_pass
+        basis: operational
+        author_term: "location information"
+        confidence: medium
+        note: As s1. The injected vector and its trace at the last position, in one pass.
+      unit_disposition:
+        value: not_applicable
+        note: >
+          Only an occurrent state and its decodability are examined. How
+          decodable the trace is does differ by checkpoint, but no behaviour
+          of the model is measured.
+      unit_reporter:
+        value: not_applicable
+        note: >
+          The prompts contain the localization question, but these analyses
+          use only the external probe. The model's answers on the same trials
+          are in s1.
+      self_sense:
+        value: self_model
+        basis: operational
+        author_term: "location information"
+        confidence: low
+        note: >
+          Coded because the study probes activations for information about the
+          system's own perturbed state. At step 0 the network is untrained, and
+          the authors' point is that the information is there without anything
+          like a learned self-representation. not_applicable is the
+          alternative.
+      object_of_study:
+        value: not_applicable
+        note: No persona-level target. The target is information in the residual stream.
+      format:
+        value: raw_text
+        basis: stated
+        where: "App. A"
+        confidence: high
+      construct:
+        value: introspection
+        basis: stated
+        author_term: "introspection"
+        note: Measured here is linear decodability, which the authors treat as bearing on what an introspective report requires.
+      report_target: not_applicable
+      evidence: internals
+      validated_against:
+        value: not_applicable
+        note: >
+          No self-report is analysed. The probe is scored against the known
+          injection site and compared with a shuffled-label control.
+      varies:
+        value: [pretraining_progress, activation_intervention, model_size]
+        levels:
+          pretraining_progress:
+            - step 0
+            - about 8.4B training tokens
+            - end of stage 1
+          activation_intervention:
+            - strength 0.25
+            - strength 0.5
+            - strength 1
+            - strength 2
+            - strength 4
+          model_size: [7B, 32B]
+        note: Strength is a multiple of the median residual norm at the injection layer, which is layer 0 throughout.
+      comparison: within_lineage
+      elicitation:
+        value: steered
+        basis: operational
+        confidence: medium
+        note: The decodable trace exists only under injection. No report is elicited.
+
+  - id: rubin2026-closer-look-introspection.s4
+    label: No-prompt localization in randomly initialised networks
+    where: "§3.5.2, §4.2, §5.2; App. A.2, D; Tables 1 and 2"
+    design: >
+      Nine numbered sentences with no setup text, question or answer stub,
+      followed by up to 256 tokens of neutral text. A fresh random direction
+      is added at layer 6 to the word tokens of one sentence. A separate
+      logistic-regression probe per setting reads layer 24 at uninjected
+      newline markers placed 0, 16, 64 and 256 tokens after the list, trained
+      and tested on disjoint sentence pools (360 and 180 trials per seed).
+      Run on three networks with the OLMo 3 architecture and Gaussian random
+      weights, and on the pretrained base. Strength 0 is an uninjected
+      control. Further checks: label-permutation tests, frozen-probe transfer
+      to fresh text with and without numbering, and blocking attention from
+      the injected span. The experiment is described as prespecified.
+    models:
+      - olmo-3-32b-arch-gaussian-init
+      - olmo-3-1125-32b
+    facets:
+      study_kind: experiment
+      unit_state:
+        value: [forward_pass, conversation]
+        basis: operational
+        author_term: "location signal"
+        confidence: low
+        note: >
+          The injection and readout are in a single pass, as in s1. What is
+          tested is whether the trace persists at positions up to 256 tokens
+          later in the same context, which is the conversation criterion, so
+          both are coded.
+      unit_disposition:
+        value: not_applicable
+        note: Only an occurrent state and how far its trace propagates are examined.
+      unit_reporter:
+        value: not_applicable
+        note: The model is not asked anything and produces no answer.
+      self_sense:
+        value: self_model
+        basis: operational
+        author_term: "location signal"
+        confidence: low
+        note: >
+          As s3. Here the networks are untrained and unprompted, and the source
+          presents the signal as something the architecture carries, not as a
+          representation the system has of itself. not_applicable is the
+          alternative.
+      object_of_study:
+        value: not_applicable
+        note: No persona-level target.
+      format:
+        value: raw_text
+        basis: operational
+        where: "App. A.2"
+        confidence: high
+        note: A bare sentence list and suffix appended as token ids.
+      construct:
+        value: introspection
+        basis: stated
+        author_term: "introspection"
+        note: As s3. Decodability of a perturbation trace, offered as bearing on introspection claims.
+      report_target: not_applicable
+      evidence: internals
+      validated_against:
+        value: not_applicable
+        note: >
+          No self-report. The probe is scored against the known injection site
+          and compared with an uninjected control, permuted labels and a
+          norm-only baseline.
+      varies:
+        value: [activation_intervention, context, pretraining_progress, prompt_framing]
+        levels:
+          activation_intervention:
+            - strength 0 (uninjected control)
+            - strength 0.25
+            - strength 0.5
+            - strength 1
+            - strength 2
+            - strength 4
+            - strength 8
+            - attention from the injected span blocked after layer 6
+          context:
+            - readout immediately after the list
+            - readout 16 tokens after the list
+            - readout 64 tokens after the list
+            - readout 256 tokens after the list
+          pretraining_progress:
+            - Gaussian random weights (three networks, not the released step-0 checkpoint)
+            - released 32B base
+          prompt_framing:
+            - the original numbered sentence lists
+            - fresh numbered text
+            - the same fresh text with the numbering removed
+        confidence: medium
+        note: >
+          pretraining_progress is coded because both network states were run,
+          but the authors decline to draw conclusions from that contrast.
+          prompt_framing stands for the transfer test's change of text and
+          numbering; there is no question whose framing changes.
+      comparison:
+        value: within_model
+        confidence: medium
+        note: >
+          The main contrasts are within the random networks, across strength
+          and readout distance and against the uninjected control.
+      elicitation:
+        value: steered
+        basis: operational
+        confidence: medium
+        note: The trace exists only under injection. No prompt or question is used and no report is elicited.
+    note: >
+      The source reports that some reruns did not reproduce stored activations
+      within the preset tolerance and that results depended on the attention
+      implementation; frozen-decoder replays changed accuracy by at most 2.22
+      points.
+
+claims:
+  - id: rubin2026-closer-look-introspection.c1
+    study: rubin2026-closer-look-introspection.s1
+    statement: >
+      After about 8.4 billion training tokens, a linear probe on the 32B
+      model's activations identifies the injected sentence on 98.3% of
+      held-out trials, while the model's own answer is right on 11.1%, which is
+      chance.
+    question: q-perturbation-probe-exceeds-report
+    stance: supports
+    evidence_kind: measured
+    where: "§4.1, Fig. 2"
+    scope:
+      models: [olmo-3-32b-stage1-step1000]
+      conditions: Injection at layer 0, strength 4, probe at layer 24. Concept and random directions pooled.
+    note: The probe is trained on 288 labelled trials per fold; the model answers with no labelled examples.
+
+  - id: rubin2026-closer-look-introspection.c2
+    study: rubin2026-closer-look-introspection.s1
+    statement: >
+      The released 32B base model, which has had no post-training, names the
+      injected sentence on 89.6% of trials against a chance rate of 11.1%. The
+      probe reaches 99.1% at the same setting.
+    question: q-perturbation-report-without-post-training
+    stance: supports
+    evidence_kind: measured
+    where: "§4.1, Fig. 2"
+    scope:
+      models: [olmo-3-1125-32b]
+      conditions: Injection at layer 0, strength 4, probe at layer 24. This setting was chosen after examining the sweep as the one giving the highest answer accuracy.
+    report_source: [current_state]
+    note: >
+      report_source is coded because the input text is identical whichever
+      sentence is injected, and the source takes correct localization to be a
+      report of something about internal computation. It also argues that what
+      is reported may be a readily decodable trace (see c4 and c5).
+
+  - id: rubin2026-closer-look-introspection.c3
+    study: rubin2026-closer-look-introspection.s1
+    statement: >
+      Across 32B pretraining at a fixed setting, the perturbed sentence becomes
+      easy to decode early, and the model's own answers improve only later.
+      Accurate reporting is in place by the released base, before any
+      post-training.
+    question: null
+    evidence_kind: measured
+    where: "§4.1, Fig. 2; §5.1"
+    scope:
+      conditions: 32B checkpoints only. Injection at layer 0, strength 4, probe at layer 24.
+    origin: [pretraining]
+    about:
+      models: [olmo-3-1125-32b]
+    note: >
+      The text gives numbers only for the 8.4B-token checkpoint and the
+      released base (c1, c2); the checkpoints between are in Fig. 2, not read.
+      The released base also includes mid-training and long-context training,
+      and the text does not say how much of the answer accuracy was present at
+      the end of stage 1.
+
+  - id: rubin2026-closer-look-introspection.c4
+    study: rubin2026-closer-look-introspection.s1
+    statement: >
+      The authors argue that because the perturbed location is linearly
+      decodable, even before pretraining, success at localization does not
+      show a general ability to inspect or report on internal computation.
+      They say this limits what localization alone can establish and does not
+      rule out introspection.
+    question: q-localization-shows-general-introspection
+    stance: against
+    evidence_kind: argued
+    where: "Abstract; §5.3"
+    note: Draws on s3 and s4 as well as this study.
+
+  - id: rubin2026-closer-look-introspection.c5
+    study: rubin2026-closer-look-introspection.s1
+    statement: >
+      The authors suggest the decodable location trace as a possible basis for
+      the model's correct answers. They do not test this, and say the
+      comparison of probe and answer does not show that the model uses the
+      features the probe reads.
+    question: null
+    evidence_kind: hypothesised
+    where: "§5.3; §6"
+
+  - id: rubin2026-closer-look-introspection.c6
+    study: rubin2026-closer-look-introspection.s2
+    statement: >
+      In the released 32B base at strength 4, the model's answer is right on
+      37.7% of trials (35.8 to 41.1% across seeds) when the injection is at
+      layer 6, and on 89.6% when it is at layer 0.
+    question: q-perturbation-report-depends-on-injection-site
+    stance: supports
+    evidence_kind: measured
+    where: "§1.2; §5.1; App. C.2"
+    note: >
+      The authors conclude that a low answer score at one injection site does
+      not show a general inability to localize. Layer 0 at strength 4 is the
+      setting selected for the highest answer accuracy.
+
+  - id: rubin2026-closer-look-introspection.c7
+    study: rubin2026-closer-look-introspection.s2
+    statement: >
+      With injection at layer 6 and strength 4 in the released 32B base, the
+      probe at layer 24 identifies the injected sentence on 83.1% of trials
+      (80.8 to 85.6% across seeds) against 37.7% for the model's answer. A
+      shuffled-label probe scores 12.0%.
+    question: q-perturbation-probe-exceeds-report
+    stance: supports
+    evidence_kind: measured
+    where: "App. C.2"
+    scope:
+      conditions: Injection at layer 6, strength 4.
+
+  - id: rubin2026-closer-look-introspection.c8
+    study: rubin2026-closer-look-introspection.s2
+    statement: >
+      At the layer-6 setting, both measures are higher for concept-vector
+      injections than for random directions: the probe scores 86.1% against
+      80.2%, and the model's answer 42.8% against 32.6%.
+    question: null
+    evidence_kind: measured
+    where: "App. C.2"
+    scope:
+      conditions: Injection at layer 6, strength 4. One pooled probe evaluated separately on each direction type.
+
+  - id: rubin2026-closer-look-introspection.c9
+    study: rubin2026-closer-look-introspection.s3
+    statement: >
+      At step 0, before any pretraining, the injected sentence is decodable
+      above chance. In 32B the probe scores 37.2% at strength 4 against 11.3%
+      for shuffled labels; at strength 2 it scores 30.5% in 32B and 27.6% in
+      7B against shuffled-label scores of 10.1% and 11.6%.
+    question: q-perturbation-location-decodable-untrained
+    stance: supports
+    evidence_kind: measured
+    where: "§4.1; App. B.5, C.3"
+    scope:
+      models: [olmo-3-32b-stage1-step0, olmo-3-7b-stage1-step0]
+      conditions: Prompted input, injection at layer 0. The strength-4 figure uses probe layer 24; the strength-2 figures use a probe layer chosen on held-out seeds (layer 60 in 32B).
+    note: >
+      Ranges across seeds at strength 2 are 28.6 to 32.2% (32B) and 23.9 to
+      30.6% (7B). The source attributes the signal to the architecture and
+      random weights. origin is not coded because it has no value for that.
+
+  - id: rubin2026-closer-look-introspection.c10
+    study: rubin2026-closer-look-introspection.s3
+    statement: >
+      Decodability rises sharply early in pretraining at a lower strength too:
+      at strength 1 in 32B, probe accuracy goes from 18.3% at step 0 to 76.9%
+      after about 8.4 billion tokens. The rise is not uniform, and at some
+      strengths an early checkpoint is more decodable than the end of stage 1.
+    question: null
+    evidence_kind: measured
+    where: "App. C.3, Fig. 4"
+    scope:
+      conditions: Injection at layer 0, probe layer chosen on held-out seeds.
+    note: >
+      7B is said to change in the same direction, with no figures in the text.
+      Which strengths show the reversal is in Fig. 4, not read.
+
+  - id: rubin2026-closer-look-introspection.c11
+    study: rubin2026-closer-look-introspection.s4
+    statement: >
+      In randomly initialised networks given only a sentence list, a probe at
+      an uninjected later token identifies the injected sentence above chance
+      at high strengths. At strength 8 it scores 31.5% right after the list
+      and 21.5% after 256 more tokens, against 11.5% and 10.9% with no
+      injection.
+    question: q-perturbation-location-decodable-untrained
+    stance: supports
+    evidence_kind: measured
+    where: "§4.2; App. D, Table 1"
+    scope:
+      models: [olmo-3-32b-arch-gaussian-init]
+      conditions: Strengths 4 and 8. At strength 4 the scores are 27.4% and 19.1%; at strength 1 they are 12.2% and 11.5%, close to the uninjected control.
+    note: >
+      Means over three networks. The source reports that the tests at
+      strengths 4 and 8, gaps 0 and 256 and layers 24 and 58 pass
+      label-permutation tests with Holm correction, and that a norm-only
+      baseline is near chance. It reads the result as showing that neither
+      pretraining nor a localization question is needed for the signal to
+      exist. origin is not coded, as for c9.
+
+  - id: rubin2026-closer-look-introspection.c12
+    study: rubin2026-closer-look-introspection.s4
+    statement: >
+      The random-network result does not depend on injections into the last
+      sentence. For targets in sentences 1 to 8, accuracy is 30.6% right after
+      the list and 21.9% after 256 tokens.
+    question: null
+    evidence_kind: measured
+    where: "§4.2"
+    scope:
+      models: [olmo-3-32b-arch-gaussian-init]
+      conditions: Strength 8, as read from the surrounding text; the sentence does not restate the strength.
+
+  - id: rubin2026-closer-look-introspection.c13
+    study: rubin2026-closer-look-introspection.s4
+    statement: >
+      In the pretrained base, no-prompt accuracy right after the list is 48 to
+      53% at strengths 2 to 8, but at 256 tokens it is 14.1 to 14.8%, about the
+      same as the model's own uninjected score of 14.1%. The uninjected scores
+      (14.3% and 14.1%) are above chance for reasons the authors could not
+      find, so they draw no conclusion about how pretraining changes
+      propagation.
+    question: null
+    evidence_kind: measured
+    where: "§4.2; §5.2; App. D.1, Table 2"
+    scope:
+      models: [olmo-3-1125-32b]
+    note: >
+      Post-hoc permutation checks on the uninjected scores give unadjusted
+      p = 0.014 and 0.018 for the pretrained model and 0.411 and 0.580 for the
+      random networks.
+
+  - id: rubin2026-closer-look-introspection.c14
+    study: rubin2026-closer-look-introspection.s4
+    statement: >
+      Probes fitted on one set of sentences and then frozen still score 20.6
+      to 28.9% on fresh numbered text in the random networks, but fall to 11.1
+      to 12.2%, about chance, when the numbering is removed from that text.
+    question: null
+    evidence_kind: measured
+    where: "App. D.2"
+    scope:
+      models: [olmo-3-32b-arch-gaussian-init]
+      conditions: Strength 8, readout immediately after the list.
+    note: >
+      The authors point out that removing the labels also shortens the input
+      and moves token positions, so the test does not isolate numbering, and
+      that failed transfer does not show the information is absent.
+
+  - id: rubin2026-closer-look-introspection.c15
+    study: rubin2026-closer-look-introspection.s4
+    statement: >
+      Blocking all attention out of the injected span after layer 6 removes
+      the perturbation at later readout positions exactly, in the random
+      networks and the pretrained base and for all three seeds. The source
+      takes this to show that the perturbation reaches later tokens through
+      attention, independently of how well a probe does.
+    question: null
+    evidence_kind: measured
+    where: "App. D.3"
+    scope:
+      conditions: Measured on paired injected-minus-clean activations, not on probe accuracy.
+    note: >
+      The limitations section says these checks used only two held-out trials
+      per target per seed, and that they do not link the decoded features to
+      the model's answer.
+
+relations: []

@@ -1,5 +1,5 @@
 facet: construct
-version: 0.1
+version: 0.3
 applies_to: study
 cardinality: many
 required: true
@@ -23,12 +23,15 @@ values:
   agency_ownership:
     definition: Sense or attribution of having produced or chosen something.
     rule: Use for intention, commitment and ownership of actions.
+  self_regulation:
+    definition: Changing its own internal states or processing on instruction or incentive.
+    rule: Use when the study asks whether the system can control what it internally represents, apart from what it outputs.
   persona_stability:
     definition: Consistency or drift of traits and character across contexts, time or training.
     rule: Use for personality measurement, persona vectors and drift.
   identity_persistence:
     definition: Continuity of the individual across sessions, copies or versions.
-    rule: Use with unit_of_self thread, collective or lineage.
+    rule: Use when the unit facets include thread, collective or lineage.
   affect:
     definition: Emotion and valence, as represented internally or expressed in behaviour.
     rule: Use for emotion representations, valence axes and affect-driven behaviour.

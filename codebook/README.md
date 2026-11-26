@@ -3,9 +3,8 @@
 The codebook defines every controlled value used in the database. A value that
 is not defined here fails validation.
 
-Status: **v0.2, draft.** Written before the pilot and revised once after
-review. Expect definitions to change as the first papers are coded; see
-`CHANGELOG.md`.
+Status: **v0.3, draft.** Revised after a six-coder pilot on three papers
+(see `pilot/`). See `CHANGELOG.md`.
 
 ## Three kinds of file
 
@@ -37,7 +36,7 @@ Study facets, coded on every study:
 | `evidence` | Which channels of evidence are collected? |
 | `validated_against` | What is the report checked against? |
 | `varies` | What does the study vary? |
-| `comparison` | What is the comparison structure? |
+| `comparison` | What comparisons does the study make? |
 | `elicitation` | How was the report or capacity brought out? |
 
 Claim facets:
@@ -52,6 +51,10 @@ Claim facets:
 | `integration` | How deeply is the stance held? (optional) |
 | `aspect` | Represented, functional, or both? (optional) |
 
+A study of kind `conceptual` or `review` need only code `study_kind`,
+`self_sense`, `construct` and, where it has one, `unit_position`. The other
+required facets may be left out and are read as `not_applicable`.
+
 The optional claim facets record what a source argues or tests. Leave them
 off when the source does not address the matter; do not fill them with the
 coder's own reading.
@@ -59,14 +62,14 @@ coder's own reading.
 ## Facet file format
 
 ```yaml
-facet: unit_of_self
-version: 0.1
+facet: object_of_study
+version: 0.3
 applies_to: study        # study | claim
 cardinality: many        # one | many
 required: true           # must every record code it?
-question: Which unit is the "self" under study?
+question: Which layer of the system does the study target?
 values:
-  weights:
+  default_persona:
     definition: ...
     rule: ...
 ```
@@ -92,7 +95,7 @@ evidence: [self_report, behaviour]
 Long form, when the coding needs support:
 
 ```yaml
-unit_of_self:
+unit_disposition:
   value: weights
   basis: operational     # stated | operational
   author_term: "the model"
@@ -101,6 +104,8 @@ unit_of_self:
   note: Why this value and not a neighbouring one.
 ```
 
+- `basis` and `confidence` apply to the whole entry. If one value is stated
+  and another inferred, use the weaker label and say which is which in the note.
 - `basis: stated` means the authors say it. `basis: operational` means the coder
   inferred it from what the experiment did.
 - `author_term` keeps the source's own word next to our coding, so recoding

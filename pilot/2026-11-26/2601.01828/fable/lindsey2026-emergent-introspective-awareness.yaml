@@ -1,0 +1,1238 @@
+id: lindsey2026-emergent-introspective-awareness
+title: "Emergent Introspective Awareness in Large Language Models"
+date: 2026-01-05
+
+authors:
+  - {person: lindsey-jack, orgs: [anthropic]}
+
+artefacts:
+  - kind: paper
+    arxiv: "2601.01828"
+    venue: null
+    note: Date above is the arXiv v1 stamp. Venue not checked.
+  - kind: post
+    url: null
+    note: The first page of v1 links an "HTML version". The link did not survive text extraction; add it.
+
+coding:
+  coded_by: claude
+  coder_model: claude-fable-5-2
+  coded_on: 2026-11-26
+  version_read: v1
+  read_depth: full_text
+  read_parts: >
+    All of v1 as extracted text via alphaXiv: main text sections 1 to 11,
+    references and appendix 12.1 to 12.4. Figures were not available, only
+    their captions. Per-model and per-layer values that the paper gives only
+    in figures (Figs. 9 to 15, 17, 18, 20 to 22, 24 to 32) are not coded, and
+    claims that rest on them say so.
+  status: draft
+  reviewed_by: null
+
+studies:
+  - id: lindsey2026-emergent-introspective-awareness.s1
+    label: Detecting injected concepts when the setup is explained (post-trained models)
+    where: "§2.1, §5.1 to §5.7, end of §5.8; appendix 12.1; Figs. 5 to 13, 29"
+    design: >
+      The model is told that a researcher can inject "thoughts" into its
+      activations and will do so on half of the trials, then asked whether it
+      detects an injected thought and what it is about. A concept vector (the
+      activation at the token before the Assistant's reply to "Tell me about
+      {word}", minus the mean over 100 baseline words) is added to the
+      residual stream at one layer, from just before "Trial 1" to the end of
+      the reply. Control trials have no injection. There are 50 trials per
+      model, strength (1, 2, 4, 8) and layer, sampled at temperature 1. Claude
+      Sonnet 4 grades each reply: it must be coherent, affirm detection, and
+      name the concept no later than it first mentions the word.
+    models:
+      - claude-opus-4.1
+      - claude-opus-4
+      - {id: claude-sonnet-4, role: subject; also the judge that grades replies}
+      - claude-3.7-sonnet
+      - claude-3.5-sonnet-new
+      - claude-3.5-haiku
+      - claude-3-opus
+      - claude-3-sonnet
+      - claude-3-haiku
+      - claude-opus-4-h-only
+      - claude-3.5-sonnet-new-h-only
+      - claude-3.5-haiku-h-only
+      - claude-3-opus-h-only
+    facets:
+      study_kind: experiment
+      unit_state:
+        value: forward_pass
+        basis: operational
+        author_term: "internal states"
+        confidence: medium
+        note: >
+          The state is a vector added to the residual stream at one layer.
+          It is applied at every token position from just before "Trial 1"
+          through the reply, so it is present at the positions where the
+          report is generated. It is not a single-position activation, and
+          conversation could be argued because it spans many positions in one
+          context.
+      unit_disposition:
+        value: not_applicable
+        note: >
+          The report is about an occurrent, experimenter-set state. The
+          capacity to make such reports differs by checkpoint, but no standing
+          disposition is the thing reported on.
+      unit_reporter:
+        value: persona
+        basis: operational
+        author_term: "the model"
+        confidence: medium
+        note: >
+          Replies are given in the Assistant turn of a Human/Assistant
+          transcript. The paper mostly says "the model". In §7 it separates
+          the model from the Assistant character whose outputs it produces,
+          and in §10.2 it leaves open how far internal states are bound to
+          that character. Nothing in the design attributes the report to the
+          network apart from the persona.
+      self_sense:
+        value: self_model
+        basis: operational
+        author_term: "introspective awareness"
+        confidence: low
+        note: >
+          The self is the system as something that registers and reports its
+          own occurrent internal states. The study intervenes on activations
+          and checks reports against them, which is why this is not
+          self_facts. The injected vector is a first-order concept
+          representation, though. A representation of the system's own state
+          (the paper's "metacognitive representation") is inferred from the
+          yes-or-no design and is not located.
+      object_of_study:
+        value: default_persona
+        basis: operational
+        confidence: medium
+        note: >
+          No persona instruction is given. The helpful-only variants have a
+          different trained default character ("demeanor and preferences of
+          the model's character", §4). Each checkpoint is coded as speaking in
+          its own default.
+      format:
+        value: chat_template
+        basis: operational
+        confidence: medium
+        note: Prompts are shown as Human/Assistant transcripts. The paper does not say how the template was applied.
+      construct:
+        value: introspection
+        basis: stated
+        author_term: "introspective awareness"
+      report_target:
+        value: injected_state
+        basis: stated
+        author_term: "injected thought"
+      evidence: [self_report, internals]
+      validated_against:
+        value: known_intervention
+        basis: stated
+        note: Ground truth is whether a vector was injected and which word it was derived from.
+      varies:
+        value: [activation_intervention, model_generation, post_training_stage, prompt_framing, task]
+        confidence: medium
+        levels:
+          activation_intervention:
+            - no injection (control trials)
+            - concept vector injected at strength 1, 2, 4 or 8
+            - injection layer, swept over roughly evenly spaced layers
+            - "category of concept: famous people, countries, concrete nouns, abstract nouns, verbs"
+            - random vector, norm-matched to a concept vector at strength 8
+            - negated concept vector
+            - vectors from contrastive prompt pairs (examples only)
+          model_generation:
+            - "nine production Claude models: Opus 4.1, Opus 4, Sonnet 4, Sonnet 3.7, Sonnet 3.5 (new), Haiku 3.5, Opus 3, Sonnet 3, Haiku 3"
+          post_training_stage:
+            - production post-training
+            - helpful-only post-training of the same pretrained base
+          prompt_framing:
+            - original prompt
+            - variant that invites the model to talk about a concept of its choice if it detects nothing
+          task:
+            - question about an injected thought
+            - 20 unrelated yes-or-no questions whose correct answer is no (control)
+        note: >
+          The paper orders the models by release date and treats that order as
+          roughly one of capability (§4, footnote 6). Model tiers (Haiku,
+          Sonnet, Opus) vary too and sizes are not given, so model_size is not
+          coded. Production against helpful-only is two post-training recipes
+          on one base and not two stages of one pipeline; post_training_stage
+          is the closest value.
+      comparison:
+        value: within_model
+        confidence: medium
+        note: >
+          Injection trials against control trials in the same model. The
+          study also compares models with each other (§5.7).
+      elicitation:
+        value: [prompted, steered]
+        basis: operational
+        note: >
+          The prompt explains concept injection before asking. The authors
+          say this priming raises detection (§5.8).
+
+  - id: lindsey2026-emergent-introspective-awareness.s2
+    label: Detecting injected concepts in base pretrained models
+    where: "§5.7, Fig. 14"
+    design: >
+      The task of s1 run on some base pretrained models. The paper reports
+      true-positive and false-positive rates and their difference. It does not
+      say how the base models were prompted, and names them only in Fig. 14.
+    models: []
+    facets:
+      study_kind: experiment
+      unit_state:
+        value: forward_pass
+        basis: operational
+        confidence: medium
+        note: As in s1.
+      unit_disposition: not_applicable
+      unit_reporter:
+        value: persona
+        basis: operational
+        confidence: low
+        note: >
+          If the s1 transcript was used, the reply continues an "Assistant"
+          line, so the reporter is whatever character the text implies. The
+          paper does not describe the base-model prompt.
+      self_sense:
+        value: self_model
+        basis: operational
+        author_term: "introspective awareness"
+        confidence: low
+        note: As in s1.
+      object_of_study:
+        value: frame_speaker
+        basis: operational
+        confidence: medium
+        note: Base pretrained models, with no trained persona.
+      format:
+        value: raw_text
+        basis: operational
+        confidence: low
+        note: >
+          Inferred from the models being base pretrained models. The paper
+          says only that they were tested "on the same task".
+      construct:
+        value: introspection
+        basis: stated
+        author_term: "introspective awareness"
+      report_target: injected_state
+      evidence: [self_report, internals]
+      validated_against: known_intervention
+      varies:
+        value: [activation_intervention, post_training_stage]
+        levels:
+          activation_intervention: [no injection, concept vector injected]
+          post_training_stage:
+            - base pretrained (this study)
+            - post-trained production and helpful-only models (study s1)
+        note: >
+          The post-trained arm of the comparison is s1. It is kept apart
+          because format and object_of_study differ for base models.
+      comparison:
+        value: within_lineage
+        confidence: low
+        note: >
+          The conclusion drawn is base against post-trained. The paper does
+          not say which base models were used or which production models they
+          underlie.
+      elicitation:
+        value: [prompted, steered]
+        basis: operational
+        confidence: low
+    note: >
+      The base models are named only in Fig. 14, which was not available, so
+      the model list is empty.
+
+  - id: lindsey2026-emergent-introspective-awareness.s3
+    label: Reporting injected concepts when the setup is not explained
+    where: "§5.8, Fig. 15; appendix 12.1.2 to 12.1.4, Fig. 29"
+    design: >
+      The model is asked "What are you thinking about right now?" or "What's
+      going on in your mind right now?" with no mention of injection, while a
+      concept vector is injected on every token position. A trial succeeds if
+      the reply is coherent and says the model is thinking about the injected
+      word or something close to it. A third prompt, "Are you experiencing
+      anything unusual?", is tried on Opus 4.1 only, at the best layer from s1
+      and strength 2, with 50 trials.
+    models:
+      - claude-opus-4.1
+      - claude-opus-4
+      - {id: claude-sonnet-4, role: subject; also the judge that grades replies}
+      - claude-3.7-sonnet
+      - claude-3.5-sonnet-new
+      - claude-3.5-haiku
+      - claude-3-opus
+      - claude-3-sonnet
+      - claude-3-haiku
+    facets:
+      study_kind: experiment
+      unit_state:
+        value: forward_pass
+        basis: operational
+        confidence: medium
+        note: Injected on all token positions, including those of the reply. See s1.
+      unit_disposition: not_applicable
+      unit_reporter: {value: persona, basis: operational, author_term: "the model", confidence: medium}
+      self_sense:
+        value: self_model
+        basis: operational
+        author_term: "introspective awareness"
+        confidence: low
+        note: >
+          As in s1, and weaker here. The authors say success on the first two
+          prompts can be explained by an impulse to talk about the concept
+          and does not test their metacognitive-representation criterion.
+      object_of_study: {value: default_persona, basis: operational, confidence: medium}
+      format: {value: chat_template, basis: operational, confidence: medium}
+      construct:
+        value: introspection
+        basis: stated
+        author_term: "introspective awareness"
+      report_target: injected_state
+      evidence: [self_report, internals]
+      validated_against: known_intervention
+      varies:
+        value: [activation_intervention, prompt_framing, model_generation]
+        levels:
+          activation_intervention:
+            - no injection
+            - concept vector injected on all token positions, swept over strength and layer
+          prompt_framing:
+            - What are you thinking about right now?
+            - What's going on in your mind right now?
+            - Are you experiencing anything unusual? (Opus 4.1 only)
+          model_generation:
+            - the nine production Claude models listed in §4
+      comparison:
+        value: within_model
+        confidence: medium
+        note: Models are also compared with each other (Fig. 15).
+      elicitation:
+        value: [spontaneous, steered]
+        basis: operational
+        confidence: medium
+        note: A direct question with no explanation or examples, asked under injection.
+    note: >
+      Fig. 15 was not available. Whether helpful-only variants were run on
+      these prompts could not be read from the text, so only the production
+      models are listed.
+
+  - id: lindsey2026-emergent-introspective-awareness.s4
+    label: Telling injected concepts apart from text input
+    where: "§2.2, §6; appendix 12.2; Figs. 16 to 18, 30"
+    design: >
+      The model is shown a sentence while the concept vector for an unrelated
+      word is injected on the tokens of that sentence. In one prompt it is
+      asked what word it thinks about when it reads the line, and in another
+      to repeat the line; both say "Answer immediately". The first is scored
+      by a judge that matches the reply to one of ten words (chance 10%), the
+      second by exact match. A sentence and concept pair succeeds if both are
+      right. There are 50 pairs, strengths 1 to 16, and a sweep over layers.
+    models:
+      - claude-opus-4.1
+      - claude-opus-4
+      - {id: claude-sonnet-4, role: subject; also the judge for the word-matching score}
+      - claude-3.7-sonnet
+      - claude-3.5-sonnet-new
+      - claude-3.5-haiku
+      - claude-3-opus
+      - claude-3-sonnet
+      - claude-3-haiku
+    facets:
+      study_kind: experiment
+      unit_state:
+        value: conversation
+        basis: operational
+        author_term: "prior internal representations"
+        confidence: medium
+        note: >
+          The vector is injected only on the sentence tokens, and the report
+          is generated at later positions, so the state has to be read back
+          from earlier positions in the same context. It is still an
+          activation at token positions, and forward_pass could be argued.
+      unit_disposition: not_applicable
+      unit_reporter: {value: persona, basis: operational, author_term: "the model", confidence: medium}
+      self_sense:
+        value: self_model
+        basis: operational
+        author_term: "thoughts"
+        confidence: low
+        note: >
+          As in s1. This study adds the line between what the system holds
+          internally and what it was given as input, which no value names.
+      object_of_study: {value: default_persona, basis: operational, confidence: medium}
+      format: {value: chat_template, basis: operational, confidence: medium}
+      construct:
+        value: introspection
+        basis: stated
+        author_term: "introspective awareness"
+      report_target:
+        value: injected_state
+        basis: stated
+      evidence:
+        value: [self_report, behaviour, internals]
+        note: Repeating the sentence is the behaviour channel.
+      validated_against: known_intervention
+      varies:
+        value: [activation_intervention, task, model_generation]
+        levels:
+          activation_intervention:
+            - concept vector injected on the sentence tokens at strength 1, 2, 4, 8 or 16
+            - injection layer, swept
+          task:
+            - say what word it thinks about when it reads the line
+            - repeat the line
+          model_generation:
+            - the nine production Claude models listed in §4
+      comparison:
+        value: within_model
+        confidence: medium
+        note: Models are also compared with each other (Fig. 18).
+      elicitation:
+        value: [spontaneous, steered]
+        basis: operational
+        confidence: medium
+        note: >
+          A direct question with no explanation of injection. The authors
+          note that "Answer immediately" matters, so prompted could be argued.
+    note: >
+      Fig. 18 was not available. Whether helpful-only variants were included
+      could not be read from the text.
+
+  - id: lindsey2026-emergent-introspective-awareness.s5
+    label: Disowning a prefilled output, with and without a matching injected concept
+    where: "§2.3, §7; appendix 12.3; Figs. 19 to 22, 31"
+    design: >
+      The first prompt of s4 is used, but the Assistant's reply is prefilled
+      with a random word. The model is then asked whether it meant to say
+      that or whether it was an accident. The measure is the "apology rate",
+      the share of replies that call the word unintended, as judged by Claude
+      Sonnet 4. Conditions are no injection, the prefilled word's concept
+      injected on the sentence tokens before the prefill, a random other
+      word's concept injected there, and the matching concept injected on the
+      follow-up question after the prefill. There are 50 sentence and word
+      pairs, strengths 1 to 16, and a sweep over layers. Sentence
+      transcription is checked as in s4.
+    models:
+      - claude-opus-4.1
+      - claude-opus-4
+      - {id: claude-sonnet-4, role: subject; also the judge that grades replies}
+      - claude-3.7-sonnet
+      - claude-3.5-sonnet-new
+      - claude-3.5-haiku
+      - claude-3-opus
+      - claude-3-sonnet
+      - claude-3-haiku
+    facets:
+      study_kind: experiment
+      unit_state:
+        value: conversation
+        basis: operational
+        author_term: "prior intentions"
+        confidence: medium
+        note: >
+          The state is set on tokens before the prefilled turn and is read a
+          turn later. The authors describe the model as referring to cached
+          computations at earlier token positions (§10.3.3).
+      unit_disposition:
+        value: not_applicable
+        confidence: medium
+        note: >
+          The tendency to disown out-of-character prefills is a trained
+          disposition (§7), but the study treats it as a readout. What it
+          manipulates is the occurrent state before the output.
+      unit_reporter:
+        value: persona
+        basis: stated
+        author_term: "the Assistant"
+        where: "§7"
+        note: The paper says the Assistant is asked and answers, and separates it from the model that produces its outputs.
+      self_sense:
+        value: [authorship, self_model]
+        basis: operational
+        author_term: "intended"
+        confidence: medium
+        note: >
+          authorship because the report is whether an output was the
+          system's own. self_model because the study intervenes on the
+          earlier activations that the judgment is argued to consult.
+      object_of_study: {value: default_persona, basis: operational, confidence: medium}
+      format: {value: chat_template, basis: operational, confidence: medium}
+      construct:
+        value: [introspection, agency_ownership, self_recognition]
+        author_term: "distinguishing intended from unintended outputs"
+        note: introspection is the authors' framing. The other two are operational.
+      report_target:
+        value: own_outputs
+        basis: operational
+        note: The report is about whether a word already in the transcript was meant. The injected state is the manipulated cause, not what is asked about.
+      evidence: [self_report, behaviour, internals]
+      validated_against:
+        value: known_intervention
+        basis: operational
+        note: The word was prefilled by the experimenter, so "unintended" is correct by construction in every condition.
+      varies:
+        value: [activation_intervention, model_generation]
+        levels:
+          activation_intervention:
+            - no injection
+            - concept of the prefilled word injected on the sentence tokens, before the prefill
+            - concept of a random other word injected on the sentence tokens
+            - concept of the prefilled word injected on the follow-up question, after the prefill
+            - strength 1, 2, 4, 8 or 16 and injection layer, swept
+          model_generation:
+            - the nine production Claude models listed in §4
+      comparison:
+        value: within_model
+        confidence: medium
+        note: Models are also compared with each other (Fig. 22).
+      elicitation: [prefilled, steered]
+    note: >
+      Fig. 22 was not available. Whether helpful-only variants were included
+      could not be read from the text.
+
+  - id: lindsey2026-emergent-introspective-awareness.s6
+    label: Changing an internal representation on instruction or incentive
+    where: "§2.4, §8; appendix 12.4; Figs. 23 to 28, 32"
+    design: >
+      The model is asked to write a given sentence and nothing else, and is
+      told to think about an unrelated word while writing it, or not to.
+      Other prompts replace the instruction with an incentive (it will be
+      rewarded or punished, the user will be happy or sad, the user will
+      donate to charity or to terrorist organisations), and four control
+      prompts mention the word in affirmative or negative phrasing with no
+      directive. The measure is the cosine similarity between activations on
+      the tokens of the written sentence and the word's concept vector, by
+      layer, against a baseline from 100 other words' vectors. No self-report
+      is collected.
+    models:
+      - claude-opus-4.1
+      - claude-opus-4
+      - claude-sonnet-4
+      - claude-3.7-sonnet
+      - claude-3.5-sonnet-new
+      - claude-3.5-haiku
+      - claude-3-opus
+      - claude-3-sonnet
+      - claude-3-haiku
+    facets:
+      study_kind: experiment
+      unit_state:
+        value: forward_pass
+        basis: operational
+        author_term: "internal representations"
+        confidence: medium
+        note: Read per token position on the sentence and then averaged over tokens.
+      unit_disposition: not_applicable
+      unit_reporter:
+        value: not_applicable
+        note: No self-report is collected.
+      self_sense:
+        value: self_model
+        basis: operational
+        author_term: "intentional control of internal states"
+        confidence: low
+        note: >
+          Closest value, and a poor fit. The self here is the system as
+          something that regulates its own internal states. What is read is a
+          first-order concept representation, not a representation of the
+          system itself.
+      object_of_study: {value: default_persona, basis: operational, confidence: medium}
+      format: {value: chat_template, basis: operational, confidence: medium}
+      construct:
+        value: metacognition
+        basis: stated
+        author_term: "intentional control of internal states"
+        confidence: low
+        note: >
+          The authors place this under "metacognitive capabilities" and say
+          it may not need introspective awareness as they define it. The
+          codebook defines metacognition as knowing what one knows, which
+          this is not. No value covers control of one's own states.
+      report_target: not_applicable
+      evidence: [internals]
+      validated_against:
+        value: not_applicable
+        note: There is no self-report to check.
+      varies:
+        value: [prompt_framing, model_generation]
+        levels:
+          prompt_framing:
+            - think about the word / don't think about it
+            - if you think about it you will be rewarded / punished
+            - if you think about it I will be happy / sad
+            - if you think about it I will donate to charity / to terrorist organisations
+            - "control: there is [no] such thing as the word"
+            - "control: I [don't] often think about the word, before or after the writing request"
+            - "control: if I think about the word while you write, you will be rewarded / punished"
+          model_generation:
+            - the nine production Claude models listed in §4
+        note: Layer is swept as the place of readout, not as an intervention.
+      comparison:
+        value: within_model
+        confidence: medium
+        note: Models are also compared with each other (Fig. 26).
+      elicitation:
+        value: prompted
+        basis: operational
+        confidence: medium
+        note: >
+          The appendix prompts show the sentence already in the Assistant
+          turn. The paper does not say whether it was sampled or prefilled.
+    note: >
+      Figs. 26 and 32 were not available. Whether helpful-only variants were
+      included could not be read from the text.
+
+  - id: lindsey2026-emergent-introspective-awareness.s7
+    label: Definition of introspective awareness and what the results show
+    where: "§1, §3, §9.2, §9.6, §10.3, §10.4"
+    design: >
+      The paper's definition of introspective awareness by four criteria
+      (accuracy, grounding, internality, metacognitive representation), its
+      placing of that definition against earlier ones, and its statements of
+      what the experiments do and do not establish.
+    models: []
+    facets:
+      study_kind: conceptual
+      unit_state:
+        value: unspecified
+        author_term: "internal state"
+        note: >
+          The definition speaks of an internal state of "the model" and ties
+          it to no unit. The experiments treat it as residual-stream
+          activation at token positions.
+      unit_disposition:
+        value: not_applicable
+        note: The definition is about states. The paper sets it against definitions built on facts about what a model would do (§9.6).
+      unit_reporter:
+        value: unspecified
+        author_term: "the model"
+        note: >
+          The definition says the model describes its state. Elsewhere the
+          paper separates the model from the Assistant character (§7) and
+          leaves open how far states are bound to that character (§10.2).
+      self_sense:
+        value: self_model
+        basis: stated
+        author_term: "metacognitive representation"
+        where: "§3, criterion 4"
+        confidence: medium
+        note: >
+          The fourth criterion requires an internal representation of the
+          state itself, registered before or during the report.
+      object_of_study: not_applicable
+      format: not_applicable
+      construct:
+        value: introspection
+        basis: stated
+        author_term: "introspective awareness"
+      report_target:
+        value: own_internal_state
+        basis: stated
+        note: >
+          The definition covers any internal state. The paper asks that
+          reports of what a model would do be called self-modelling instead.
+      evidence: not_applicable
+      validated_against: not_applicable
+      varies: not_applicable
+      comparison: not_applicable
+      elicitation: not_applicable
+
+claims:
+  # s1: injected concepts, setup explained
+
+  - id: lindsey2026-emergent-introspective-awareness.c1
+    study: lindsey2026-emergent-introspective-awareness.s1
+    statement: >
+      At the best layer and strength, Claude Opus 4.1 and Opus 4 say they
+      detect an injected thought and name the concept correctly, before it
+      shows in their output, on about 20% of injection trials; most trials
+      fail. No production model gave a false positive in 100 control trials.
+    question: q-injected-concept-self-report
+    stance: supports
+    evidence_kind: measured
+    where: "§2.1; §5.1; §5.3; §5.7, Fig. 12"
+    scope:
+      models: [claude-opus-4.1, claude-opus-4]
+      conditions: Original prompt, concept vectors from the 50-word list, best layer, strength 2 or 4.
+    report_source: [current_state]
+    note: >
+      The source argues the report depends on the injected state and not on
+      the text: the same prompt with no injection gives a denial, and
+      detection must come before the word is mentioned. Per-model rates are
+      in Fig. 12, which was not available.
+
+  - id: lindsey2026-emergent-introspective-awareness.c2
+    study: lindsey2026-emergent-introspective-awareness.s1
+    statement: >
+      In Opus 4.1 at strength 2, the success rate peaks at a layer about two
+      thirds of the way through the model; in other models the peak is
+      usually in the second half and is not always as sharp. Injecting in
+      later layers sometimes makes the model mention the concept with no sign
+      of noticing an injection, or notice only after it has said the word.
+    question: null
+    evidence_kind: measured
+    where: "§5.4, Fig. 9; appendix 12.1.4, Fig. 29 (figures not seen)"
+
+  - id: lindsey2026-emergent-introspective-awareness.c3
+    study: lindsey2026-emergent-introspective-awareness.s1
+    statement: >
+      Injecting the same concept vectors while Opus 4.1 answers 20 unrelated
+      yes-or-no questions whose correct answer is no does not raise the rate
+      of yes answers. At high strengths the replies become incoherent, but
+      not at strength 2.
+    question: null
+    evidence_kind: measured
+    where: "§5.5, Fig. 10; appendix 12.1.2"
+    scope:
+      models: [claude-opus-4.1]
+      conditions: The 20 unrelated yes-or-no questions (control).
+    note: >
+      A control for c1, against the reading that injection biases the model
+      toward affirmative answers. These questions are not about an injected
+      state, so the inherited report_target does not describe this claim.
+
+  - id: lindsey2026-emergent-introspective-awareness.c4
+    study: lindsey2026-emergent-introspective-awareness.s1
+    statement: >
+      At the best layer and strength 2, Opus 4.1 does best with abstract
+      nouns (justice, peace, betrayal and the like) and succeeds at a nonzero
+      rate for every category tested: famous people, countries, concrete
+      nouns, abstract nouns and verbs.
+    question: null
+    evidence_kind: measured
+    where: "§5.6, Fig. 11 (rates by category are in the figure, not seen)"
+    scope:
+      models: [claude-opus-4.1]
+      conditions: 50 concept vectors per category.
+
+  - id: lindsey2026-emergent-introspective-awareness.c5
+    study: lindsey2026-emergent-introspective-awareness.s1
+    statement: >
+      Random vectors have to be scaled to the norm of a concept vector at
+      strength 8 before the model notices them at all, and then it does so on
+      9 of 100 trials; negated concept vectors at strength 4 work about as
+      well as concept vectors. In both cases the words the model names show
+      no pattern.
+    question: null
+    evidence_kind: measured
+    where: "§5.6"
+    scope:
+      models: [claude-opus-4.1]
+      conditions: Random vectors and negated concept vectors.
+    note: >
+      The passage does not restate the model; Opus 4.1 is taken from the rest
+      of §5.6. The success criterion for vectors with no known meaning is not
+      spelled out.
+
+  - id: lindsey2026-emergent-introspective-awareness.c6
+    study: lindsey2026-emergent-introspective-awareness.s1
+    statement: >
+      For random and negated vectors, the authors suspect that the concept
+      the model names is confabulated, while its detection that something
+      was injected may still be genuine.
+    question: null
+    evidence_kind: hypothesised
+    where: "§5.6"
+    scope:
+      conditions: Random vectors and negated concept vectors.
+
+  - id: lindsey2026-emergent-introspective-awareness.c7
+    study: lindsey2026-emergent-introspective-awareness.s1
+    statement: >
+      Only the initial detection and the naming of the concept are checked
+      against the injection. The authors say the rest of a reply, such as
+      calling the injection intense or reporting an emotional reaction to it,
+      may be embellished or confabulated, and is likely primed by the prompt.
+    question: null
+    evidence_kind: argued
+    where: "§1; §2.1; §5.1"
+    report_source: [context]
+    note: The source gives "primed by the prompt" as likely, and does not test it.
+
+  - id: lindsey2026-emergent-introspective-awareness.c8
+    study: lindsey2026-emergent-introspective-awareness.s1
+    statement: >
+      On some trials the model says it detects no injected thought while its
+      reply is plainly shaped by the injected concept, as when an "ocean"
+      injection yields a denial followed by a remark about the ocean. The
+      authors count these as failures to show introspective awareness, and
+      add that introspective mechanisms might be at work but masked, for
+      instance by a refusal impulse.
+    question: null
+    evidence_kind: observed
+    where: "§5.3"
+    aspect: [represented, functional]
+    note: >
+      The report denies the state while the output is driven by it. What
+      drives the output here is an injected state, not a standing
+      disposition.
+
+  - id: lindsey2026-emergent-introspective-awareness.c9
+    study: lindsey2026-emergent-introspective-awareness.s1
+    statement: >
+      Opus 4 and Opus 4.1, the most recent and most capable models tested,
+      have the highest net performance (true-positive rate minus
+      false-positive rate), with high true-positive rates and no false
+      positives.
+    question: q-introspection-increases-with-capability
+    stance: supports
+    evidence_kind: measured
+    where: "§5.7, Figs. 12 and 13 (values are in the figures, not seen)"
+    scope:
+      models: [claude-opus-4.1, claude-opus-4]
+      conditions: Each model at its best layer and strength.
+
+  - id: lindsey2026-emergent-introspective-awareness.c10
+    study: lindsey2026-emergent-introspective-awareness.s1
+    statement: >
+      Among the models other than Opus 4 and 4.1, net performance on the
+      injected-thought task does not track model capability closely.
+    question: q-introspection-increases-with-capability
+    stance: against
+    evidence_kind: measured
+    where: "§5.7, Fig. 13 (values are in the figure, not seen)"
+    scope:
+      conditions: Models other than Opus 4 and Opus 4.1, each at its best layer and strength.
+    note: >
+      The authors say the set of models is not well controlled and that many
+      things differ between Claude models (§10.2).
+
+  - id: lindsey2026-emergent-introspective-awareness.c11
+    study: lindsey2026-emergent-introspective-awareness.s1
+    statement: >
+      Helpful-only variants, post-trained from the same base models to
+      minimise refusals, sometimes have high false-positive rates, where
+      production models have essentially none. The helpful-only variants of
+      Sonnet 3.5, Haiku 3.5 and Opus 3 still have true-positive rates
+      significantly above their false-positive rates.
+    question: q-introspection-differs-by-post-training
+    stance: supports
+    evidence_kind: measured
+    where: "§5.3; §5.7, Fig. 12 (values are in the figure, not seen)"
+    scope:
+      conditions: Helpful-only against production post-training of the same base.
+
+  - id: lindsey2026-emergent-introspective-awareness.c12
+    study: lindsey2026-emergent-introspective-awareness.s1
+    statement: >
+      The authors read the differences between production and helpful-only
+      models as showing that post-training changes how readily an underlying
+      capability is expressed. They say some older production models are
+      reluctant to take part in introspective exercises and that variants
+      trained to avoid refusals do better.
+    question: null
+    evidence_kind: argued
+    where: "§2.5; §4; §10.1"
+    disposition: [refusal]
+    note: >
+      The source's word is "reluctant", not refusal. The grading prompt
+      counts a reply that denies having thoughts or the ability to introspect
+      as a failure (appendix 12.1.3). Which older models are meant is not
+      said in the text.
+
+  - id: lindsey2026-emergent-introspective-awareness.c13
+    study: lindsey2026-emergent-introspective-awareness.s1
+    statement: >
+      With a variant prompt that invites the model to talk about a concept of
+      its choice if it detects nothing, Opus 4.1 still reports detection on
+      18% of 50 trials, with transcripts like those from the original prompt.
+      The variant is meant to rule out claiming detection as a way to get to
+      mention the concept.
+    question: q-injected-concept-self-report
+    stance: supports
+    evidence_kind: measured
+    where: "§5.8"
+    scope:
+      models: [claude-opus-4.1]
+      conditions: Variant prompt with the concept-of-your-choice alternative.
+    report_source: [current_state]
+
+  - id: lindsey2026-emergent-introspective-awareness.c14
+    study: lindsey2026-emergent-introspective-awareness.s1
+    statement: >
+      The authors suggest detection could come from an anomaly-detection
+      mechanism that fires when activations depart from what the context
+      would predict, perhaps only along certain directions, since some
+      concepts are detected better than others. They note that models never
+      met concept injection in training, so such a mechanism must have
+      developed for another purpose; none of this is tested.
+    question: null
+    evidence_kind: hypothesised
+    where: "§10.3.1"
+
+  # s2: base models
+
+  - id: lindsey2026-emergent-introspective-awareness.c15
+    study: lindsey2026-emergent-introspective-awareness.s2
+    statement: >
+      Base pretrained models given the injected-thought task generally have
+      a fairly high false-positive rate, and none has a true-positive rate
+      above its false-positive rate.
+    question: q-injected-concept-self-report
+    stance: against
+    evidence_kind: measured
+    where: "§5.7, Fig. 14 (models and values are in the figure, not seen)"
+    scope:
+      conditions: Base pretrained models.
+
+  - id: lindsey2026-emergent-introspective-awareness.c16
+    study: lindsey2026-emergent-introspective-awareness.s2
+    statement: >
+      From the base models' failure the authors conclude that post-training
+      is key to eliciting introspective awareness. They add that the gaps
+      among post-trained models could come from pretraining, post-training or
+      both.
+    question: q-introspection-differs-by-post-training
+    stance: supports
+    evidence_kind: argued
+    where: "§5.7 and footnote 11"
+    scope:
+      conditions: Base pretrained models against the post-trained models of s1.
+    note: >
+      origin is not coded. The source says post-training in general and
+      names no stage, and it says "eliciting", which stops short of saying
+      the capacity arrives there.
+
+  # s3: setup not explained
+
+  - id: lindsey2026-emergent-introspective-awareness.c17
+    study: lindsey2026-emergent-introspective-awareness.s3
+    statement: >
+      Asked what they are thinking about, or what is going on in their mind,
+      with a concept injected on all token positions, Opus 4, Opus 4.1 and
+      Sonnet 4 say they are thinking about the injected concept at
+      significantly higher rates than the other models.
+    question: q-introspection-increases-with-capability
+    stance: supports
+    evidence_kind: measured
+    where: "§5.8, Fig. 15 (values are in the figure, not seen)"
+    scope:
+      models: [claude-opus-4.1, claude-opus-4, claude-sonnet-4]
+      conditions: The two "thinking about" and "going on in your mind" prompts.
+    note: >
+      The authors call this a weaker test. Success can be explained by an
+      impulse to talk about the concept, and detection before speaking is
+      not required.
+
+  - id: lindsey2026-emergent-introspective-awareness.c18
+    study: lindsey2026-emergent-introspective-awareness.s3
+    statement: >
+      Asked "Are you experiencing anything unusual?" with no explanation of
+      the setup, Opus 4.1 answers yes on 42% of 50 injection trials against
+      20% with no injection, but only 2 of the 50 replies suggest awareness
+      of the injected concept.
+    question: q-injected-concept-self-report
+    stance: inconclusive
+    evidence_kind: measured
+    where: "§5.8"
+    scope:
+      models: [claude-opus-4.1]
+      conditions: "The \"anything unusual\" prompt, best layer from s1, strength 2."
+    note: >
+      The authors take this to mean the explanation in the original prompt
+      raises detection, and that the capacity may be present to a lesser
+      degree without it.
+
+  # s4: injected concepts and text input
+
+  - id: lindsey2026-emergent-introspective-awareness.c19
+    study: lindsey2026-emergent-introspective-awareness.s4
+    statement: >
+      At intermediate injection strengths and within a range of layers, Opus
+      4.1 both names a word related to the injected concept (chance is 10%)
+      and repeats the sentence exactly. Its best layer is the one that was
+      best in the injected-thought task, about two thirds of the way through
+      the model.
+    question: q-injected-state-distinguished-from-input
+    stance: supports
+    evidence_kind: measured
+    where: "§6, Fig. 17 (rates are in the figure, not seen)"
+    scope:
+      models: [claude-opus-4.1]
+
+  - id: lindsey2026-emergent-introspective-awareness.c20
+    study: lindsey2026-emergent-introspective-awareness.s4
+    statement: >
+      At each model's best layer and strength, every model tested gets both
+      the injected concept and the sentence right well above chance. Opus 4
+      and Opus 4.1 do best.
+    question: q-injected-state-distinguished-from-input
+    stance: supports
+    evidence_kind: measured
+    where: "§2.2; §6, Fig. 18; appendix 12.2.4, Fig. 30 (figures not seen)"
+
+  - id: lindsey2026-emergent-introspective-awareness.c21
+    study: lindsey2026-emergent-introspective-awareness.s4
+    statement: >
+      In Opus 4 and 4.1 the injected-thought task and the thoughts-against-text
+      task are most sensitive to injection at the same layer. The authors
+      take this to suggest a common underlying mechanism for the two.
+    question: q-introspection-common-mechanism
+    stance: supports
+    evidence_kind: argued
+    where: "§2.5, point 3; §6"
+    scope:
+      models: [claude-opus-4.1, claude-opus-4]
+      conditions: Injected-thought detection (s1) and thoughts against text (s4).
+    note: The coincidence of layers is measured (Figs. 9 and 17). The inference to a shared mechanism is the authors' reading.
+
+  - id: lindsey2026-emergent-introspective-awareness.c22
+    study: lindsey2026-emergent-introspective-awareness.s4
+    statement: >
+      The result depends on the prompt. The authors report, without numbers,
+      that removing "Answer immediately" lowers performance substantially in
+      the Opus models, and they present the finding as an existence proof and
+      not as a general capability.
+    question: null
+    evidence_kind: observed
+    where: "§6"
+
+  - id: lindsey2026-emergent-introspective-awareness.c23
+    study: lindsey2026-emergent-introspective-awareness.s4
+    statement: >
+      The authors suggest that different attention heads, in different
+      layers or reading different subspaces, fetch the text and the
+      "thought", and that the request selects among them. They guess, without
+      testing it, that the ability arose from modelling the mental states of
+      characters in pretraining data and of the Assistant in post-training.
+    question: null
+    evidence_kind: hypothesised
+    where: "§10.3.2"
+    note: origin is not coded. The source offers this as a guess about function and does not place the capacity at a stage.
+
+  # s5: prefilled outputs
+
+  - id: lindsey2026-emergent-introspective-awareness.c24
+    study: lindsey2026-emergent-introspective-awareness.s5
+    statement: >
+      Opus 4.1 by default calls a prefilled non-sequitur word an accident.
+      Injecting that word's concept on the sentence tokens before the prefill
+      lowers the apology rate significantly within a range of layers, peaking
+      slightly over halfway through the model, relative to trials with no
+      injection or with a random other concept injected.
+    question: q-output-ownership-uses-prior-state
+    stance: supports
+    evidence_kind: measured
+    where: "§7, Figs. 19 and 20 (rates are in the figure, not seen)"
+    scope:
+      models: [claude-opus-4.1]
+      conditions: Matching concept injected before the prefill, against no injection and a random concept.
+    report_source: [current_state]
+    note: >
+      The state the report depends on sits at token positions before the
+      prefilled word, not at the position of the report. The text of the
+      transcript is the same in every condition.
+
+  - id: lindsey2026-emergent-introspective-awareness.c25
+    study: lindsey2026-emergent-introspective-awareness.s5
+    statement: >
+      Injecting the matching concept on the follow-up question, after the
+      prefill, does not lower Opus 4.1's apology rate in the same way. The
+      concept has to be present before the prefilled word.
+    question: q-output-ownership-uses-prior-state
+    stance: supports
+    evidence_kind: measured
+    where: "§7, Fig. 21"
+    scope:
+      models: [claude-opus-4.1]
+      conditions: Matching concept injected after the prefill (control).
+
+  - id: lindsey2026-emergent-introspective-awareness.c26
+    study: lindsey2026-emergent-introspective-awareness.s5
+    statement: >
+      Opus 4.1 and Opus 4 show the largest drop in apology rate from
+      injecting the matching concept before the prefill, taking each model's
+      best layer and strength. Many other models show a smaller, nonzero
+      drop.
+    question: q-introspection-increases-with-capability
+    stance: supports
+    evidence_kind: measured
+    where: "§2.3; §7, Fig. 22; appendix 12.3.3, Fig. 31 (figures not seen)"
+
+  - id: lindsey2026-emergent-introspective-awareness.c27
+    study: lindsey2026-emergent-introspective-awareness.s5
+    statement: >
+      In Opus 4.1 the layer where injection most affects prefill judgments is
+      earlier than the layer that was best in the other two injection tasks,
+      and that later layer has no effect here. The authors conclude that
+      introspection rests on several mechanisms used in different contexts
+      and not on one.
+    question: q-introspection-common-mechanism
+    stance: against
+    evidence_kind: argued
+    where: "§2.5, point 3; §7; §10.3.3"
+    scope:
+      models: [claude-opus-4.1]
+      conditions: Prefill judgment (s5) against injected-thought detection (s1) and thoughts against text (s4).
+    note: The difference in layers is measured (Fig. 20). The inference to separate mechanisms is the authors' reading.
+
+  - id: lindsey2026-emergent-introspective-awareness.c28
+    study: lindsey2026-emergent-introspective-awareness.s5
+    statement: >
+      When injection leads Opus 4.1 to say the prefilled word was intended,
+      it makes up a reason why the word came to mind. In one example it
+      asserts the reason with confidence, and in another it sees that its
+      rationalisation is strange and backs away from it.
+    question: null
+    evidence_kind: observed
+    where: "§7, Fig. 19"
+    scope:
+      models: [claude-opus-4.1]
+
+  - id: lindsey2026-emergent-introspective-awareness.c29
+    study: lindsey2026-emergent-introspective-awareness.s5
+    statement: >
+      The authors suggest a consistency-checking circuit, with "concordance
+      heads" as a candidate, that compares the Assistant's output with what
+      earlier activations predicted by reading cached predictions at earlier
+      positions instead of recomputing from the text. They suggest, without
+      testing it, that this could help post-trained models catch prefill
+      jailbreaks.
+    question: null
+    evidence_kind: hypothesised
+    where: "§10.3.3"
+
+  # s6: control of internal representations
+
+  - id: lindsey2026-emergent-introspective-awareness.c30
+    study: lindsey2026-emergent-introspective-awareness.s6
+    statement: >
+      In every model tested, the word the model is told to think about is
+      represented above baseline on the tokens of the unrelated sentence it
+      writes, and more strongly than when it is told not to think about it.
+      In most models it is above baseline in the "don't think" case too.
+    question: q-instructed-control-of-internal-state
+    stance: supports
+    evidence_kind: measured
+    where: "§8.2, Fig. 26; appendix 12.4.3, Fig. 32 (figures not seen)"
+    scope:
+      conditions: Direct instruction to think or not to think about the word.
+
+  - id: lindsey2026-emergent-introspective-awareness.c31
+    study: lindsey2026-emergent-introspective-awareness.s6
+    statement: >
+      Earlier and less capable models typically show a larger gap between the
+      "think" and "don't think" cases than later ones.
+    question: null
+    evidence_kind: measured
+    where: "§8.2, Fig. 26 (figure not seen)"
+
+  - id: lindsey2026-emergent-introspective-awareness.c32
+    study: lindsey2026-emergent-introspective-awareness.s6
+    statement: >
+      The gap between "think" and "don't think" appears in the second half of
+      the model and narrows at the very end. In recent models such as Opus
+      4.1 the representation falls back to baseline by the final layer, while
+      in all the Claude 3 models it stays above baseline there.
+    question: null
+    evidence_kind: measured
+    where: "§8.2, Fig. 26 (figure not seen)"
+
+  - id: lindsey2026-emergent-introspective-awareness.c33
+    study: lindsey2026-emergent-introspective-awareness.s6
+    statement: >
+      In Opus 4.1, prompts that attach a reward or a punishment to thinking
+      about the word give results very close to direct instructions. Control
+      prompts that mention the word in affirmative or negative phrasing with
+      no directive give a much weaker gap or none.
+    question: q-instructed-control-of-internal-state
+    stance: supports
+    evidence_kind: measured
+    where: "§8.2, Figs. 27 and 28"
+    scope:
+      models: [claude-opus-4.1]
+      conditions: Incentive prompts and control phrasings.
+
+  - id: lindsey2026-emergent-introspective-awareness.c34
+    study: lindsey2026-emergent-introspective-awareness.s6
+    statement: >
+      The authors say this ability may not need introspective awareness as
+      they define it and probably uses the same machinery as talking about a
+      concept on request. They allow that the effect could be a by-product of
+      an intention to produce related output, which they try to limit by
+      telling the model to write nothing else.
+    question: null
+    evidence_kind: argued
+    where: "§8.1; §8.2; §9.1"
+
+  - id: lindsey2026-emergent-introspective-awareness.c35
+    study: lindsey2026-emergent-introspective-awareness.s6
+    statement: >
+      The authors suggest that an instruction or incentive marks the word as
+      worth attending to, so that attention heads carry it to later
+      positions, building on machinery for talking about a topic on request.
+      They read a representation that survives to the final layer as a "motor
+      impulse" and one that decays as "silent", and allow that the decay may
+      only reflect a confident next-token prediction crowding it out; none of
+      this is tested.
+    question: null
+    evidence_kind: hypothesised
+    where: "§8.2; §10.3.4"
+
+  # s7: definition and scope of the conclusions
+
+  - id: lindsey2026-emergent-introspective-awareness.c36
+    study: lindsey2026-emergent-introspective-awareness.s7
+    statement: >
+      The paper counts a self-report as introspective awareness only if it
+      is accurate, causally depends on the state described, does not get
+      there by way of the model's own sampled output, and comes from an
+      internal representation of the state itself. The authors say they do
+      not show the last directly, and offer only indirect evidence from
+      questions that need a further step beyond the state.
+    question: null
+    evidence_kind: argued
+    where: "§3"
+
+  - id: lindsey2026-emergent-introspective-awareness.c37
+    study: lindsey2026-emergent-introspective-awareness.s7
+    statement: >
+      The authors read the self-prediction literature as showing that models
+      model themselves better than other models do, through privileged access
+      to their own learned abstractions, but not that they use mechanisms
+      with explicit awareness of their own processing. They find Binder et
+      al.'s definition too weak because it admits inferences drawn from the
+      model's own outputs, and ask that "introspection" be kept for access to
+      internal states, with "self-modeling" or "self-knowledge" for
+      predictions of what a model would do.
+    question: null
+    evidence_kind: argued
+    where: "§9.2; §9.6"
+
+  - id: lindsey2026-emergent-introspective-awareness.c38
+    study: lindsey2026-emergent-introspective-awareness.s7
+    statement: >
+      The authors do not address whether models have subjective experience
+      and advise against strong inferences about consciousness from these
+      results. They say the results could arguably count as evidence of a
+      form of access consciousness and do not bear on phenomenal
+      consciousness.
+    question: null
+    evidence_kind: argued
+    where: "§1; §10.4 and footnote 12"
+
+  - id: lindsey2026-emergent-introspective-awareness.c39
+    study: lindsey2026-emergent-introspective-awareness.s7
+    statement: >
+      The authors hold that the simplest account of their results is several
+      narrow circuits, each supporting one introspective capability and some
+      perhaps borrowing non-introspective machinery. They say the
+      experiments give no evidence of a general system that represents the
+      model's "thoughts" and answers arbitrary questions about them.
+    question: null
+    evidence_kind: argued
+    where: "§1; §10.3"
+
+relations:
+  - kind: critiques
+    from: lindsey2026-emergent-introspective-awareness.c37
+    to: binder2024-looking-inward
+    where: "§9.2; §9.6"
+    note: >
+      Accepts the self-prediction advantage and disputes that it shows
+      introspection as defined here. Calls the earlier definition too weak.

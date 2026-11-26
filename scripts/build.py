@@ -36,7 +36,9 @@ CREATE TABLE models (
 );
 CREATE TABLE model_stage_methods (model TEXT, method TEXT);
 CREATE TABLE model_stage_datasets (model TEXT, dataset TEXT);
-CREATE TABLE questions (id TEXT PRIMARY KEY, text TEXT, status TEXT, added TEXT);
+CREATE TABLE questions (id TEXT PRIMARY KEY, text TEXT, parent TEXT, status TEXT, added TEXT);
+-- Each question with the top of its parent chain (itself if it has no parent).
+CREATE TABLE question_roots (question TEXT PRIMARY KEY, root TEXT);
 CREATE TABLE sources (
     id TEXT PRIMARY KEY, title TEXT, date TEXT, year INTEGER,
     coded_by TEXT, coder_model TEXT, coded_on TEXT, version_read TEXT,
@@ -56,23 +58,33 @@ CREATE TABLE claims (
     id TEXT PRIMARY KEY, source TEXT, study TEXT, statement TEXT, question TEXT,
     stance TEXT, evidence_kind TEXT, scope_conditions TEXT, where_ TEXT, note TEXT
 );
+-- Every question a claim takes a stance on: its main one and any others.
+CREATE TABLE claim_questions (claim TEXT, question TEXT, stance TEXT, main INTEGER);
+CREATE TABLE claim_compares (claim TEXT, study TEXT);
 CREATE TABLE claim_models (claim TEXT, model TEXT, scoped INTEGER);
 -- Optional claim facets (disposition, report_source, origin, integration, aspect).
 CREATE TABLE claim_codes (claim TEXT, facet TEXT, value TEXT);
 CREATE TABLE claim_about (claim TEXT, kind TEXT, ref TEXT);
-CREATE TABLE relations (source TEXT, kind TEXT, from_ TEXT, to_ TEXT, where_ TEXT, note TEXT);
+CREATE TABLE relations (source TEXT, kind TEXT, from_ TEXT, to_ TEXT, to_external TEXT, where_ TEXT, note TEXT);
 
 -- One row per claim and facet value, with facets inherited from the study.
 CREATE VIEW claim_facets AS
 SELECT c.id AS claim, c.question, c.stance, f.facet, f.value
 FROM claims c JOIN study_facets f ON f.study = c.study;
 
--- Pairs of claims that take opposite stances on the same question.
+-- Pairs of claims that take opposite stances on the same question, or on
+-- questions under the same parent. `question` is the shared top-level question.
 CREATE VIEW conflicts AS
-SELECT a.question, a.id AS supports, b.id AS against,
-       a.scope_conditions AS supports_conditions, b.scope_conditions AS against_conditions
-FROM claims a JOIN claims b ON a.question = b.question
-WHERE a.stance = 'supports' AND b.stance = 'against';
+SELECT ra.root AS question, a.claim AS supports, b.claim AS against,
+       a.question AS supports_question, b.question AS against_question,
+       ca.scope_conditions AS supports_conditions, cb.scope_conditions AS against_conditions
+FROM claim_questions a
+JOIN question_roots ra ON ra.question = a.question
+JOIN claim_questions b ON b.stance = 'against'
+JOIN question_roots rb ON rb.question = b.question AND rb.root = ra.root
+JOIN claims ca ON ca.id = a.claim
+JOIN claims cb ON cb.id = b.claim
+WHERE a.stance = 'supports';
 
 -- For each conflicting pair, the facet values one side has and the other lacks.
 CREATE VIEW conflict_facet_diff AS
@@ -136,7 +148,7 @@ def build(out_path):
             (
                 m["id"], m.get("name"), m.get("family"), m.get("developer"), text(m.get("size")),
                 None if m.get("open_weights") is None else int(m["open_weights"]),
-                m.get("derived_from"), int(m.get("stage") is not None),
+                ", ".join(as_list(m.get("derived_from"))) or None, int(m.get("stage") is not None),
                 stage.get("disclosure"), text(stage.get("documented_in")), text(m.get("note")),
             ),
         )
@@ -145,11 +157,18 @@ def build(out_path):
         for ds in as_list(stage.get("datasets")):
             db.execute("INSERT INTO model_stage_datasets VALUES (?,?)", (m["id"], ds))
 
+    parents = {}
     for _, q in load_list_dir("questions"):
+        parents[q["id"]] = q.get("parent")
         db.execute(
-            "INSERT INTO questions VALUES (?,?,?,?)",
-            (q["id"], text(q.get("text")), q.get("status"), text(q.get("added"))),
+            "INSERT INTO questions VALUES (?,?,?,?,?)",
+            (q["id"], text(q.get("text")), q.get("parent"), q.get("status"), text(q.get("added"))),
         )
+    for qid in parents:
+        root = qid
+        while parents.get(root):
+            root = parents[root]
+        db.execute("INSERT INTO question_roots VALUES (?,?)", (qid, root))
 
     for _, src in load_sources():
         sid = src["id"]
@@ -212,6 +231,12 @@ def build(out_path):
                     text(claim.get("where")), text(claim.get("note")),
                 ),
             )
+            if claim.get("question"):
+                db.execute("INSERT INTO claim_questions VALUES (?,?,?,1)", (cid, claim["question"], claim.get("stance")))
+            for link in as_list(claim.get("other_questions")):
+                db.execute("INSERT INTO claim_questions VALUES (?,?,?,0)", (cid, link["question"], link["stance"]))
+            for other in as_list(claim.get("compares")):
+                db.execute("INSERT INTO claim_compares VALUES (?,?)", (cid, other))
             scoped = as_list((claim.get("scope") or {}).get("models"))
             for mid in scoped or study_models.get(claim["study"], []):
                 db.execute("INSERT INTO claim_models VALUES (?,?,?)", (cid, mid, int(bool(scoped))))
@@ -225,8 +250,9 @@ def build(out_path):
 
         for rel in as_list(src.get("relations")):
             db.execute(
-                "INSERT INTO relations VALUES (?,?,?,?,?,?)",
-                (sid, rel.get("kind"), rel.get("from"), rel.get("to"), text(rel.get("where")), text(rel.get("note"))),
+                "INSERT INTO relations VALUES (?,?,?,?,?,?,?)",
+                (sid, rel.get("kind"), rel.get("from"), rel.get("to"), text(rel.get("to_external")),
+                 text(rel.get("where")), text(rel.get("note"))),
             )
 
     db.commit()

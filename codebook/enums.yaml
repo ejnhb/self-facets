@@ -1,7 +1,8 @@
 # Bookkeeping vocabularies. See README.md for how these differ from facets.
 enums:
   read_depth:
-    full_text: The whole document was read, including appendices.
+    full_text: The whole document was read, including appendices and figures.
+    text_only: All of the text was read, including appendices, but figures were seen only as captions. The usual case for extracted text.
     partial: Part of the full text was read. Say which parts in read_parts.
     abstract_only: Only the abstract was read.
     summary_only: Only a third-party or machine-generated summary was read.
@@ -37,6 +38,8 @@ enums:
     government: A government body or public institute.
     independent: No institutional affiliation.
 
+  # Direction: `from` is the work doing the replicating, extending or
+  # criticising; `to` is the earlier work.
   relation_kind:
     replicates: Repeats the earlier work and finds the same.
     fails_to_replicate: Repeats the earlier work and does not find the same.

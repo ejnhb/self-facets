@@ -2,6 +2,54 @@
 
 Newest first. Each entry: what changed, what is open, what needs a decision.
 
+## 2026-11-26: first pilot and codebook 0.3
+
+Coder: claude (claude-fable-5-2), working with the owner. Six blind coders
+(three claude-fable-5-2, three claude-opus-5-5) each coded one of three papers
+from a clean copy of the repo.
+
+**Added**
+
+- `pilot/2026-11-26/`: the six records and the coders' notes, with a summary.
+- Codebook 0.3. See `codebook/CHANGELOG.md`.
+- Question parents, `other_questions`, `compares`, `to_external`, and lighter
+  coding for conceptual studies, in the scripts.
+- A rewritten splitting rule and new rules on registries, artefacts, dates,
+  questions and relations in `CLAUDE.md`.
+
+**Learned**
+
+- Agreement between the two coders was 87% on 126 facet codings over nine
+  matched studies. It is an upper bound: both coders are Claude models, and
+  some agreements were the same fallback value chosen for want of a fit.
+- Splits matched study for study on the paper with one section per
+  experiment, and did not match on the other two.
+- With a parent question in place, the Binder and Song records conflict as
+  they should, and the facet difference includes trained against spontaneous
+  elicitation. This was checked in a scratch copy with one pilot record.
+
+**Open**
+
+- The pilot records are coded against 0.2 and are not in `sources/`. They need
+  recoding against 0.3, reconciling (one record per paper, shared ids for
+  questions, people, orgs and models) and a check of their numbers against the
+  papers by a coder who has not seen them.
+- 0.3 has not itself been piloted.
+- The conflicts view does not show which models each side is scoped to, so two
+  claims in one study that differ only by model show no difference.
+- Mixed `basis` or `confidence` within one facet entry cannot be recorded
+  apart from the note.
+- `report_source` cannot record that a source rules a route out.
+
+**For the owner to decide**
+
+- Confirm or change codebook 0.3.
+- Whether the first parent question, `q-privileged-self-access`, is worded as
+  wanted. It will sit above most of the introspection literature.
+- Still open from 0.2: `stake` and `allegiance`, the fifth `report_source`
+  value, and whether `integration` is wanted yet. The pilot papers did not
+  exercise them.
+
 ## 2026-11-26: codebook 0.2 after review
 
 Coder: claude (claude-fable-5-2), working with the owner.

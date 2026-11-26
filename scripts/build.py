@@ -21,6 +21,7 @@ from _load import (
     facet_entry,
     load_codebook,
     load_links,
+    evaluate,
     load_list_dir,
     load_sources,
     model_ref,
@@ -78,9 +79,16 @@ CREATE TABLE claims (
 -- `requires` of the question or a question above it, so it is not evidence there even with no reading applied.
 CREATE TABLE claim_questions (claim TEXT, question TEXT, stance TEXT, counted INTEGER, note TEXT, origin TEXT);
 -- Readings (readings/) and views (views/): see design/readings.md.
+-- Definitions (definitions/): named logic over facets for what a design tests in one stated sense.
+CREATE TABLE definitions (id TEXT PRIMARY KEY, construct TEXT, statement TEXT, sources TEXT, not_expressible TEXT);
+-- Claims whose (unlensed) facets satisfy a definition.
+CREATE TABLE claim_definitions (claim TEXT, definition TEXT);
+-- Studies whose authors use a construct label (construct facet) that some definitions define, but whose claims
+-- match none of those definitions.
+CREATE TABLE construct_mismatches (study TEXT, construct TEXT, definitions TEXT);
 CREATE TABLE readings (id TEXT PRIMARY KEY, status TEXT, statement TEXT, reinterpret TEXT, tested_by TEXT);
 CREATE TABLE reading_matches (reading TEXT, claim TEXT);
-CREATE TABLE views (id TEXT PRIMARY KEY, question TEXT, readings TEXT, note TEXT);
+CREATE TABLE views (id TEXT PRIMARY KEY, question TEXT, readings TEXT, substitute TEXT, note TEXT);
 -- Every claim linked to the view's question or a question under it: its stance on the view's question,
 -- whether it counts with no reading and under the view, and which reading excluded it.
 CREATE TABLE view_evidence (
@@ -367,25 +375,28 @@ def build(out_path):
                 out[name] = set(as_list(claim.get(name)))
         return out
 
+    definitions = {d["id"]: d for _, d in load_list_dir("definitions")}
+
+    def matcher(values, study_id, models):
+        def match(key, allowed):
+            if key == "comparison.closest":
+                return closest_by_study.get(study_id) in allowed
+            if key.startswith("model."):
+                return bool(models) and all(model_reach.get(m) in allowed for m in models)
+            return bool(values.get(key, set()) & allowed)
+        return match
+
+    def holds(expr, cid, values, substitute=None):
+        claim, _, models = claims_mem[cid]
+        return evaluate(expr, matcher(values, claim["study"], models), definitions, substitute)
+
     def matches(reading, cid):
         applies = reading.get("applies_to") or {}
-        claim, _, models = claims_mem[cid]
+        claim, _, _ = claims_mem[cid]
         targets = set(as_list(applies.get("targets")))
         if targets:
             return cid in targets or claim["study"] in targets
-        values = record_values(cid)
-        for name, allowed in (applies.get("selector") or {}).items():
-            allowed = set(as_list(allowed))
-            if name == "comparison.closest":
-                if closest_by_study.get(claim["study"]) not in allowed:
-                    return False
-                continue
-            if name.startswith("model."):
-                if not models or not all(model_reach.get(m) in allowed for m in models):
-                    return False
-            elif not (values.get(name, set()) & allowed):
-                return False
-        return True
+        return holds(applies.get("selector"), cid, record_values(cid))
 
     def lens(cid, reading_ids):
         """Facet values of a claim under the readings, which reading changed each facet, and reinterpretations."""
@@ -411,12 +422,17 @@ def build(out_path):
             out.append(qid); qid = qs[qid].get("parent")
         return out
 
-    def counts(cid, qid, reading_ids):
-        """Whether the claim counts as evidence on qid under the readings, and which reading excluded it."""
+    def counts(cid, qid, reading_ids, substitute=None):
+        """Whether the claim counts as evidence on qid under the readings (and definition substitutions), and why not."""
         values, changed, _ = lens(cid, reading_ids)
         for anc in chain(qid):
-            for name, allowed in (qs[anc].get("requires") or {}).items():
-                if not (values.get(name, set()) & set(as_list(allowed))):
+            req = qs[anc].get("requires") or {}
+            for name, allowed in req.items():
+                if name == "definitions":
+                    for d in as_list(allowed):
+                        if not holds(d, cid, values, substitute):
+                            return False, ", ".join(sorted(set(changed.values()))) or f"requires {(substitute or {}).get(d, d)} ({anc})"
+                elif not (values.get(name, set()) & set(as_list(allowed))):
                     return False, changed.get(name, "requires " + anc)
         return True, None
 
@@ -429,11 +445,32 @@ def build(out_path):
                 db.execute("INSERT INTO reading_matches VALUES (?,?)", (rid, cid))
 
     def in_frame(cid, qid):
-        frame = qs[qid].get("frame") or {}
-        if not frame:
-            return False
-        values = record_values(cid)
-        return all(values.get(name, set()) & set(as_list(vals)) for name, vals in frame.items())
+        frame = qs[qid].get("frame")
+        return bool(frame) and holds(frame, cid, record_values(cid))
+
+    for did, d in definitions.items():
+        db.execute("INSERT INTO definitions VALUES (?,?,?,?,?)",
+                   (did, d.get("construct"), text(d.get("statement")), "; ".join(as_list(d.get("sources"))) or None,
+                    text(d.get("not_expressible"))))
+        for cid in claims_mem:
+            if holds(did, cid, record_values(cid)):
+                db.execute("INSERT INTO claim_definitions VALUES (?,?)", (cid, did))
+    by_construct = {}
+    for did, d in definitions.items():
+        if d.get("construct"):
+            by_construct.setdefault(d["construct"], []).append(did)
+    claims_by_study = {}
+    for cid, (claim, _, _) in claims_mem.items():
+        claims_by_study.setdefault(claim["study"], []).append(cid)
+    for stid, cids in claims_by_study.items():
+        kinds = record_values(cids[0]).get("study_kind", set())
+        if kinds & {"conceptual", "review"}:
+            continue  # no design to test against a definition
+        labels = record_values(cids[0]).get("construct", set())
+        for label in sorted(labels):
+            defs = by_construct.get(label)
+            if defs and not any(holds(d, c, record_values(c)) for d in defs for c in cids):
+                db.execute("INSERT INTO construct_mismatches VALUES (?,?,?)", (stid, label, ", ".join(defs)))
 
     links = []
     for _, data in load_links():
@@ -472,7 +509,9 @@ def build(out_path):
 
     for _, v in load_list_dir("views"):
         vid, vq, rids = v["id"], v["question"], as_list(v.get("readings"))
-        db.execute("INSERT INTO views VALUES (?,?,?,?)", (vid, vq, ", ".join(rids), text(v.get("note"))))
+        subst = v.get("substitute") or {}
+        db.execute("INSERT INTO views VALUES (?,?,?,?,?)", (vid, vq, ", ".join(rids),
+                   ", ".join(f"{a} -> {b}" for a, b in subst.items()) or None, text(v.get("note"))))
         for link in links:
             cid, lq = link["claim"], link["question"]
             if vq not in chain(lq):
@@ -500,7 +539,7 @@ def build(out_path):
                 if sign == -1 and stance in ("supports", "against"):
                     stance = "against" if stance == "supports" else "supports"
                 base_ok, _ = counts(cid, lq, [])
-                ok, why = counts(cid, lq, rids)
+                ok, why = counts(cid, lq, rids, subst)
                 db.execute("INSERT INTO view_evidence VALUES (?,?,?,?,?,?,?)", (vid, cid, lq, stance, int(base_ok), int(ok), why))
                 _, _, notes = lens(cid, rids)
             for rid, note in notes:

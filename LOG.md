@@ -2,6 +2,40 @@
 
 Newest first. Each entry: what changed, what is open, what needs a decision.
 
+## 2026-11-26: codebook 0.9 (definitions built, starting with Lindsey)
+
+Coder: claude (claude-opus-5-5), working with the owner.
+
+**Changed**
+
+- `definitions/` with one definition, `d-introspection-grounded` (Lindsey
+  2026, §3, criteria 1 and 2; internality and metacognitive representation
+  recorded as not expressible). It matches 35 claims in 5 studies (Lindsey s1,
+  s3, s4, s5; Rubin s1).
+- One logic for definitions, frames, reading selectors and `requires`;
+  `requires: {definitions: [...]}`; view `substitute`.
+- Frames using the definition: candidates for
+  `q-introspection-differs-by-post-training` 27 to 16,
+  `q-introspection-increases-with-capability` 52 to 28,
+  `q-stabilisation-improves-introspection` 87 to 0 (no coded paper tests it);
+  `q-injected-state-report` unchanged at 25.
+- `construct_mismatches`: 13 experimental studies are labelled introspection
+  but do not meet the grounding definition (Binder et al., Song et al., Lindsey
+  s2 and s6, Rubin s2 and s3). With one definition loaded this reads as "not
+  introspection in Lindsey's grounded sense"; Lindsey §9.6 himself calls
+  Binder et al.'s case self-modelling.
+- `design/candidate-facets.md`: internality (partly derivable: nothing
+  generated before the report; the scoring-rule case would need a facet),
+  metacognitive representation, injection depth.
+
+**Tested** on a throwaway copy: definition cycles, bad facet values in logic,
+an unknown substituted definition, and `not` with a model field.
+
+**For the owner to decide**
+
+- Which definition to add next (privileged access after Binder et al. and
+  Song et al. would make the first substitution view possible).
+
 ## 2026-11-26: design proposal for definitions
 
 Coder: claude (claude-opus-5-5), working with the owner.

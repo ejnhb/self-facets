@@ -120,3 +120,62 @@ def relation(a, b, models):
     if ma.get("developer") and ma.get("developer") == mb.get("developer"):
         return "same_developer"
     return "other"
+
+
+# Logic over facets, shared by frames, selectors, requires and definitions.
+# An expression is a definition id (string), or a mapping whose keys are joined by AND:
+#   all: [expr, ...]   any: [expr, ...]   not: expr   def: id or [ids]
+#   FACET: [values]    (the record shares a value; model.FIELD and comparison.closest too)
+LOGIC_KEYS = ("all", "any", "not", "def")
+
+
+def evaluate(expr, match, definitions, substitute=None, _seen=()):
+    """True if the expression holds. match(key, allowed) tests one facet or field; substitute swaps definitions."""
+    substitute = substitute or {}
+    if expr is None:
+        return True
+    if isinstance(expr, str):
+        did = substitute.get(expr, expr)
+        if did in _seen:
+            raise ValueError(f"definition '{did}' refers to itself")
+        return evaluate((definitions[did] or {}).get("logic"), match, definitions, substitute, _seen + (did,))
+    if isinstance(expr, list):
+        return all(evaluate(e, match, definitions, substitute, _seen) for e in expr)
+    for key, val in expr.items():
+        if key == "all":
+            ok = all(evaluate(e, match, definitions, substitute, _seen) for e in as_list(val))
+        elif key == "any":
+            ok = any(evaluate(e, match, definitions, substitute, _seen) for e in as_list(val))
+        elif key == "not":
+            ok = not evaluate(val, match, definitions, substitute, _seen)
+        elif key == "def":
+            ok = all(evaluate(d, match, definitions, substitute, _seen) for d in as_list(val))
+        else:
+            ok = match(key, set(as_list(val)))
+        if not ok:
+            return False
+    return True
+
+
+def logic_atoms(expr):
+    """Every (key, values) test and every definition id an expression uses, for validation."""
+    atoms, defs = [], []
+    if expr is None:
+        return atoms, defs
+    if isinstance(expr, str):
+        return atoms, [expr]
+    if isinstance(expr, list):
+        for e in expr:
+            a, d = logic_atoms(e); atoms += a; defs += d
+        return atoms, defs
+    for key, val in expr.items():
+        if key in ("all", "any"):
+            for e in as_list(val):
+                a, d = logic_atoms(e); atoms += a; defs += d
+        elif key == "not":
+            a, d = logic_atoms(val); atoms += a; defs += d
+        elif key == "def":
+            defs += as_list(val)
+        else:
+            atoms.append((key, as_list(val)))
+    return atoms, defs

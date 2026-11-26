@@ -18,6 +18,7 @@ from _load import (
     load_codebook,
     load_links,
     load_list_dir,
+    logic_atoms,
     load_sources,
     model_ref,
 )
@@ -81,6 +82,53 @@ def validate():
     datasets = index(rep, load_list_dir("datasets"), "dataset")
     models = index(rep, load_list_dir("models"), "model")
     questions = index(rep, load_list_dir("questions"), "question")
+    definitions = index(rep, load_list_dir("definitions"), "definition")
+
+    def check_logic(expr, where):
+        atoms, defs = logic_atoms(expr)
+        for key, vals in atoms:
+            if key == "comparison.closest":
+                bad = [v for v in vals if v not in RELATIONS]
+                if bad:
+                    rep.err(where, f"comparison.closest {bad} not in {RELATIONS}")
+            elif key.startswith("model."):
+                field = key[len("model."):]
+                if field != "post_training_reached":
+                    rep.err(where, f"'{key}': models have no field '{field}' to test")
+                else:
+                    for v in vals:
+                        if v not in enums.get("post_training_reached", {}):
+                            rep.err(where, f"'{key}': '{v}' is not in enums.yaml post_training_reached")
+            elif key not in facets:
+                rep.err(where, f"'{key}' is not a facet, model.FIELD or comparison.closest")
+            else:
+                for v in vals:
+                    if v not in facets[key]["values"] and v not in SPECIAL:
+                        rep.err(where, f"{key} '{v}' is not in the codebook")
+        for d in defs:
+            if d not in definitions:
+                rep.err(where, f"definition '{d}' is not in definitions/")
+
+    for did, d in definitions.items():
+        where = f"definition {did}"
+        for key in set(d) - {"id", "construct", "statement", "sources", "logic", "not_expressible", "note"}:
+            rep.err(where, f"unknown key '{key}'")
+        if not d.get("statement"):
+            rep.err(where, "missing statement")
+        if not d.get("logic"):
+            rep.err(where, "missing logic")
+        if d.get("construct") is not None and d["construct"] not in facets["construct"]["values"]:
+            rep.err(where, f"construct '{d['construct']}' is not a construct value")
+        check_logic(d.get("logic"), where)
+    for did in definitions:  # cycles
+        stack, seen = [did], set()
+        while stack:
+            cur = stack.pop()
+            for ref in logic_atoms((definitions.get(cur) or {}).get("logic"))[1]:
+                if ref == did:
+                    rep.err(f"definition {did}", "refers to itself, directly or through other definitions"); stack = []; break
+                if ref in definitions and ref not in seen:
+                    seen.add(ref); stack.append(ref)
 
     for oid, org in orgs.items():
         check_enum(rep, f"org {oid}", "kind", org.get("kind"), enums, "org_kind")
@@ -118,18 +166,17 @@ def validate():
                     rep.err(f"question {qid}", f"auto_stance effect_of '{var}' is not a varies value")
             if not q.get("frame"):
                 rep.err(f"question {qid}", "auto_stance needs a frame, to say which studies' effects count")
-        for name, vals in (q.get("frame") or {}).items():
-            if name not in facets:
-                rep.err(f"question {qid}", f"frame facet '{name}' is not a facet")
-                continue
-            for v in as_list(vals):
-                if v not in facets[name]["values"]:
-                    rep.err(f"question {qid}", f"frame {name} '{v}' is not in the codebook")
+        check_logic(q.get("frame"), f"question {qid} frame")
         requires = q.get("requires") or {}
         if not isinstance(requires, dict):
             rep.err(f"question {qid}", "requires must map a facet to the values a claim needs to count")
             requires = {}
+        for d in as_list(requires.get("definitions")):
+            if d not in definitions:
+                rep.err(f"question {qid}", f"requires definition '{d}', which is not in definitions/")
         for name, vals in requires.items():
+            if name == "definitions":
+                continue
             if name not in facets:
                 rep.err(f"question {qid}", f"requires '{name}', which is not a facet")
                 continue
@@ -418,7 +465,7 @@ def validate():
             # needs and requires, from the question and every question above it
             needs = {}
             for anc in ancestors(qid):
-                for name in as_list(questions[anc].get("needs")) + list((questions[anc].get("requires") or {})):
+                for name in as_list(questions[anc].get("needs")) + [k for k in (questions[anc].get("requires") or {}) if k != "definitions"]:
                     needs.setdefault(name, anc)
             for name, anc in sorted(needs.items()):
                 f = facets.get(name)
@@ -443,25 +490,7 @@ def validate():
         applies = r.get("applies_to") or {}
         if bool(applies.get("selector")) == bool(applies.get("targets")):
             rep.err(where, "applies_to needs exactly one of selector (facet values) or targets (claim or study ids)")
-        for name, vals in (applies.get("selector") or {}).items():
-            if name == "comparison.closest":
-                for v in as_list(vals):
-                    if v not in RELATIONS:
-                        rep.err(where, f"selector comparison.closest '{v}' is not one of {RELATIONS}")
-                continue
-            if name.startswith("model."):
-                field = name[len("model."):]
-                if field not in model_fields:
-                    rep.err(where, f"selector '{name}': models have no field '{field}' to select on")
-                for v in as_list(vals):
-                    if field in model_fields and v not in model_fields[field]:
-                        rep.err(where, f"selector '{name}': '{v}' is not in enums.yaml {field}")
-            elif name not in facets:
-                rep.err(where, f"selector '{name}' is not a facet (or model.FIELD)")
-            else:
-                for v in as_list(vals):
-                    if v not in facets[name]["values"] and v not in SPECIAL:
-                        rep.err(where, f"selector {name} '{v}' is not in the codebook")
+        check_logic(applies.get("selector"), where + " selector")
         for t in as_list(applies.get("targets")):
             if t not in all_claims and t not in all_studies:
                 rep.err(where, f"target '{t}' is not a coded claim or study")
@@ -488,6 +517,10 @@ def validate():
         for rid in as_list(v.get("readings")):
             if rid not in readings:
                 rep.err(f"view {vid}", f"reading '{rid}' is not in readings/")
+        for a_, b_ in (v.get("substitute") or {}).items():
+            for d in (a_, b_):
+                if d not in definitions:
+                    rep.err(f"view {vid}", f"substitute: '{d}' is not in definitions/")
 
     # The templates must name every facet the codebook has, and nothing it lacks, so they cannot drift.
     from _load import ROOT, read_yaml

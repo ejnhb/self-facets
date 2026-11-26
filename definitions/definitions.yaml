@@ -1,0 +1,21 @@
+# Definitions: named logic over facets for what a design tests, in one stated sense (design/definitions.md).
+# construct keeps the authors' label; a definition says what the design tests. In this repo every definition rests
+# on a published source; not_expressible records what part of the source's definition the facets cannot capture,
+# so a match reads as "consistent with", not "satisfies".
+
+- id: d-introspection-grounded
+  construct: introspection
+  statement: >
+    The self-report describes an internal state and is checked against that state by a means that can establish a
+    causal link (an intervention set by the experimenter, a reading of the internals, or a probe).
+  sources:
+    - "Lindsey (2026), Emergent introspective awareness in large language models, arXiv 2601.01828, §3 (criterion 1, accuracy; criterion 2, grounding)"
+  logic:
+    all:
+      - {evidence: [self_report]}
+      - {report_target: [own_internal_state, injected_state, own_computation]}
+      - {validated_against: [known_intervention, internals, probe]}
+  not_expressible: >
+    Criterion 3, internality: the state's influence on the report must not route through the model's own sampled
+    outputs. Criterion 4, metacognitive representation: the report must come from a representation of the state, not a
+    direct translation of it. Neither is a facet; see design/candidate-facets.md.

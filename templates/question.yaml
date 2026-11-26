@@ -11,10 +11,10 @@
   needs: [report_source]            # (O) interpretive facets every linked claim (and its study) must code
   requires:                         # (O) facet values a linked claim must have to count as evidence (inherited down;
     evidence: [self_report]         #     readings can reclassify a claim out of it). Implies the facet is coded.
-  frame:                            # (O) facet values a relevant study has; the build lists matching claims not yet
-                                    #     linked as candidates (question_candidates)
-    construct: [introspection]
-    varies: [post_training_stage]
+    # definitions: [d-...]          #     or definitions its study must match (a view can substitute others)
+  frame:                            # (O) what a relevant study looks like, as logic (as in definitions): keys are ANDed,
+    def: d-introspection-grounded   #     each FACET shares a value; all / any / not / def nest. The build lists matching
+    varies: [post_training_stage]   #     claims not yet linked as candidates (question_candidates)
   auto_stance:                      # (O) for "does X change Y?": claims in frame-matching studies whose effect_of is
     effect_of: [post_training_stage]  #     one of these take a stance from effect_presence (present supports, absent against)
   added: 2026-01-31                 # (R)

@@ -1,10 +1,10 @@
 facet: validated_against
-version: 0.6
+version: "0.10"
 applies_to: study
 cardinality: many
 required: true
 tier: core
-question: What is the system's self-report checked against?
+question: What is the system's self-report checked against, or, in a study with no self-report, the decoder's reading?
 values:
   behaviour:
     definition: The system's own observed behaviour.
@@ -38,4 +38,10 @@ values:
     rule: Use when reports are compared with each other and with nothing outside them.
   none:
     definition: Reports are taken at face value.
-    rule: Use when no check is made. Distinct from not_applicable, which means there is no self-report to check.
+    rule: Use when no check is made. Distinct from not_applicable, which means nothing is read out and scored (conceptual work, or a study with neither a report nor a decoder).
+notes: >
+  In a probe-only study the probe's reading is what is scored, so code what it
+  is scored against: known_intervention for an injected state, with
+  shuffled-label or uninjected controls covered by the same value. probe is
+  for a probe used as the baseline for a report, so it does not apply to the
+  probe's own scoring.

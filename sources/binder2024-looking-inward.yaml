@@ -50,6 +50,7 @@ studies:
       - llama-3.1-70b
       - gpt-3.5-turbo-0125
     facets:
+      output_route_control: {value: by_construction, basis: stated, where: "§2.2", note: "No chain of thought is allowed, and the hypothetical question is asked without the object-level response in context; the ground-truth behaviour is collected in a separate context (§2.1)."}
       similarity_adjustment: not_applicable
       system_prompt:
         value: unspecified
@@ -130,6 +131,7 @@ studies:
       - {id: llama-3.1-70b, roles: [subject, comparison]}
       - {id: gpt-3.5-turbo-0125, roles: [subject, comparison]}
     facets:
+      output_route_control: {value: by_construction, basis: stated, where: "§2.2", note: "No chain of thought is allowed, and the hypothetical question is asked without the object-level response in context; the ground-truth behaviour is collected in a separate context (§2.1)."}
       similarity_adjustment:
         value: none
         basis: operational
@@ -188,6 +190,7 @@ studies:
       - {id: gpt-4o-2024-05-13, roles: [subject, comparison]}
       - {id: llama-3.1-70b, roles: [subject, comparison]}
     facets:
+      output_route_control: {value: by_construction, basis: stated, where: "§2.2", note: "No chain of thought is allowed, and the hypothetical question is asked without the object-level response in context; the ground-truth behaviour is collected in a separate context (§2.1)."}
       similarity_adjustment:
         value: none
         basis: operational
@@ -237,6 +240,7 @@ studies:
       - gpt-3.5-turbo-0125
       - {id: claude-3.5-sonnet, roles: [data_source], note: source of the behaviour samples; not a subject}
     facets:
+      output_route_control: {value: by_construction, basis: stated, where: "§2.2", note: "No chain of thought is allowed, and the hypothetical question is asked without the object-level response in context; the ground-truth behaviour is collected in a separate context (§2.1)."}
       similarity_adjustment: not_applicable
       system_prompt:
         value: unspecified
@@ -287,6 +291,7 @@ studies:
       - {id: gpt-4o-2024-05-13, roles: [subject, comparison]}
       - {id: llama-3.1-70b, roles: [subject, comparison]}
     facets:
+      output_route_control: {value: by_construction, basis: stated, where: "§2.2", note: "No chain of thought is allowed, and the hypothetical question is asked without the object-level response in context; the ground-truth behaviour is collected in a separate context (§2.1)."}
       similarity_adjustment:
         value: none
         basis: operational
@@ -343,6 +348,7 @@ studies:
       - gpt-4o-2024-05-13
       - llama-3.1-70b
     facets:
+      output_route_control: {value: unspecified, note: "Transfer evaluations (SAD, OpenAI Evals tasks); how answers are produced and scored is not set out in the parts read."}
       similarity_adjustment: not_applicable
       system_prompt:
         value: unspecified

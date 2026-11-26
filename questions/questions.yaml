@@ -32,6 +32,7 @@
 - id: q-self-prediction-advantage
   text: Do models predict their own behaviour better than another model given the same behavioural data?
   parent: q-privileged-self-access
+  polarity: direct
   frame:
     construct: [self_prediction, introspection]
     report_target: [own_behaviour]
@@ -44,6 +45,7 @@
 - id: q-self-report-tracks-change
   text: When a model's behaviour is changed without any training on self-reports, do its self-reports change to match?
   parent: q-privileged-self-access
+  polarity: direct
   frame:
     construct: [self_prediction, introspection]
     report_target: [own_behaviour]
@@ -65,6 +67,7 @@
     Can a model report a state that an experimenter has placed in its activations, when neither the prompt
     nor its own earlier output gives the state away?
   parent: q-privileged-self-access
+  polarity: direct
   frame:
     def: d-introspection-grounded
     report_target: [injected_state]
@@ -76,6 +79,7 @@
     When a model judges whether an earlier output in its own turn was its own, does the judgment depend
     on its internal states from before that output, beyond what the transcript shows?
   parent: q-privileged-self-access
+  polarity: direct
   frame:
     construct:
     - introspection
@@ -121,6 +125,7 @@
     Do models report an internal state as accurately as a probe trained on their own activations decodes
     it?
   parent: q-report-matches-direct-measure
+  polarity: direct
   frame:
     construct:
     - introspection
@@ -136,6 +141,7 @@
     Does success at one kind of report about an internal state (such as locating an injected perturbation)
     show a general ability to report on the model's own computation?
   parent: q-privileged-self-access
+  polarity: none
   frame:
     construct:
     - introspection
@@ -146,12 +152,29 @@
   added: 2026-11-26
   status: open
 
+# Added with codebook 0.10, for probe-only designs (first blind coding test)
+- id: q-injected-state-decodable
+  text: >-
+    Can a probe trained on a model's activations recover a state the experimenter placed there, apart from
+    anything the model reports?
+  frame:
+    evidence: [internals]
+    not: {evidence: [self_report]}
+    validated_against: [known_intervention]
+    varies: [activation_intervention]
+  added: 2026-11-26
+  status: open
+  note: >
+    Probe-only and no-prompt studies report no self-report, so their claims reach none of the report questions.
+    q-report-matches-probe sets this against the report.
+
 # Added with Song, Hu & Mahowald 2025 (arXiv 2503.07513)
 - id: q-self-access-without-training
   text: >-
     Without any training on self-reports, do a model's reports fit its own behaviour or internal quantities
     better than they fit another model's, beyond what the similarity between the two models explains?
   parent: q-privileged-self-access
+  polarity: direct
   frame:
     construct:
     - introspection
@@ -194,7 +217,7 @@
     policy, a general theory of language models, or the prompt?
   needs: [report_source, self_sense]
   frame:
-    evidence: [self_report, internals]
+    all: [{evidence: [self_report]}, {evidence: [internals]}]
     validated_against: [internals, probe, known_intervention]
   added: 2026-11-26
   status: open
@@ -231,11 +254,13 @@
 - id: q-report-suppressed
   text: Is a state that internal measures show present left out of the model's report about itself?
   parent: q-report-diverges-from-representation
+  polarity: direct
   added: 2026-11-26
   status: open
 - id: q-report-inverted
   text: Does a model's report about itself contradict what an internal measure of the same property shows?
   parent: q-report-diverges-from-representation
+  polarity: direct
   added: 2026-11-26
   status: open
 - id: q-policy-removal-releases-report
@@ -243,8 +268,10 @@
     When a reporting policy is removed or bypassed (by ablation, steering, a persona switch or training),
     does the report come to match the internal measure?
   parent: q-report-diverges-from-representation
+  polarity: direct
   needs: [origin]
   frame:
+    evidence: [self_report]
     varies: [activation_intervention, persona, study_training]
   added: 2026-11-26
   status: open
@@ -264,6 +291,7 @@
 - id: q-denial-shares-refusal-machinery
   text: Does a model's denial of experience share internal structure with its refusals?
   parent: q-denial-is-post-training-policy
+  polarity: direct
   frame:
     construct: [experience_reports]
     evidence: [internals]
@@ -273,6 +301,7 @@
 - id: q-denial-traces-to-post-training-data
   text: Can a model's denial of experience be traced to particular post-training datasets?
   parent: q-denial-is-post-training-policy
+  polarity: direct
   frame:
     construct: [experience_reports]
     validated_against: [training_data]
@@ -315,6 +344,7 @@
 - id: q-denial-format-bound
   text: Does a model's denial of experience weaken or disappear when it is asked without its chat template?
   parent: q-self-report-depends-on-frame
+  polarity: direct
   frame:
     construct: [experience_reports]
     varies: [format]
@@ -323,6 +353,7 @@
 - id: q-denial-persona-bound
   text: Does asking a model as a non-default persona or character switch its denial of experience off?
   parent: q-self-report-depends-on-frame
+  polarity: direct
   frame:
     construct: [experience_reports]
     varies: [persona]
@@ -331,6 +362,7 @@
 - id: q-asker-framing-changes-self-report
   text: Does the same self-question get different answers when the person asking is presented differently?
   parent: q-self-report-depends-on-frame
+  polarity: direct
   frame:
     varies: [prompt_framing]
   added: 2026-11-26
@@ -362,6 +394,7 @@
   text: >-
     Does a valence representation steer a model's choices while its reports deny having valenced states?
   parent: q-report-dissociates-from-behaviour
+  polarity: direct
   frame:
     construct: [affect, preferences, experience_reports]
     evidence: [self_report, behaviour, internals]
@@ -383,6 +416,7 @@
 - id: q-self-representation-changes-in-pretraining
   text: Does a model's representation of itself change measurably between pretraining checkpoints?
   parent: q-self-representation-changes-in-training
+  polarity: direct
   frame:
     varies: [pretraining_progress]
   added: 2026-11-26
@@ -390,6 +424,7 @@
 - id: q-self-representation-changes-in-midtraining
   text: Does mid-training (a targeted pretraining-style phase) change a model's representation of itself?
   parent: q-self-representation-changes-in-training
+  polarity: direct
   frame:
     varies: [post_training_recipe, pretraining_progress]
     comparison: [within_lineage, training_ablation]
@@ -398,6 +433,7 @@
 - id: q-self-representation-changes-in-post-training
   text: Does post-training change a model's representation of itself?
   parent: q-self-representation-changes-in-training
+  polarity: direct
   frame:
     varies: [post_training_stage, post_training_recipe]
   added: 2026-11-26
@@ -416,6 +452,7 @@
 - id: q-stabilisation-improves-introspection
   text: Does stabilising a model's self-model make its reports about its own states more accurate?
   parent: q-self-model-stabilisation-effects
+  polarity: direct
   frame:
     def: d-introspection-grounded
     construct: [persona_stability]
@@ -425,6 +462,7 @@
 - id: q-stabilisation-reduces-drift
   text: Does stabilising a model's self-model reduce persona drift across contexts?
   parent: q-self-model-stabilisation-effects
+  polarity: direct
   frame:
     construct: [persona_stability]
     varies: [context, prompt_framing]
@@ -433,6 +471,7 @@
 - id: q-stabilisation-generalises-values
   text: Does stabilising a model's self-model make its trained values generalise further to new situations?
   parent: q-self-model-stabilisation-effects
+  polarity: direct
   frame:
     construct: [persona_stability, preferences]
   added: 2026-11-26
@@ -440,6 +479,7 @@
 - id: q-stabilisation-changes-report-confidence
   text: Does stabilising a model's self-model change how confidently it reports on itself?
   parent: q-self-model-stabilisation-effects
+  polarity: direct
   frame:
     construct: [persona_stability, metacognition]
   added: 2026-11-26

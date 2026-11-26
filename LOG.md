@@ -2,6 +2,45 @@
 
 Newest first. Each entry: what changed, what is open, what needs a decision.
 
+## 2026-11-26: codebook 0.10 (fixes from the first blind coding test; internality)
+
+Coder: claude (claude-opus-5-5), working with the owner.
+
+**Changed**
+
+- The first blind coding test: one paper coded twice, on an orphan `blind-test` branch with its record and all
+  traces removed, by two coders from different model families. The comparison is kept outside this repo. The
+  structural calls held up; the disagreements came where the codebook was silent, and the fixes are below.
+- Codebook 0.10 (`codebook/CHANGELOG.md`):
+  - new core facet `output_route_control` (internality), now criterion 3 of `d-introspection-grounded`, backfilled on every experimental study from the papers
+    (fetched this session: Binder v1 §2.1 to 2.2; Lindsey v1 §5.4 to 5.8, §7, App. 12.1.3 and 12.2.2; Song v3 §2;
+    Rubin v2 §3.2);
+  - `elicitation` and `validated_against` rules for probe-only studies;
+  - `varies: initialisation`;
+  - the size rule in `comparison`;
+  - no `effect_of` on control results.
+- Rubin et al. s2 and s3 recoded under the new rules: `validated_against: known_intervention`, `elicitation:
+  not_applicable`; s3 `pretraining_progress` became `initialisation`.
+- Questions: polarity required on child questions and set on all 25; `q-introspection-success-generalises` is
+  `none`, which removes 14 conflicts (159 to 145) that had set the paper's argument against its own results. Two
+  frames tightened; new `q-injected-state-decodable` (candidates: Rubin et al.'s seven probe-only claims).
+- Build: candidates apply `requires` up the chain; `missing_needs` names the interpretive facets a candidate lacks.
+- `scripts/fetch_paper.py` and the CLAUDE.md figures rule; `_paper/` git-ignored.
+
+**Open**
+
+- `scoring_rule` and `control_condition` were not tried blind; Lindsey's backfill of them is mine alone.
+- Lindsey s2 (the bias control) is coded `none` for `output_route_control`, operationally; it could be argued
+  `not_applicable`, since its answers are not reports about the injected state.
+- Links from Rubin et al.'s probe-only claims to `q-injected-state-decodable` are left to the question poser.
+- The `blind-test` branch can be deleted once the owner has what he needs from it.
+
+**For the owner to decide**
+
+- Whether the blind test's codings and comparison should go into `pilot/` (they are codings of a published paper;
+  the reference coding used for comparison is private).
+- A second blind test on a paper the codebook has not been shaped by.
+
 ## 2026-11-26: codebook 0.9 (definitions built, starting with Lindsey)
 
 Coder: claude (claude-opus-5-5), working with the owner.

@@ -1,0 +1,83 @@
+# Organisations: labs, universities, programmes. One entry per organisation.
+# Affiliation is recorded per source (see sources/), so a person's history over
+# time is derived from their papers and not stored here.
+
+- id: anthropic
+  name: Anthropic
+  kind: company
+
+- id: eleos-ai
+  name: Eleos AI
+  kind: nonprofit
+
+- id: independent
+  name: Independent
+  kind: independent
+  note: Placeholder for authors listed with no institution.
+
+- id: mats
+  name: MATS Program
+  kind: programme
+
+- id: meta
+  name: Meta
+  kind: company
+
+- id: nyu
+  name: New York University
+  kind: university
+
+- id: openai
+  name: OpenAI
+  kind: company
+
+- id: scale-ai
+  name: Scale AI
+  kind: company
+
+- id: speechmatics
+  name: Speechmatics
+  kind: company
+
+- id: stanford
+  name: Stanford University
+  kind: university
+
+- id: truthful-ai
+  name: Truthful AI
+  kind: nonprofit
+  note: Kind not verified; check before relying on it.
+
+- id: uc-berkeley
+  name: UC Berkeley
+  kind: university
+
+- id: uc-san-diego
+  name: UC San Diego
+  kind: university
+
+- id: allen-ai
+  name: Allen Institute for AI
+  kind: nonprofit
+  note: >
+    Name and kind were not taken from a source; check before relying on them.
+
+# Added with Song, Hu & Mahowald 2025 (arXiv 2503.07513)
+- id: johns-hopkins
+  name: Johns Hopkins University
+  kind: university
+- id: mistral-ai
+  name: Mistral AI
+  kind: company
+  note: >
+    Song et al. (2025) give only the Hugging Face organisation "mistralai". Kind not verified.
+- id: qwen-team
+  name: Qwen Team
+  kind: company
+  note: >
+    Named as Song et al. (2025) cite it ("Qwen Team"; Hugging Face organisation "Qwen"). That source does
+    not name a parent company, so none is recorded. Kind not verified; merge with the parent's entry when
+    a source names it.
+- id: ut-austin
+  name: The University of Texas at Austin
+  kind: university

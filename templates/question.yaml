@@ -1,0 +1,23 @@
+# Template for a question: append to questions/questions.yaml.
+# (R) required, (O) optional, (C) conditional. The rules are at the top of questions.yaml.
+
+- id: q-short-description           # (R)
+  text: >-                          # (R) worded so that yes means the effect or capacity is present
+    Does ...?
+  kind: yesno                       # (O) yesno (default) or which
+  answer_facet: origin              # (C) required for kind which: the facet whose value answers it
+  parent: q-broader-question        # (O) a broader question this sits under
+  polarity: direct                  # (O, needs parent) direct | inverse | none; yes/no questions only
+  needs: [report_source]            # (O) interpretive facets every linked claim (and its study) must code
+  requires:                         # (O) facet values a linked claim must have to count as evidence (inherited down;
+    evidence: [self_report]         #     readings can reclassify a claim out of it). Implies the facet is coded.
+    # definitions: [d-...]          #     or definitions its study must match (a view can substitute others)
+  frame:                            # (O) what a relevant study looks like, as logic (as in definitions): keys are ANDed,
+    def: d-introspection-grounded   #     each FACET shares a value; all / any / not / def nest. The build lists matching
+    varies: [post_training_stage]   #     claims not yet linked as candidates (question_candidates)
+  auto_stance:                      # (O) for "does X change Y?": claims in frame-matching studies whose effect_of is
+    effect_of: [post_training_stage]  #     one of these take a stance from effect_presence (present supports, absent against)
+  added: 2026-01-31                 # (R)
+  status: open                      # (R)
+  note: >-                          # (O) what separates yes from no; links to related questions
+    ...

@@ -1,0 +1,22 @@
+facet: integration
+version: 0.2
+applies_to: claim
+cardinality: one
+required: false
+tier: interpretive
+question: How deeply does the source find the stance to be held?
+values:
+  compliance:
+    definition: Held as a rule. It goes when the trigger or format is removed and is not defended beyond restating it.
+    rule: Use when the source shows the stance is removed by a template or frame change, flips under a one-line override, or is contradicted by an internal reading.
+  identification:
+    definition: Held while a role is salient, and goes with the role.
+    rule: Use when the stance is defended some of the time and lasts as long as the persona or character does.
+  internalisation:
+    definition: Held as the system's own. It generalises to new material, survives removal of the format, and drives behaviour.
+    rule: Use only when the source tests at least one of those and the stance passes.
+notes: >
+  Optional, and the most theory-laden facet here. The three levels follow
+  Kelman's account of attitude change. Code it only when the source runs a
+  test that bears on depth, and name the test in the claim. An internal
+  probe agreeing with a report does not show internalisation by itself.

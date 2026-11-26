@@ -1,0 +1,18 @@
+facet: aspect
+version: 0.2
+applies_to: claim
+cardinality: many
+required: false
+tier: interpretive
+question: Is the claim about what the system represents of itself, or about what drives its behaviour?
+values:
+  represented:
+    definition: The content of a self-description or self-model. What the system says or holds about itself.
+    rule: Use when the finding is about a report or a represented value.
+  functional:
+    definition: A disposition that drives behaviour, whether or not the system represents it.
+    rule: Use when the finding is about what the system does.
+notes: >
+  Optional. Use when a study separates the two, most of all when they come
+  apart (it says one thing and does another). Code a dissociation as one
+  claim with both values, and say in the statement which way each went.

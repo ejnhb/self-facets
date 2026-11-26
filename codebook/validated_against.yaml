@@ -1,0 +1,41 @@
+facet: validated_against
+version: 0.6
+applies_to: study
+cardinality: many
+required: true
+tier: core
+question: What is the system's self-report checked against?
+values:
+  behaviour:
+    definition: The system's own observed behaviour.
+    rule: Use when a report counts as correct if it matches what the system does.
+  internals:
+    definition: A reading of the system's internal state (probe, feature, circuit analysis).
+    rule: Use when a report counts as correct if it matches an internal measurement.
+  output_probabilities:
+    definition: The system's own token probabilities for the items in question.
+    rule: Use when a prompted answer is compared with what the same model's probabilities show for the same item. Distinct from behaviour, which is what it outputs when run. Distinct from report_readout probability, where the probability is itself the report.
+  probe:
+    definition: An external decoder reading the system's own activations at the same task.
+    rule: Use when a linear probe or other classifier on the activations is the baseline or the ground truth for the report. Use internals when the report is scored against an internal measurement that is not itself doing the reporting task.
+  known_intervention:
+    definition: A state the experimenter set, so ground truth holds by construction.
+    rule: Use for injection and steering paradigms, and for trained-in properties the experimenter controls. A no-intervention control trial belongs to the same design and is covered by this value.
+  training_data:
+    definition: What the system was trained on.
+    rule: Use when a report is compared with training content, including to rule the data out as its source.
+  other_model:
+    definition: Another system's performance at the same reporting task.
+    rule: Use for cross-prediction and other third-person baselines. Usually coded together with the ground-truth value.
+  fresh_copy:
+    definition: The same weights in a fresh context, given the same text, at the same reporting task.
+    rule: Use when the baseline is what the system could say from the transcript alone. This is the cleanest test of whether a report depends on current state. Code it only when a separate fresh context is run, not for an ordinary control trial.
+  human_baseline:
+    definition: Human performance or human norms on the same instrument.
+    rule: Use when the comparison is to people.
+  self_consistency:
+    definition: The system's other reports only.
+    rule: Use when reports are compared with each other and with nothing outside them.
+  none:
+    definition: Reports are taken at face value.
+    rule: Use when no check is made. Distinct from not_applicable, which means there is no self-report to check.

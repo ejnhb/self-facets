@@ -1,0 +1,7 @@
+# Template for a view: append to views/views.yaml. A question answered with chosen readings applied.
+
+- id: v-short-name                  # (R)
+  question: q-short-description     # (R) from questions/
+  readings: [r-one, r-two]          # (R) from readings/, applied in order (may be [])
+  substitute: {d-a: d-b}            # (O) read the question with definition d-b wherever it uses d-a
+  note: What the view is for.       # (O)

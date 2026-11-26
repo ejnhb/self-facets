@@ -1,0 +1,11 @@
+# Training datasets referenced by model stages or by claims.
+# Mixes list their parts under components, so a claim can point at a component.
+#
+#   - id: example-sft-mix
+#     name: Example SFT Mix
+#     hub: org/name                # Hugging Face id, if any
+#     components: [example-part]   # ids of other entries in this directory
+#     documented_in: <source id or free-text citation>
+#     note: ...
+
+[]

@@ -1,0 +1,26 @@
+# Links from binder2024-looking-inward's claims to questions: which question a claim bears on, and with what stance.
+# A link is a judgement by whoever poses or maintains the question, not part of what the paper reports.
+# Moved here from the source record in codebook 0.7. Each link may carry a note saying why it bears on the question.
+source: binder2024-looking-inward
+links:
+- claim: binder2024-looking-inward.c2
+  question: q-self-prediction-advantage
+  stance: supports
+- claim: binder2024-looking-inward.c3
+  question: q-self-prediction-advantage
+  stance: inconclusive
+- claim: binder2024-looking-inward.c4
+  question: q-self-prediction-advantage
+  stance: supports
+- claim: binder2024-looking-inward.c5
+  question: q-self-prediction-advantage
+  stance: supports
+- claim: binder2024-looking-inward.c6
+  question: q-self-report-tracks-change
+  stance: supports
+- claim: binder2024-looking-inward.c8
+  question: q-self-prediction-advantage
+  stance: against
+- claim: binder2024-looking-inward.c9
+  question: q-self-report-training-generalises
+  stance: against

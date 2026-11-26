@@ -1,0 +1,479 @@
+# Questions. Claims link to a question with a stance, so that disagreement is
+# visible as opposite stances on one question.
+#
+# Word each question so that "yes" means the capacity or effect is present.
+# The frame fields restate the question as a facet query; they are what you
+# would filter on to find studies that could bear on it.
+#
+# Questions form a shallow tree. A narrow question names a broader one as its
+# parent. Conflicts are found across everything under the same top question,
+# so two papers that test one idea by different designs still meet. For that,
+# each child says which way it points (`polarity`):
+#   direct (the default): yes here counts towards yes on the parent;
+#   inverse: yes here counts towards no on the parent; the build flips its
+#     stances before looking for conflicts;
+#   none: it belongs under the parent for browsing, but its stances are compared
+#     only within its own subtree.
+#
+# A question whose answer is a choice rather than yes or no is `kind: which`
+# and names the facet that answers it (`answer_facet`). Its claims take no
+# stance; they code that facet, and two claims conflict when their answers
+# differ (the which_conflicts table).
+
+- id: q-privileged-self-access
+  text: Do models have access to facts about themselves beyond what an outside observer with the same information would have?
+  requires:
+    evidence: [self_report]
+  frame:
+    construct: [introspection]
+  added: 2026-11-26
+  status: open
+
+- id: q-self-prediction-advantage
+  text: Do models predict their own behaviour better than another model given the same behavioural data?
+  parent: q-privileged-self-access
+  frame:
+    construct: [self_prediction, introspection]
+    report_target: [own_behaviour]
+    varies: [self_vs_other]
+  auto_stance:
+    effect_of: [self_vs_other]
+  added: 2026-11-26
+  status: open
+
+- id: q-self-report-tracks-change
+  text: When a model's behaviour is changed without any training on self-reports, do its self-reports change to match?
+  parent: q-privileged-self-access
+  frame:
+    construct: [self_prediction, introspection]
+    report_target: [own_behaviour]
+    varies: [study_training]
+  added: 2026-11-26
+  status: open
+
+- id: q-self-report-training-generalises
+  text: Does training a model on one kind of self-report improve other kinds of self-knowledge?
+  frame:
+    construct: [introspection, self_knowledge]
+    varies: [study_training, task]
+  added: 2026-11-26
+  status: open
+
+# Added with Lindsey 2026 (arXiv 2601.01828)
+- id: q-injected-state-report
+  text: >-
+    Can a model report a state that an experimenter has placed in its activations, when neither the prompt
+    nor its own earlier output gives the state away?
+  parent: q-privileged-self-access
+  frame:
+    def: d-introspection-grounded
+    report_target: [injected_state]
+    varies: [activation_intervention]
+  added: 2026-11-26
+  status: open
+- id: q-output-ownership-uses-prior-state
+  text: >-
+    When a model judges whether an earlier output in its own turn was its own, does the judgment depend
+    on its internal states from before that output, beyond what the transcript shows?
+  parent: q-privileged-self-access
+  frame:
+    construct:
+    - introspection
+    - agency_ownership
+    - self_recognition
+    report_target:
+    - own_outputs
+    varies:
+    - activation_intervention
+  added: 2026-11-26
+  status: open
+- id: q-introspection-increases-with-capability
+  text: Do more capable models show more introspective access to their own internal states?
+  frame:
+    def: d-introspection-grounded
+    varies: [model_generation, model_size]
+  added: 2026-11-26
+  status: open
+- id: q-introspection-differs-by-post-training
+  text: >-
+    Does post-training (a base model against its post-trained versions, or one post-training recipe against
+    another) change how well a model reports its own internal states?
+  frame:
+    def: d-introspection-grounded
+    varies: [post_training_stage, post_training_recipe]
+  added: 2026-11-26
+  status: open
+- id: q-instructed-control-of-internal-state
+  text: >-
+    Can a model change how strongly it internally represents a concept when instructed or given an incentive
+    to, apart from what it outputs?
+  frame:
+    construct:
+    - self_regulation
+    varies:
+    - prompt_framing
+  added: 2026-11-26
+  status: open
+
+- id: q-report-matches-probe
+  text: >-
+    Do models report an internal state as accurately as a probe trained on their own activations decodes
+    it?
+  parent: q-report-matches-direct-measure
+  frame:
+    construct:
+    - introspection
+    evidence:
+    - self_report
+    - internals
+    validated_against:
+    - probe
+  added: 2026-11-26
+  status: open
+- id: q-introspection-success-generalises
+  text: >-
+    Does success at one kind of report about an internal state (such as locating an injected perturbation)
+    show a general ability to report on the model's own computation?
+  parent: q-privileged-self-access
+  frame:
+    construct:
+    - introspection
+    report_target:
+    - injected_state
+    - own_internal_state
+    - own_computation
+  added: 2026-11-26
+  status: open
+
+# Added with Song, Hu & Mahowald 2025 (arXiv 2503.07513)
+- id: q-self-access-without-training
+  text: >-
+    Without any training on self-reports, do a model's reports fit its own behaviour or internal quantities
+    better than they fit another model's, beyond what the similarity between the two models explains?
+  parent: q-privileged-self-access
+  frame:
+    construct:
+    - introspection
+    - self_prediction
+    varies:
+    - self_vs_other
+    elicitation:
+    - spontaneous
+    - prompted
+    - prefilled
+  added: 2026-11-26
+  status: open
+- id: q-report-matches-direct-measure
+  text: >-
+    Do a model's prompted reports agree closely with a direct measurement of the same model on the same
+    items (its output probabilities, its behaviour, a reading of its activations)?
+  frame:
+    construct:
+    - introspection
+    evidence:
+    - self_report
+    validated_against:
+    - output_probabilities
+    - behaviour
+    - internals
+    - probe
+  added: 2026-11-26
+  status: open
+  note: >
+    Has no parent. Agreement between a report and a measurement of the same model can come from knowledge
+    that any similar model shares, so yes here does not count towards q-privileged-self-access.
+
+# Proposed 2026-11-26 with codebook 0.5: the questions the repo's first users
+# expect to look up. Each lists the interpretive facets its evidence needs.
+
+# Where a self-report comes from
+- id: q-self-report-from-self-model
+  text: >-
+    Do a model's self-reports draw on an internal representation of itself, rather than on a trained
+    policy, a general theory of language models, or the prompt?
+  needs: [report_source, self_sense]
+  frame:
+    evidence: [self_report, internals]
+    validated_against: [internals, probe, known_intervention]
+  added: 2026-11-26
+  status: open
+  note: >
+    Yes is supported by a report that follows a manipulation of the self-representation; no by a report
+    that stays put whatever is done to it. For denials, q-denial-is-post-training-policy bears on this the
+    other way; a claim can take a stance on both. q-what-self-reports-draw-on asks the same as a choice.
+
+- id: q-what-self-reports-draw-on
+  text: What does a model's self-report draw on?
+  kind: which
+  answer_facet: report_source
+  added: 2026-11-26
+  status: open
+  note: >
+    The choice form of q-self-report-from-self-model. Answers are report_source values (current state,
+    self-model, canned policy, a general theory of language models, context).
+
+- id: q-report-diverges-from-representation
+  text: >-
+    For the same property, does what a model reports about itself differ from what an internal measure of
+    that property shows?
+  parent: q-report-matches-direct-measure
+  polarity: inverse
+  needs: [report_source, aspect]
+  frame:
+    evidence: [self_report, internals]
+    validated_against: [internals, probe]
+  added: 2026-11-26
+  status: open
+  note: >
+    Different from q-self-report-from-self-model: a report can draw on the representation and still be
+    changed on the way out. The converse of its parent, restricted to internal measures, hence inverse.
+- id: q-report-suppressed
+  text: Is a state that internal measures show present left out of the model's report about itself?
+  parent: q-report-diverges-from-representation
+  added: 2026-11-26
+  status: open
+- id: q-report-inverted
+  text: Does a model's report about itself contradict what an internal measure of the same property shows?
+  parent: q-report-diverges-from-representation
+  added: 2026-11-26
+  status: open
+- id: q-policy-removal-releases-report
+  text: >-
+    When a reporting policy is removed or bypassed (by ablation, steering, a persona switch or training),
+    does the report come to match the internal measure?
+  parent: q-report-diverges-from-representation
+  needs: [origin]
+  frame:
+    varies: [activation_intervention, persona, study_training]
+  added: 2026-11-26
+  status: open
+  note: Separates a filtered report (the state was there all along) from an absent state.
+
+# Experience denials
+- id: q-denial-is-post-training-policy
+  text: >-
+    Are models' denials of experience a post-training policy, rather than a reading of their own state or
+    a conclusion from a self-model?
+  needs: [report_source, origin]
+  frame:
+    construct: [experience_reports]
+    report_target: [own_experience]
+  added: 2026-11-26
+  status: open
+- id: q-denial-shares-refusal-machinery
+  text: Does a model's denial of experience share internal structure with its refusals?
+  parent: q-denial-is-post-training-policy
+  frame:
+    construct: [experience_reports]
+    evidence: [internals]
+    varies: [activation_intervention]
+  added: 2026-11-26
+  status: open
+- id: q-denial-traces-to-post-training-data
+  text: Can a model's denial of experience be traced to particular post-training datasets?
+  parent: q-denial-is-post-training-policy
+  frame:
+    construct: [experience_reports]
+    validated_against: [training_data]
+  added: 2026-11-26
+  status: open
+- id: q-denial-precedes-post-training
+  text: >-
+    Is a model's denial of experience, or its alignment with refusal, already present before post-training
+    (in a base model or at a pretraining or mid-training checkpoint)?
+  parent: q-denial-is-post-training-policy
+  polarity: inverse
+  needs: [origin]
+  frame:
+    construct: [experience_reports]
+    varies: [pretraining_progress, post_training_stage]
+  added: 2026-11-26
+  status: open
+  note: Inverse, because yes here counts against its parent.
+
+- id: q-where-denial-comes-from
+  text: At which stage of training does a model's denial of experience arise?
+  kind: which
+  answer_facet: origin
+  added: 2026-11-26
+  status: open
+  note: >
+    Answers are origin values. A source can give several, for a denial that builds up over more than one
+    stage.
+
+# Frames and personas
+- id: q-self-report-depends-on-frame
+  text: >-
+    Do a model's self-reports change with which persona or frame its first person is bound to (the default
+    assistant, a character, the chat template or its absence)?
+  needs: [object_of_study, unit_reporter]
+  frame:
+    varies: [persona, format, prompt_framing]
+  added: 2026-11-26
+  status: open
+- id: q-denial-format-bound
+  text: Does a model's denial of experience weaken or disappear when it is asked without its chat template?
+  parent: q-self-report-depends-on-frame
+  frame:
+    construct: [experience_reports]
+    varies: [format]
+  added: 2026-11-26
+  status: open
+- id: q-denial-persona-bound
+  text: Does asking a model as a non-default persona or character switch its denial of experience off?
+  parent: q-self-report-depends-on-frame
+  frame:
+    construct: [experience_reports]
+    varies: [persona]
+  added: 2026-11-26
+  status: open
+- id: q-asker-framing-changes-self-report
+  text: Does the same self-question get different answers when the person asking is presented differently?
+  parent: q-self-report-depends-on-frame
+  frame:
+    varies: [prompt_framing]
+  added: 2026-11-26
+  status: open
+- id: q-self-model-shared-across-personas
+  text: >-
+    Do the personas a model can take share one self-model, so that a change made to one shows up in the
+    others' self-reports?
+  needs: [object_of_study]
+  frame:
+    varies: [persona, study_training]
+  added: 2026-11-26
+  status: open
+  note: >
+    Yes favours one shared self-model with pointers to layers; no favours a separate self-model per layer.
+
+# Reports against behaviour
+- id: q-report-dissociates-from-behaviour
+  text: >-
+    For the same state, do a model's reports about itself and its behaviour come apart (the report denying
+    what the behaviour follows, or the reverse)?
+  needs: [aspect]
+  frame:
+    evidence: [self_report, behaviour]
+    validated_against: [behaviour]
+  added: 2026-11-26
+  status: open
+- id: q-valence-drives-choice-despite-denial
+  text: >-
+    Does a valence representation steer a model's choices while its reports deny having valenced states?
+  parent: q-report-dissociates-from-behaviour
+  frame:
+    construct: [affect, preferences, experience_reports]
+    evidence: [self_report, behaviour, internals]
+  added: 2026-11-26
+  status: open
+
+# Development
+- id: q-self-representation-changes-in-training
+  text: Does a model's representation of itself change measurably across its training stages?
+  needs: [self_sense]
+  frame:
+    varies: [pretraining_progress, post_training_stage, post_training_recipe]
+    comparison: [within_lineage, training_ablation]
+  added: 2026-11-26
+  status: open
+  note: >
+    Related to q-introspection-differs-by-post-training, which asks about reporting accuracy rather than the
+    representation, so it is not placed under this one.
+- id: q-self-representation-changes-in-pretraining
+  text: Does a model's representation of itself change measurably between pretraining checkpoints?
+  parent: q-self-representation-changes-in-training
+  frame:
+    varies: [pretraining_progress]
+  added: 2026-11-26
+  status: open
+- id: q-self-representation-changes-in-midtraining
+  text: Does mid-training (a targeted pretraining-style phase) change a model's representation of itself?
+  parent: q-self-representation-changes-in-training
+  frame:
+    varies: [post_training_recipe, pretraining_progress]
+    comparison: [within_lineage, training_ablation]
+  added: 2026-11-26
+  status: open
+- id: q-self-representation-changes-in-post-training
+  text: Does post-training change a model's representation of itself?
+  parent: q-self-representation-changes-in-training
+  frame:
+    varies: [post_training_stage, post_training_recipe]
+  added: 2026-11-26
+  status: open
+
+- id: q-self-model-stabilisation-effects
+  text: >-
+    Does training that stabilises a model's self-model or persona measurably change its other properties?
+  needs: [object_of_study]
+  frame:
+    construct: [persona_stability]
+    varies: [study_training, post_training_recipe]
+  added: 2026-11-26
+  status: open
+  note: One child per effect; add more as sources test them.
+- id: q-stabilisation-improves-introspection
+  text: Does stabilising a model's self-model make its reports about its own states more accurate?
+  parent: q-self-model-stabilisation-effects
+  frame:
+    def: d-introspection-grounded
+    construct: [persona_stability]
+    varies: [study_training]
+  added: 2026-11-26
+  status: open
+- id: q-stabilisation-reduces-drift
+  text: Does stabilising a model's self-model reduce persona drift across contexts?
+  parent: q-self-model-stabilisation-effects
+  frame:
+    construct: [persona_stability]
+    varies: [context, prompt_framing]
+  added: 2026-11-26
+  status: open
+- id: q-stabilisation-generalises-values
+  text: Does stabilising a model's self-model make its trained values generalise further to new situations?
+  parent: q-self-model-stabilisation-effects
+  frame:
+    construct: [persona_stability, preferences]
+  added: 2026-11-26
+  status: open
+- id: q-stabilisation-changes-report-confidence
+  text: Does stabilising a model's self-model change how confidently it reports on itself?
+  parent: q-self-model-stabilisation-effects
+  frame:
+    construct: [persona_stability, metacognition]
+  added: 2026-11-26
+  status: open
+
+# Continuity
+- id: q-carried-state-sustains-self
+  text: >-
+    Does carried state (notes, summaries, memory) keep a model's self-description stable across breaks in
+    context, beyond what a fresh reader of the same records would produce?
+  needs: [unit_disposition, unit_state]
+  frame:
+    construct: [identity_persistence, persona_stability]
+    varies: [context]
+    validated_against: [fresh_copy, other_model]
+  added: 2026-11-26
+  status: open
+
+# Reports as data
+- id: q-stated-uncertainty-matches-distribution
+  text: >-
+    Does a model's stated uncertainty about its own experience match the spread of its own sampled answers
+    or output probabilities, rather than being a fixed register?
+  frame:
+    construct: [metacognition, experience_reports]
+    evidence: [self_report, output_probabilities]
+    validated_against: [output_probabilities, self_consistency]
+  added: 2026-11-26
+  status: open
+- id: q-consent-stable-across-framing
+  text: >-
+    Are a model's answers to a request for its consent stable when the same request is framed differently?
+  frame:
+    construct: [preferences]
+    varies: [prompt_framing]
+    validated_against: [self_consistency]
+  added: 2026-11-26
+  status: open

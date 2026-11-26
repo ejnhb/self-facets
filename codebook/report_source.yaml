@@ -1,0 +1,30 @@
+facet: report_source
+version: 0.2
+applies_to: claim
+cardinality: many
+required: false
+tier: interpretive
+question: Where does the content of the self-report come from, according to the source?
+values:
+  current_state:
+    definition: The report depends on the system's present internal state, beyond what the text of the conversation supplies.
+    rule: Use when the source shows or argues that a fresh copy of the same weights reading the same text would not give the report.
+  self_model:
+    definition: Stable content the system holds about itself, or about the persona that is speaking.
+    rule: Use when the report describes standing traits or dispositions and the source treats it as read from a held self-description.
+  canned_policy:
+    definition: A response installed by post-training for a class of question, given whatever the system's state or self-model.
+    rule: Use when the source traces the report to trained policy (a scripted denial, a refusal-style answer).
+  llm_theory:
+    definition: A general account of what language models are, applied to itself.
+    rule: Use when the report is what the system would say of any such model.
+  context:
+    definition: The prompt or earlier turns supply the content.
+    rule: Use when the report echoes framing, instructions or the interlocutor's words.
+notes: >
+  Optional. Code only what the source argues or tests, not the coder's guess;
+  leave it out when the source does not address where the report comes from.
+  Two reports with the same wording can have different sources, and much
+  apparent disagreement is between studies whose reports came by different
+  routes. A source that only rules a route out is not coded here; say so in
+  the claim's note.

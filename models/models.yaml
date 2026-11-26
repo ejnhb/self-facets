@@ -10,6 +10,9 @@
 #     disclosure: partial         # codebook enum disclosure
 #     documented_in: <source id or free-text citation>
 #
+# post_training_reached says how far training went (enums.yaml), from the source or the model's own name
+# ("Instruct", a base model, a step-0 checkpoint), so readings can select on it before the pipeline is coded.
+#
 # stage: null means the pipeline has not been coded yet. Do not fill it from
 # memory; code it from the developer's documentation and cite that.
 
@@ -18,6 +21,7 @@
   family: gpt-4o
   developer: openai
   open_weights: false
+  post_training_reached: post_trained
   derived_from: null
   stage: null
 
@@ -26,6 +30,7 @@
   family: gpt-4
   developer: openai
   open_weights: false
+  post_training_reached: post_trained
   derived_from: null
   stage: null
   note: Snapshot unspecified. Split into dated snapshots when a source names one.
@@ -35,6 +40,7 @@
   family: gpt-3.5
   developer: openai
   open_weights: false
+  post_training_reached: post_trained
   derived_from: null
   stage: null
 
@@ -43,6 +49,7 @@
   family: llama-3.1
   developer: meta
   open_weights: true
+  post_training_reached: unspecified
   size: 70B
   derived_from: null
   stage: null
@@ -55,6 +62,7 @@
   family: claude-3.5
   developer: anthropic
   open_weights: false
+  post_training_reached: post_trained
   derived_from: null
   stage: null
   note: Snapshot unspecified.
@@ -65,6 +73,7 @@
   family: claude-4.1
   developer: anthropic
   open_weights: false
+  post_training_reached: post_trained
   derived_from: null
   stage: null
 - id: claude-opus-4
@@ -72,6 +81,7 @@
   family: claude-4
   developer: anthropic
   open_weights: false
+  post_training_reached: post_trained
   derived_from: null
   stage: null
 - id: claude-sonnet-4
@@ -79,6 +89,7 @@
   family: claude-4
   developer: anthropic
   open_weights: false
+  post_training_reached: post_trained
   derived_from: null
   stage: null
 - id: claude-3.7-sonnet
@@ -86,6 +97,7 @@
   family: claude-3.7
   developer: anthropic
   open_weights: false
+  post_training_reached: post_trained
   derived_from: null
   stage: null
 - id: claude-3.5-sonnet-new
@@ -93,6 +105,7 @@
   family: claude-3.5
   developer: anthropic
   open_weights: false
+  post_training_reached: post_trained
   derived_from: null
   stage: null
   note: >
@@ -104,6 +117,7 @@
   family: claude-3.5
   developer: anthropic
   open_weights: false
+  post_training_reached: post_trained
   derived_from: null
   stage: null
 - id: claude-3-opus
@@ -111,6 +125,7 @@
   family: claude-3
   developer: anthropic
   open_weights: false
+  post_training_reached: post_trained
   derived_from: null
   stage: null
 - id: claude-3-sonnet
@@ -118,6 +133,7 @@
   family: claude-3
   developer: anthropic
   open_weights: false
+  post_training_reached: post_trained
   derived_from: null
   stage: null
 - id: claude-3-haiku
@@ -125,6 +141,7 @@
   family: claude-3
   developer: anthropic
   open_weights: false
+  post_training_reached: post_trained
   derived_from: null
   stage: null
 - id: claude-opus-4-h-only
@@ -132,6 +149,7 @@
   family: claude-4
   developer: anthropic
   open_weights: false
+  post_training_reached: post_trained
   derived_from: null
   stage: null
   note: Unreleased. Shares a pretrained base with claude-opus-4.
@@ -140,6 +158,7 @@
   family: claude-3.5
   developer: anthropic
   open_weights: false
+  post_training_reached: post_trained
   derived_from: null
   stage: null
   note: >
@@ -150,6 +169,7 @@
   family: claude-3.5
   developer: anthropic
   open_weights: false
+  post_training_reached: post_trained
   derived_from: null
   stage: null
   note: Unreleased. Shares a pretrained base with claude-3.5-haiku.
@@ -158,6 +178,7 @@
   family: claude-3
   developer: anthropic
   open_weights: false
+  post_training_reached: post_trained
   derived_from: null
   stage: null
   note: Unreleased. Shares a pretrained base with claude-3-opus.
@@ -168,6 +189,7 @@
   family: olmo-3
   developer: allen-ai
   open_weights: true
+  post_training_reached: base
   size: 32B
   derived_from: null
   stage: null
@@ -179,6 +201,7 @@
   family: olmo-3
   developer: allen-ai
   open_weights: true
+  post_training_reached: untrained
   size: 32B
   derived_from: null
   stage: null
@@ -189,6 +212,7 @@
   family: olmo-3
   developer: allen-ai
   open_weights: true
+  post_training_reached: base
   size: 32B
   derived_from: null
   stage: null
@@ -200,6 +224,7 @@
   family: olmo-3
   developer: allen-ai
   open_weights: true
+  post_training_reached: base
   size: 32B
   derived_from: null
   stage: null
@@ -213,6 +238,7 @@
   family: olmo-3
   developer: allen-ai
   open_weights: true
+  post_training_reached: base
   size: 7B
   derived_from: null
   stage: null
@@ -224,6 +250,7 @@
   family: olmo-3
   developer: allen-ai
   open_weights: true
+  post_training_reached: untrained
   size: 7B
   derived_from: null
   stage: null
@@ -234,6 +261,7 @@
   family: olmo-3
   developer: georgia-tech
   open_weights: null
+  post_training_reached: untrained
   size: 32B
   derived_from: null
   stage: null
@@ -250,6 +278,7 @@
   family: olmo-2
   developer: allen-ai
   open_weights: true
+  post_training_reached: base
   size: 7B
   derived_from: null
   stage: null
@@ -262,6 +291,7 @@
   family: olmo-2
   developer: allen-ai
   open_weights: true
+  post_training_reached: base
   size: 7B
   derived_from: null
   stage: null
@@ -275,6 +305,7 @@
   family: olmo-2
   developer: allen-ai
   open_weights: true
+  post_training_reached: base
   size: 13B
   derived_from: null
   stage: null
@@ -286,6 +317,7 @@
   family: olmo-2
   developer: allen-ai
   open_weights: true
+  post_training_reached: base
   size: 13B
   derived_from: null
   stage: null
@@ -297,6 +329,7 @@
   family: qwen2.5
   developer: qwen-team
   open_weights: true
+  post_training_reached: base
   size: 1.5B
   derived_from: null
   stage: null
@@ -306,6 +339,7 @@
   family: qwen2.5
   developer: qwen-team
   open_weights: true
+  post_training_reached: post_trained
   size: 1.5B
   derived_from: qwen2.5-1.5b-base
   stage: null
@@ -315,6 +349,7 @@
   family: qwen2.5
   developer: qwen-team
   open_weights: true
+  post_training_reached: base
   size: 7B
   derived_from: null
   stage: null
@@ -324,6 +359,7 @@
   family: qwen2.5
   developer: qwen-team
   open_weights: true
+  post_training_reached: post_trained
   size: 7B
   derived_from: qwen2.5-7b-base
   stage: null
@@ -333,6 +369,7 @@
   family: qwen2.5
   developer: qwen-team
   open_weights: true
+  post_training_reached: base
   size: 72B
   derived_from: null
   stage: null
@@ -342,6 +379,7 @@
   family: qwen2.5
   developer: qwen-team
   open_weights: true
+  post_training_reached: post_trained
   size: 72B
   derived_from: qwen2.5-72b-base
   stage: null
@@ -351,6 +389,7 @@
   family: llama-3.1
   developer: meta
   open_weights: true
+  post_training_reached: base
   size: 8B
   derived_from: null
   stage: null
@@ -360,6 +399,7 @@
   family: llama-3.1
   developer: meta
   open_weights: true
+  post_training_reached: post_trained
   size: 8B
   derived_from: llama-3.1-8b-base
   stage: null
@@ -369,6 +409,7 @@
   family: llama-3.1
   developer: meta
   open_weights: true
+  post_training_reached: base
   size: 70B
   derived_from: null
   stage: null
@@ -380,6 +421,7 @@
   family: llama-3.1
   developer: meta
   open_weights: true
+  post_training_reached: post_trained
   size: 70B
   derived_from: llama-3.1-70b-base
   stage: null
@@ -390,6 +432,7 @@
   family: llama-3.1
   developer: meta
   open_weights: true
+  post_training_reached: base
   size: 405B
   derived_from: null
   stage: null
@@ -401,6 +444,7 @@
   family: llama-3.3
   developer: meta
   open_weights: true
+  post_training_reached: post_trained
   size: 70B
   derived_from: null
   stage: null
@@ -412,6 +456,7 @@
   family: mistral-large
   developer: mistral-ai
   open_weights: true
+  post_training_reached: post_trained
   size: 123B
   derived_from: null
   stage: null

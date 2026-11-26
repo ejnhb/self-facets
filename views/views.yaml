@@ -1,0 +1,12 @@
+# Views: a question answered with chosen readings applied (design/readings.md). The build compares each view with
+# the same question under no readings (view_evidence, view_diff, view_conflicts, view_reinterpretations).
+
+- id: v-privileged-access-text-answers-only
+  question: q-privileged-self-access
+  readings: [r-logit-readout-not-answer]
+  note: Privileged self-access, counting only self-reports given as text.
+
+- id: v-privileged-access-similarity
+  question: q-privileged-self-access
+  readings: [r-similarity-uncontrolled]
+  note: Privileged self-access, with the similarity critique attached where it applies.

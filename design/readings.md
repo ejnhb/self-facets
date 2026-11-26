@@ -1,7 +1,10 @@
-# Readings: a design proposal (2026-11-26, not built)
+# Readings: design (2026-11-26; built in codebook 0.7)
 
-Status: proposal for discussion. Nothing here is implemented; the record format
-and scripts are unchanged.
+Status: built in codebook 0.7, with three additions the examples called for:
+links moved out of the records into `links/`; questions can `require` facet
+values, which is what gives a reclassification something to act on; and a
+selector can test a model field (`model.post_training_reached`). The text
+below is the proposal as written, with those changes noted where they bear.
 
 ## The problem
 
@@ -152,11 +155,23 @@ becomes something the record captures.
   with or without a given post-training stage). That needs the model
   registry's `stage` coded, which today is mostly null.
 
-## Open
+## As built (0.7)
 
-- Where readings and views live (`readings/`, `views/`), and whether readings
-  from outside the shared layer can apply to its claims by id (they can, if
-  nothing here points back).
-- Whether links from claims to questions move out of the records into this
-  layer too, which the "posing a question is cheap" goal suggests.
-- How a view reports its difference from the readings-free view.
+- Readings in `readings/`, views in `views/`, links in `links/` (one file per
+  source). Readings from outside the shared layer can apply to its claims by
+  id; nothing here points back.
+- A reclassification acts through a question's `requires`: a claim whose
+  values, after the lens, no longer meet them stops counting on that question.
+  Without `requires` a reclassification shows in the claim's facets and in
+  conflict facet differences, but changes no count.
+- The build writes `view_evidence` (every linked claim: its stance on the
+  view's question, whether it counts without readings and under the view, and
+  which reading excluded it), `view_diff`, `view_conflicts`,
+  `view_reinterpretations` and, for which-questions, `view_answers`.
+- First result, from the two example views on `q-privileged-self-access`
+  (which now requires `evidence: self_report`): with no readings, 27 linked
+  claims count; under r-logit-readout-not-answer, 16 do. The 11 that drop are
+  Rubin et al.'s logit-readout claims and Song et al.'s probability-readout
+  claims, which leaves Binder et al.'s supporting evidence without Song et
+  al.'s opposition. Whether the conflict between them survives depends, in
+  part, on whether a probability readout counts as a self-report.

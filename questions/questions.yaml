@@ -22,6 +22,8 @@
 
 - id: q-privileged-self-access
   text: Do models have access to facts about themselves beyond what an outside observer with the same information would have?
+  requires:
+    evidence: [self_report]
   frame:
     construct: [introspection]
   added: 2026-11-26

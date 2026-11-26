@@ -19,6 +19,7 @@ from _load import (
     as_list,
     facet_entry,
     load_codebook,
+    load_links,
     load_list_dir,
     load_sources,
     model_ref,
@@ -61,11 +62,24 @@ CREATE TABLE study_facets (
 );
 CREATE TABLE study_facet_levels (study TEXT, facet TEXT, value TEXT, level TEXT);
 CREATE TABLE claims (
-    id TEXT PRIMARY KEY, source TEXT, study TEXT, statement TEXT, question TEXT,
-    stance TEXT, evidence_kind TEXT, scope_conditions TEXT, where_ TEXT, note TEXT
+    id TEXT PRIMARY KEY, source TEXT, study TEXT, statement TEXT,
+    evidence_kind TEXT, scope_conditions TEXT, where_ TEXT, note TEXT
 );
--- Every question a claim takes a stance on: its main one and any others.
-CREATE TABLE claim_questions (claim TEXT, question TEXT, stance TEXT, main INTEGER);
+-- Links (links/): every yes/no question a claim takes a stance on. `counted` is 0 when the claim fails a
+-- `requires` of the question or a question above it, so it is not evidence there even with no reading applied.
+CREATE TABLE claim_questions (claim TEXT, question TEXT, stance TEXT, counted INTEGER, note TEXT);
+-- Readings (readings/) and views (views/): see design/readings.md.
+CREATE TABLE readings (id TEXT PRIMARY KEY, status TEXT, statement TEXT, reinterpret TEXT, tested_by TEXT);
+CREATE TABLE reading_matches (reading TEXT, claim TEXT);
+CREATE TABLE views (id TEXT PRIMARY KEY, question TEXT, readings TEXT, note TEXT);
+-- Every claim linked to the view's question or a question under it: its stance on the view's question,
+-- whether it counts with no reading and under the view, and which reading excluded it.
+CREATE TABLE view_evidence (
+    view TEXT, claim TEXT, linked_question TEXT, stance TEXT,
+    counted_without_readings INTEGER, counted INTEGER, excluded_by TEXT
+);
+CREATE TABLE view_reinterpretations (view TEXT, claim TEXT, reading TEXT, text TEXT);
+CREATE TABLE view_answers (view TEXT, claim TEXT, value TEXT);
 CREATE TABLE claim_compares (claim TEXT, study TEXT);
 -- The variables whose effect a claim reports (a subset of its study's varies).
 CREATE TABLE claim_effects (claim TEXT, variable TEXT);
@@ -85,12 +99,22 @@ SELECT q.claim, q.question, r.root,
        CASE WHEN r.sign = -1 AND q.stance = 'supports' THEN 'against'
             WHEN r.sign = -1 AND q.stance = 'against' THEN 'supports'
             ELSE q.stance END AS stance
-FROM claim_questions q JOIN question_roots r ON r.question = q.question;
+FROM claim_questions q JOIN question_roots r ON r.question = q.question
+WHERE q.counted = 1;
 
 -- One row per claim and facet value, with facets inherited from the study.
 CREATE VIEW claim_facets AS
-SELECT c.id AS claim, c.question, c.stance, f.facet, f.value
+SELECT c.id AS claim, f.facet, f.value
 FROM claims c JOIN study_facets f ON f.study = c.study;
+
+-- Pairs of counted claims taking opposite stances under a view, and what changed from no readings.
+CREATE VIEW view_conflicts AS
+SELECT a.view, a.claim AS supports, b.claim AS against
+FROM view_evidence a JOIN view_evidence b ON b.view = a.view AND b.stance = 'against' AND b.counted = 1
+WHERE a.stance = 'supports' AND a.counted = 1;
+CREATE VIEW view_diff AS
+SELECT view, claim, linked_question, stance, excluded_by FROM view_evidence
+WHERE counted_without_readings != counted;
 
 -- Pairs of claims that take opposite stances on the same question, or on questions in the same tree, after
 -- turning each stance into one on the root (root_stances). `question` is the root.
@@ -201,6 +225,7 @@ def build(out_path):
             root = qs[root]["parent"]
         db.execute("INSERT INTO question_roots VALUES (?,?,?)", (qid, root, sign))
 
+    claims_mem = {}
     for _, src in load_sources():
         sid = src["id"]
         coding = src.get("coding") or {}
@@ -267,28 +292,15 @@ def build(out_path):
         for claim in as_list(src.get("claims")):
             cid = claim["id"]
             db.execute(
-                "INSERT INTO claims VALUES (?,?,?,?,?,?,?,?,?,?)",
+                "INSERT INTO claims VALUES (?,?,?,?,?,?,?,?)",
                 (
-                    cid, sid, claim["study"], text(claim.get("statement")), claim.get("question"),
-                    claim.get("stance"), claim.get("evidence_kind"),
+                    cid, sid, claim["study"], text(claim.get("statement")), claim.get("evidence_kind"),
                     text((claim.get("scope") or {}).get("conditions")),
                     text(claim.get("where")), text(claim.get("note")),
                 ),
             )
-            links = ([(claim["question"], claim.get("stance"), 1)] if claim.get("question") else []) + [
-                (link["question"], link.get("stance"), 0) for link in as_list(claim.get("other_questions"))]
-            for qid, stance, main in links:
-                q = qs[qid]
-                if q.get("kind", "yesno") == "which":
-                    name = q["answer_facet"]
-                    if facets[name]["applies_to"] == "claim":
-                        values = as_list(claim.get(name))
-                    else:
-                        values = facet_entry((study_facets_by_id[claim["study"]]).get(name))["value"]
-                    for value in values:
-                        db.execute("INSERT INTO claim_answers VALUES (?,?,?)", (cid, qid, value))
-                else:
-                    db.execute("INSERT INTO claim_questions VALUES (?,?,?,?)", (cid, qid, stance, main))
+            scoped_models = as_list((claim.get("scope") or {}).get("models")) or study_models.get(claim["study"], [])
+            claims_mem[cid] = (claim, study_facets_by_id[claim["study"]], scoped_models)
             for other in as_list(claim.get("compares")):
                 db.execute("INSERT INTO claim_compares VALUES (?,?)", (cid, other))
             for var in as_list(claim.get("effect_of")):
@@ -310,6 +322,132 @@ def build(out_path):
                 (sid, rel.get("kind"), rel.get("from"), rel.get("to"), text(rel.get("to_external")),
                  text(rel.get("where")), text(rel.get("note"))),
             )
+
+    # ---- Links, readings and views ----
+    model_reach = {m["id"]: m.get("post_training_reached") for _, m in load_list_dir("models")}
+    readings = {r["id"]: r for _, r in load_list_dir("readings")}
+
+    def record_values(cid):
+        claim, sfacets, _ = claims_mem[cid]
+        out = {}
+        for name, facet in facets.items():
+            if facet["applies_to"] == "study":
+                if name in sfacets:
+                    out[name] = set(facet_entry(sfacets[name])["value"])
+                elif facet.get("tier") == "interpretive":
+                    out[name] = {NOT_YET_CODED}
+                else:
+                    out[name] = set()
+            else:
+                out[name] = set(as_list(claim.get(name)))
+        return out
+
+    def matches(reading, cid):
+        applies = reading.get("applies_to") or {}
+        claim, _, models = claims_mem[cid]
+        targets = set(as_list(applies.get("targets")))
+        if targets:
+            return cid in targets or claim["study"] in targets
+        values = record_values(cid)
+        for name, allowed in (applies.get("selector") or {}).items():
+            allowed = set(as_list(allowed))
+            if name.startswith("model."):
+                if not models or not all(model_reach.get(m) in allowed for m in models):
+                    return False
+            elif not (values.get(name, set()) & allowed):
+                return False
+        return True
+
+    def lens(cid, reading_ids):
+        """Facet values of a claim under the readings, which reading changed each facet, and reinterpretations."""
+        values = record_values(cid)
+        changed, notes = {}, []
+        for rid in reading_ids:
+            r = readings[rid]
+            if not matches(r, cid):
+                continue
+            effect = r.get("effect") or {}
+            for rc in as_list(effect.get("reclassify")):
+                f, old, new = rc["facet"], rc["from"], rc["to"]
+                if old in values.get(f, set()):
+                    values[f] = (values[f] - {old}) | {new}
+                    changed.setdefault(f, rid)
+            if effect.get("reinterpret"):
+                notes.append((rid, text(effect["reinterpret"])))
+        return values, changed, notes
+
+    def chain(qid):
+        out = []
+        while qid:
+            out.append(qid); qid = qs[qid].get("parent")
+        return out
+
+    def counts(cid, qid, reading_ids):
+        """Whether the claim counts as evidence on qid under the readings, and which reading excluded it."""
+        values, changed, _ = lens(cid, reading_ids)
+        for anc in chain(qid):
+            for name, allowed in (qs[anc].get("requires") or {}).items():
+                if not (values.get(name, set()) & set(as_list(allowed))):
+                    return False, changed.get(name, "requires " + anc)
+        return True, None
+
+    for rid, r in readings.items():
+        effect = r.get("effect") or {}
+        db.execute("INSERT INTO readings VALUES (?,?,?,?,?)",
+                   (rid, r.get("status"), text(r.get("statement")), text(effect.get("reinterpret")), text(r.get("tested_by"))))
+        for cid in claims_mem:
+            if matches(r, cid):
+                db.execute("INSERT INTO reading_matches VALUES (?,?)", (rid, cid))
+
+    links = []
+    for _, data in load_links():
+        for link in as_list(data.get("links")):
+            links.append(link)
+            cid, qid = link["claim"], link["question"]
+            q = qs[qid]
+            if q.get("kind", "yesno") == "which":
+                values, _, _ = lens(cid, [])
+                for value in sorted(values.get(q["answer_facet"], set())):
+                    db.execute("INSERT INTO claim_answers VALUES (?,?,?)", (cid, qid, value))
+            else:
+                ok, _ = counts(cid, qid, [])
+                db.execute("INSERT INTO claim_questions VALUES (?,?,?,?,?)", (cid, qid, link.get("stance"), int(ok), text(link.get("note"))))
+
+    for _, v in load_list_dir("views"):
+        vid, vq, rids = v["id"], v["question"], as_list(v.get("readings"))
+        db.execute("INSERT INTO views VALUES (?,?,?,?)", (vid, vq, ", ".join(rids), text(v.get("note"))))
+        for link in links:
+            cid, lq = link["claim"], link["question"]
+            if vq not in chain(lq):
+                continue
+            if qs[vq].get("kind", "yesno") == "which":
+                if lq != vq:
+                    continue
+                values, _, notes = lens(cid, rids)
+                for value in sorted(values.get(qs[vq]["answer_facet"], set())):
+                    db.execute("INSERT INTO view_answers VALUES (?,?,?)", (vid, cid, value))
+            else:
+                # The stance on the view's question: flip under each inverse question on the way up; a polarity
+                # none question in between cuts the link off from the view's question.
+                sign, cur, cut = 1, lq, False
+                while cur != vq:
+                    pol = qs[cur].get("polarity", "direct")
+                    if pol == "none":
+                        cut = True; break
+                    if pol == "inverse":
+                        sign = -sign
+                    cur = qs[cur]["parent"]
+                if cut:
+                    continue
+                stance = link.get("stance")
+                if sign == -1 and stance in ("supports", "against"):
+                    stance = "against" if stance == "supports" else "supports"
+                base_ok, _ = counts(cid, lq, [])
+                ok, why = counts(cid, lq, rids)
+                db.execute("INSERT INTO view_evidence VALUES (?,?,?,?,?,?,?)", (vid, cid, lq, stance, int(base_ok), int(ok), why))
+                _, _, notes = lens(cid, rids)
+            for rid, note in notes:
+                db.execute("INSERT INTO view_reinterpretations VALUES (?,?,?,?)", (vid, cid, rid, note))
 
     # Which-question conflicts: every pair of claims on one which-question whose answer sets differ.
     answers = {}

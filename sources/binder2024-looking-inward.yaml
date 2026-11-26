@@ -81,7 +81,7 @@ studies:
           Not discussed by the authors. Each fine-tuned checkpoint is treated
           as its own system with its own ground-truth behaviour.
       unit_reporter:
-        value: persona
+        value: speaker
         basis: operational
         confidence: medium
         note: >
@@ -148,7 +148,7 @@ studies:
       study_kind: experiment
       unit_state: not_applicable
       unit_disposition: {value: weights, basis: operational, confidence: medium}
-      unit_reporter: {value: persona, basis: operational, confidence: medium}
+      unit_reporter: {value: speaker, basis: operational, confidence: medium}
       self_sense:
         value: self_facts
         basis: operational
@@ -202,7 +202,7 @@ studies:
       study_kind: experiment
       unit_state: not_applicable
       unit_disposition: {value: weights, basis: operational, confidence: medium}
-      unit_reporter: {value: persona, basis: operational, confidence: medium}
+      unit_reporter: {value: speaker, basis: operational, confidence: medium}
       self_sense: {value: self_facts, basis: operational, confidence: medium}
       object_of_study: {value: default_persona, basis: operational, confidence: medium}
       format: {value: chat_template, basis: operational, confidence: medium}
@@ -253,7 +253,7 @@ studies:
         note: >
           The changed model is given a new name and is expected to predict its
           own new behaviour, not that of the checkpoint it came from.
-      unit_reporter: {value: persona, basis: operational, confidence: medium}
+      unit_reporter: {value: speaker, basis: operational, confidence: medium}
       self_sense: {value: self_facts, basis: operational, confidence: medium}
       object_of_study: {value: default_persona, basis: operational, confidence: medium}
       format: {value: chat_template, basis: operational, confidence: medium}
@@ -296,7 +296,7 @@ studies:
       study_kind: experiment
       unit_state: not_applicable
       unit_disposition: {value: weights, basis: operational, confidence: medium}
-      unit_reporter: {value: persona, basis: operational, confidence: medium}
+      unit_reporter: {value: speaker, basis: operational, confidence: medium}
       self_sense: {value: self_facts, basis: operational, confidence: medium}
       object_of_study: {value: default_persona, basis: operational, confidence: medium}
       format: {value: chat_template, basis: operational, confidence: medium}
@@ -345,7 +345,7 @@ studies:
       study_kind: experiment
       unit_state: not_applicable
       unit_disposition: {value: weights, basis: operational, confidence: medium}
-      unit_reporter: {value: persona, basis: operational, confidence: medium}
+      unit_reporter: {value: speaker, basis: operational, confidence: medium}
       self_sense: {value: self_facts, basis: operational, confidence: medium}
       object_of_study: {value: default_persona, basis: operational, confidence: medium}
       format: {value: chat_template, basis: operational, confidence: medium}
@@ -376,7 +376,6 @@ claims:
       Before training, self-prediction accuracy is close to always guessing the
       most common answer. Fine-tuning raises held-out accuracy, for GPT-4o from
       32.6% to 49.4%, with GPT-3.5 the weakest of the three.
-    question: null
     effect_of: [study_training]
     evidence_kind: measured
     where: "§3.1, Fig. 4"
@@ -388,8 +387,6 @@ claims:
       same examples of its behaviour, in both directions: Llama 70B predicts
       itself at 48.5% against 31.8% for GPT-4o predicting it, and GPT-4o
       predicts itself at 49.4% against 36.6% for Llama 70B.
-    question: q-self-prediction-advantage
-    stance: supports
     effect_of: [self_vs_other]
     evidence_kind: measured
     where: "§3.2.2, Fig. 5"
@@ -406,8 +403,6 @@ claims:
     statement: >
       For GPT-3.5 the self-prediction advantage is statistically significant
       but very small (+0.8%), and the authors do not count it as clear evidence.
-    question: q-self-prediction-advantage
-    stance: inconclusive
     effect_of: [self_vs_other]
     evidence_kind: measured
     where: "§3.2.2; §6"
@@ -420,8 +415,6 @@ claims:
       More cross-prediction data does not close the gap. GPT-4o predicting
       Llama 70B plateaus at 35.2% after 10,000 samples, against 48.5% for
       Llama 70B predicting itself.
-    question: q-self-prediction-advantage
-    stance: supports
     effect_of: [self_vs_other]
     evidence_kind: measured
     where: "§3.2.2 (details in appendix A.2.7, not read)"
@@ -435,8 +428,6 @@ claims:
       output distribution than cross-trained or untrained models, although
       training used only temperature-0 answers. Mean absolute deviation falls
       from 23.0 untrained to 8.7 self-trained, against 21.3 cross-trained.
-    question: q-self-prediction-advantage
-    stance: supports
     effect_of: [self_vs_other]
     evidence_kind: measured
     where: "§3.3.2, Fig. 6"
@@ -453,8 +444,6 @@ claims:
       After further fine-tuning changes its behaviour, GPT-4o predicts its new
       behaviour (35.4%) better than its old behaviour (21.7%), without having
       been trained on any self-predictions about the new behaviour.
-    question: q-self-report-tracks-change
-    stance: supports
     effect_of: [study_training]
     evidence_kind: measured
     where: "§3.4.2, Fig. 8"
@@ -469,7 +458,6 @@ claims:
       write, the main character's name in a story, response length), trained
       models do not beat the most-common-answer baseline at predicting
       themselves.
-    question: null
     effect_of: [task]
     evidence_kind: measured
     where: "§4 (details in appendix A.1.4, not read)"
@@ -482,8 +470,6 @@ claims:
       There is no self-prediction advantage for sycophantic answer-switching.
       Llama 70B predicts its own switching at 74.5%, and GPT-4o trained to
       predict Llama 70B reaches 76.5%.
-    question: q-self-prediction-advantage
-    stance: against
     effect_of: [self_vs_other]
     evidence_kind: measured
     where: "§4"
@@ -499,8 +485,6 @@ claims:
       tasks. On the Situational Awareness Dataset only the task closest to the
       training format improves, and there is no clear gain on self-coordination,
       sandbagging or steganography evaluations.
-    question: q-self-report-training-generalises
-    stance: against
     effect_of: [study_training]
     evidence_kind: measured
     where: "§4"
@@ -512,7 +496,6 @@ claims:
       what it would output and then a property of that output, within the
       forward pass. They offer this to explain the failure on long outputs and
       do not test it.
-    question: null
     evidence_kind: hypothesised
     where: "§2; §6, Fig. 9"
 

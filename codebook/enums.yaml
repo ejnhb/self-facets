@@ -62,6 +62,20 @@ enums:
     undisclosed: The developer has not said.
     unspecified: Not yet coded from the documentation.
 
+  reading_status:
+    grounded: Follows from the matched studies' own design facts.
+    argued: There is a case for it that the design alone does not settle.
+    speculative: A lens worth trying, without a settled case.
+
+  post_training_reached:
+    untrained: Random weights; no training at all (a step-0 checkpoint, a network the authors initialised).
+    base: Pretraining only, including mid-training and long-context phases; no post-training.
+    post_trained: Post-trained, with the stages not yet coded (most chat and instruct models until their pipeline is).
+    sft: Supervised fine-tuning is the latest stage.
+    preference: Offline preference optimisation (DPO and relatives) is the latest stage.
+    rl: Reinforcement learning (from human or AI feedback, or verifiable rewards) is the latest stage.
+    unspecified: The source does not say which variant was used.
+
   disclosure:
     full: Methods and data are documented well enough to reproduce the stage in outline.
     partial: Some of the methods or data are documented.

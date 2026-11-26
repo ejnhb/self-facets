@@ -6,6 +6,7 @@
   family: family-slug               # (R)
   developer: org-slug               # (R) an id in orgs/
   open_weights: true                # (R)
+  post_training_reached: base       # (O) enums.yaml: untrained | base | post_trained | sft | preference | rl | unspecified
   size: 7B                          # (O)
   derived_from: parent-model-slug   # (O) the checkpoint this one was trained from
   stage: null                       # (R) null until the pipeline is coded from the developer's documentation, then:

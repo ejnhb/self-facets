@@ -1,0 +1,10 @@
+# Template for a links file: links/<source id>.yaml. One file per source.
+# A link says a claim bears on a question. It is the judgement of whoever poses or maintains the question, not part
+# of what the paper reports, so a coder adding a paper may leave linking to others.
+
+source: familyYEAR-short-title      # (R) the source whose claims are linked; the file name must match
+links:
+  - claim: familyYEAR-short-title.c1     # (R) a claim of this source
+    question: q-short-description        # (R) from questions/
+    stance: supports                     # (C) codebook/stance.yaml, for a yes/no question; none for a which-question
+    note: Why the claim bears on the question, when it is not obvious.   # (O)

@@ -15,6 +15,7 @@ from _load import (
     as_list,
     facet_entry,
     load_codebook,
+    load_links,
     load_list_dir,
     load_sources,
     model_ref,
@@ -107,6 +108,17 @@ def validate():
             rep.err(f"question {qid}", "polarity says how a question points relative to its parent, so it needs a parent")
         if q.get("parent") in questions and questions[q["parent"]].get("kind") == "which" and kind != "which":
             rep.err(f"question {qid}", "a yes/no question cannot sit under a which-question")
+        requires = q.get("requires") or {}
+        if not isinstance(requires, dict):
+            rep.err(f"question {qid}", "requires must map a facet to the values a claim needs to count")
+            requires = {}
+        for name, vals in requires.items():
+            if name not in facets:
+                rep.err(f"question {qid}", f"requires '{name}', which is not a facet")
+                continue
+            for v in as_list(vals):
+                if v not in facets[name]["values"]:
+                    rep.err(f"question {qid}", f"requires {name} '{v}', which is not in the codebook")
         for name in as_list(q.get("needs")):
             if name not in facets:
                 rep.err(f"question {qid}", f"needs '{name}', which is not a facet")
@@ -130,6 +142,7 @@ def validate():
         for parent in as_list(model.get("derived_from")):
             if parent not in models:
                 rep.err(where, f"derived_from '{parent}' is not a model")
+        check_enum(rep, where, "post_training_reached", model.get("post_training_reached"), enums, "post_training_reached", required=False)
         stage = model.get("stage")
         if stage is not None:
             for method in as_list(stage.get("methods")):
@@ -144,6 +157,7 @@ def validate():
 
     source_ids, study_ids, claim_ids = set(), set(), set()
     all_relations = []
+    all_claims, all_studies = {}, {}
 
     for path, src in load_sources():
         sid = src.get("id")
@@ -194,6 +208,7 @@ def validate():
                 rep.err(sid, f"duplicate study id '{stid}'")
             study_ids.add(stid)
             local_studies[stid] = study
+            all_studies[stid] = study
 
             study_models = set()
             for raw in as_list(study.get("models")):
@@ -274,67 +289,12 @@ def validate():
                     if value not in facet["values"]:
                         rep.err(cid, f"{name} '{value}' is not in the codebook")
 
-            # A question can name interpretive facets its evidence must have coded (`needs`), for
-            # itself and every question under it. Check them on the claim and its study.
-            linked = [claim.get("question")] + [l.get("question") for l in as_list(claim.get("other_questions")) if isinstance(l, dict)]
-            needs = {}
-            for qid in [q for q in linked if q in questions]:
-                cur, seen = qid, set()
-                while cur in questions and cur not in seen:
-                    seen.add(cur)
-                    for name in as_list(questions[cur].get("needs")):
-                        needs.setdefault(name, qid)
-                    cur = questions[cur].get("parent")
-            study_coded = (study or {}).get("facets") or {}
-            for name, qid in sorted(needs.items()):
-                facet = facets.get(name)
-                if facet is None:
-                    continue
-                if facet["applies_to"] == "study":
-                    if study is not None and NOT_YET_CODED in facet_entry(study_coded.get(name))["value"] + ([NOT_YET_CODED] if name not in study_coded else []):
-                        rep.err(cid, f"question '{qid}' needs '{name}' coded on study {study.get('id')} (unspecified if the source does not settle it)")
-                elif not as_list(claim.get(name)):
-                    rep.err(cid, f"question '{qid}' needs '{name}' on the claim (unspecified if the source does not settle it)")
+            # Links to questions live in links/ since codebook 0.7.
+            for key in ("question", "stance", "other_questions"):
+                if key in claim:
+                    rep.err(cid, f"'{key}' belongs in links/{sid}.yaml now (codebook 0.7), not in the record")
+            all_claims[cid] = (claim, study)
 
-            question = claim.get("question")
-            if question is not None and question not in questions:
-                rep.err(cid, f"question '{question}' is not in questions/")
-            def is_which(qid):
-                return questions.get(qid, {}).get("kind") == "which"
-
-            def check_answer(qid, where):
-                # A which-question is answered by its answer_facet, coded on the claim or its study; no stance.
-                name = questions[qid].get("answer_facet")
-                facet = facets.get(name)
-                if facet is None:
-                    return
-                if facet["applies_to"] == "claim":
-                    values = as_list(claim.get(name))
-                else:
-                    values = facet_entry(((study or {}).get("facets") or {}).get(name))["value"]
-                if not values or NOT_YET_CODED in values:
-                    rep.err(cid, f"{where}: which-question '{qid}' is answered by '{name}', which is not coded")
-
-            if question is not None and question in questions:
-                if is_which(question):
-                    if claim.get("stance"):
-                        rep.err(cid, f"question '{question}' is a which-question: its answer is '{questions[question].get('answer_facet')}', not a stance")
-                    check_answer(question, "question")
-                elif not claim.get("stance"):
-                    rep.err(cid, "a claim linked to a question needs a stance")
-            if question is None and claim.get("stance"):
-                rep.err(cid, "stance given without a question")
-            if question is None and claim.get("other_questions"):
-                rep.err(cid, "other_questions given without a main question")
-            for link in as_list(claim.get("other_questions")):
-                if not isinstance(link, dict) or link.get("question") not in questions:
-                    rep.err(cid, f"other_questions: '{link}' does not name a question in questions/")
-                elif is_which(link["question"]):
-                    if link.get("stance"):
-                        rep.err(cid, f"other_questions: '{link['question']}' is a which-question and takes no stance")
-                    check_answer(link["question"], "other_questions")
-                elif link.get("stance") not in claim_facets["stance"]["values"]:
-                    rep.err(cid, f"other_questions: stance '{link.get('stance')}' is not in the codebook")
             if study is not None:
                 varied = set(facet_entry((study.get("facets") or {}).get("varies"))["value"])
                 for var in as_list(claim.get("effect_of")):
@@ -378,6 +338,121 @@ def validate():
             rep.err(sid, "relation needs exactly one of to (a coded record) or to_external (a citation)")
         if not rel.get("where"):
             rep.err(sid, "relation needs where (the place the source states it)")
+
+    # Links: claim -> question, with a stance for yes/no questions and none for which-questions.
+    def ancestors(qid):
+        out, seen = [], set()
+        while qid in questions and qid not in seen:
+            seen.add(qid); out.append(qid); qid = questions[qid].get("parent")
+        return out
+
+    def study_values(study, name):
+        coded = (study or {}).get("facets") or {}
+        return facet_entry(coded.get(name))["value"] if name in coded else [NOT_YET_CODED]
+
+    seen_links = set()
+    for path, data in load_links():
+        where = f"links/{path.name}"
+        if not isinstance(data, dict) or data.get("source") != path.stem:
+            rep.err(where, f"needs 'source: {path.stem}' (the file is named after its source)")
+            continue
+        for i, link in enumerate(as_list(data.get("links")), 1):
+            here = f"{where} link {i}"
+            if not isinstance(link, dict):
+                rep.err(here, "not a mapping"); continue
+            for key in set(link) - {"claim", "question", "stance", "note"}:
+                rep.err(here, f"unknown key '{key}'")
+            cid, qid = link.get("claim"), link.get("question")
+            if cid not in all_claims:
+                rep.err(here, f"claim '{cid}' is not a coded claim"); continue
+            if not str(cid).startswith(path.stem + "."):
+                rep.err(here, f"claim '{cid}' is not one of {path.stem}'s claims")
+            if qid not in questions:
+                rep.err(here, f"question '{qid}' is not in questions/"); continue
+            if (cid, qid) in seen_links:
+                rep.err(here, f"{cid} is linked to {qid} twice")
+            seen_links.add((cid, qid))
+            claim, study = all_claims[cid]
+            q = questions[qid]
+            if q.get("kind") == "which":
+                if link.get("stance"):
+                    rep.err(here, f"'{qid}' is a which-question: answered by '{q.get('answer_facet')}', not a stance")
+                name = q.get("answer_facet")
+                f = facets.get(name)
+                if f is not None:
+                    values = as_list(claim.get(name)) if f["applies_to"] == "claim" else study_values(study, name)
+                    if not values or NOT_YET_CODED in values:
+                        rep.err(here, f"which-question '{qid}' is answered by '{name}', which {cid} does not code")
+            elif link.get("stance") not in claim_facets["stance"]["values"]:
+                rep.err(here, f"a link to a yes/no question needs a stance from the codebook (got '{link.get('stance')}')")
+            # needs and requires, from the question and every question above it
+            needs = {}
+            for anc in ancestors(qid):
+                for name in as_list(questions[anc].get("needs")) + list((questions[anc].get("requires") or {})):
+                    needs.setdefault(name, anc)
+            for name, anc in sorted(needs.items()):
+                f = facets.get(name)
+                if f is None:
+                    continue
+                if f["applies_to"] == "study":
+                    if NOT_YET_CODED in study_values(study, name):
+                        rep.err(here, f"question '{anc}' needs '{name}' coded on {study.get('id') if study else '?'} (unspecified if the source does not settle it)")
+                elif not as_list(claim.get(name)):
+                    rep.err(here, f"question '{anc}' needs '{name}' on {cid} (unspecified if the source does not settle it)")
+
+    # Readings: lenses that reclassify facets, or attach an alternative explanation, under a view only.
+    readings = index(rep, load_list_dir("readings"), "reading")
+    model_fields = {"post_training_reached": enums.get("post_training_reached", {})}
+    for rid, r in readings.items():
+        where = f"reading {rid}"
+        for key in set(r) - {"id", "status", "statement", "applies_to", "effect", "sources", "tested_by", "note"}:
+            rep.err(where, f"unknown key '{key}'")
+        check_enum(rep, where, "status", r.get("status"), enums, "reading_status")
+        if not r.get("statement"):
+            rep.err(where, "missing statement")
+        applies = r.get("applies_to") or {}
+        if bool(applies.get("selector")) == bool(applies.get("targets")):
+            rep.err(where, "applies_to needs exactly one of selector (facet values) or targets (claim or study ids)")
+        for name, vals in (applies.get("selector") or {}).items():
+            if name.startswith("model."):
+                field = name[len("model."):]
+                if field not in model_fields:
+                    rep.err(where, f"selector '{name}': models have no field '{field}' to select on")
+                for v in as_list(vals):
+                    if field in model_fields and v not in model_fields[field]:
+                        rep.err(where, f"selector '{name}': '{v}' is not in enums.yaml {field}")
+            elif name not in facets:
+                rep.err(where, f"selector '{name}' is not a facet (or model.FIELD)")
+            else:
+                for v in as_list(vals):
+                    if v not in facets[name]["values"] and v not in SPECIAL:
+                        rep.err(where, f"selector {name} '{v}' is not in the codebook")
+        for t in as_list(applies.get("targets")):
+            if t not in all_claims and t not in all_studies:
+                rep.err(where, f"target '{t}' is not a coded claim or study")
+        effect = r.get("effect") or {}
+        for key in set(effect) - {"reclassify", "reinterpret"}:
+            rep.err(where, f"effect '{key}' is not reclassify or reinterpret")
+        if not effect:
+            rep.err(where, "needs an effect (reclassify, reinterpret or both)")
+        for i, rc in enumerate(as_list(effect.get("reclassify")), 1):
+            name = rc.get("facet") if isinstance(rc, dict) else None
+            if name not in facets:
+                rep.err(where, f"reclassify {i}: '{name}' is not a facet"); continue
+            for k in ("from", "to"):
+                v = rc.get(k)
+                if v not in facets[name]["values"] and v not in SPECIAL:
+                    rep.err(where, f"reclassify {i}: {k} '{v}' is not a value of {name}")
+
+    views = index(rep, load_list_dir("views"), "view")
+    for vid, v in views.items():
+        if v.get("question") not in questions:
+            rep.err(f"view {vid}", f"question '{v.get('question')}' is not in questions/")
+        elif questions[v["question"]].get("kind") == "which":
+            pass
+        for rid in as_list(v.get("readings")):
+            if rid not in readings:
+                rep.err(f"view {vid}", f"reading '{rid}' is not in readings/")
 
     # The templates must name every facet the codebook has, and nothing it lacks, so they cannot drift.
     from _load import ROOT, read_yaml

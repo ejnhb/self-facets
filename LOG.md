@@ -2,6 +2,25 @@
 
 Newest first. Each entry: what changed, what is open, what needs a decision.
 
+## 2026-11-26: design proposal for definitions
+
+Coder: claude (claude-opus-5-5), working with the owner.
+
+**Added**
+
+- `design/definitions.md`: named logic over facets for what a design tests, in
+  a stated sense, with `construct` kept as the authors' label. Four published
+  definitions written as facet logic and evaluated on the coded studies: the
+  grounding sense (Lindsey) and the privileged-access sense (Binder et al.;
+  Song et al.) split the studies cleanly, and definition-based frames cut
+  candidate lists (87 to 53 for `q-privileged-self-access`; 27 to 16 for the
+  post-training question). Not built.
+
+**For the owner to decide**
+
+- Whether to build definitions, and whether an internality facet is worth
+  adding.
+
 ## 2026-11-26: codebook 0.8 (effects, auto stances and candidates, model roles)
 
 Coder: claude (claude-opus-5-5), working with the owner.

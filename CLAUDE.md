@@ -47,6 +47,10 @@ are coded.
 - **Record the conditions.** `varies` names a variable; put the conditions
   actually used in its `levels`. When a claim holds for only some of them, say
   which in `scope.conditions`.
+- **Say which variable a claim is about.** When a claim reports the effect of
+  something the study varied, name that variable in `effect_of`. Leave it off
+  claims that report no such effect, and off variables the study varied only
+  as a covariate or to show the result is general.
 - **A conflict that differs only on task means the question is too coarse.**
   Read the two claims' conditions, then split the question or add one about
   what moderates the effect.

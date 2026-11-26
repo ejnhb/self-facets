@@ -1,5 +1,15 @@
 # Codebook changelog
 
+## 0.4 (2026-11-26, in progress)
+
+- **Claims gain `effect_of`**, naming the varied variable whose effect the
+  claim reports. `varies` on a study could not tell the contrast of interest
+  from a covariate, so a query for studies that vary post-training stage
+  returned one that only uses it to grade how similar two models are.
+  Coded on Binder et al. so far; the other three records are to follow.
+- The conflicts view gains `shared_facets`, for sorting pairs by how
+  comparable their studies are.
+
 ## 0.3 (2026-11-26)
 
 Revised after the first pilot: three papers, each coded blind by two coders.

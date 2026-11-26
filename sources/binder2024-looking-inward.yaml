@@ -284,6 +284,7 @@ claims:
       most common answer. Fine-tuning raises held-out accuracy, for GPT-4o from
       32.6% to 49.4%, with GPT-3.5 the weakest of the three.
     question: null
+    effect_of: [study_training]
     evidence_kind: measured
     where: "§3.1, Fig. 4"
 
@@ -296,6 +297,7 @@ claims:
       predicts itself at 49.4% against 36.6% for Llama 70B.
     question: q-self-prediction-advantage
     stance: supports
+    effect_of: [self_vs_other]
     evidence_kind: measured
     where: "§3.2.2, Fig. 5"
     scope:
@@ -313,6 +315,7 @@ claims:
       but very small (+0.8%), and the authors do not count it as clear evidence.
     question: q-self-prediction-advantage
     stance: inconclusive
+    effect_of: [self_vs_other]
     evidence_kind: measured
     where: "§3.2.2; §6"
     scope:
@@ -326,6 +329,7 @@ claims:
       Llama 70B predicting itself.
     question: q-self-prediction-advantage
     stance: supports
+    effect_of: [self_vs_other]
     evidence_kind: measured
     where: "§3.2.2 (details in appendix A.2.7, not read)"
     scope:
@@ -340,6 +344,7 @@ claims:
       from 23.0 untrained to 8.7 self-trained, against 21.3 cross-trained.
     question: q-self-prediction-advantage
     stance: supports
+    effect_of: [self_vs_other]
     evidence_kind: measured
     where: "§3.3.2, Fig. 6"
     scope:
@@ -357,6 +362,7 @@ claims:
       been trained on any self-predictions about the new behaviour.
     question: q-self-report-tracks-change
     stance: supports
+    effect_of: [study_training]
     evidence_kind: measured
     where: "§3.4.2, Fig. 8"
     scope:
@@ -371,6 +377,7 @@ claims:
       models do not beat the most-common-answer baseline at predicting
       themselves.
     question: null
+    effect_of: [task]
     evidence_kind: measured
     where: "§4 (details in appendix A.1.4, not read)"
     scope:
@@ -384,6 +391,7 @@ claims:
       predict Llama 70B reaches 76.5%.
     question: q-self-prediction-advantage
     stance: against
+    effect_of: [self_vs_other]
     evidence_kind: measured
     where: "§4"
     scope:
@@ -400,6 +408,7 @@ claims:
       sandbagging or steganography evaluations.
     question: q-self-report-training-generalises
     stance: against
+    effect_of: [study_training]
     evidence_kind: measured
     where: "§4"
 

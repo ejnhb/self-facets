@@ -254,6 +254,11 @@ def validate():
                     rep.err(cid, f"other_questions: '{link}' does not name a question in questions/")
                 elif link.get("stance") not in claim_facets["stance"]["values"]:
                     rep.err(cid, f"other_questions: stance '{link.get('stance')}' is not in the codebook")
+            if study is not None:
+                varied = set(facet_entry((study.get("facets") or {}).get("varies"))["value"])
+                for var in as_list(claim.get("effect_of")):
+                    if var not in varied:
+                        rep.err(cid, f"effect_of '{var}' is not one of the study's varies values")
             for other in as_list(claim.get("compares")):
                 if other not in local_studies:
                     rep.err(cid, f"compares '{other}' is not a study in this source")

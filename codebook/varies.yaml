@@ -1,5 +1,5 @@
 facet: varies
-version: 0.3
+version: 0.4
 applies_to: study
 cardinality: many
 required: true
@@ -69,3 +69,9 @@ notes: >
       levels:
         task: [second character of the output, whether it switches its answer]
   A claim that holds for only some levels says which in scope.conditions.
+  A study lists everything it varied, but only some of those are what its
+  conclusions are about. A claim that reports the effect of a variable names
+  it in effect_of, which must be one of the study's varies values:
+    effect_of: [pretraining_progress]
+  To find evidence on "does X differ by Y", filter claims by effect_of Y, not
+  studies by varies Y.

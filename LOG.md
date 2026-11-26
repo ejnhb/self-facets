@@ -49,13 +49,17 @@ reconciling coder (claude-fable-5-2) and one blind checker (claude-opus-5-5).
   images, which the pilot coders did not do. The three pilot records are
   `text_only` and should have their figure-dependent claims revisited.
 
+**Added after review with the owner**
+
+- `effect_of` on claims, and `shared_facets` on the conflicts view. The owner's
+  view is that showing every conflict and filtering by facet is right, so
+  nothing is hidden; the new column only allows sorting.
+
 **Open**
 
-- `varies` cannot say what role a variable plays (the contrast of interest, or
-  a covariate). This makes the training-stage query over-inclusive.
-- A parent question multiplies conflict rows: 56 between Lindsey and Song,
-  most between studies that share little. The view needs a way to rank or
-  filter pairs, for example by how many facets they share.
+- `effect_of` is coded on Binder et al. only. The Lindsey, Rubin and Song
+  records need it, and need a pass over their figure-dependent claims now
+  that figures can be read. Both are held until the owner says to go.
 - Whether a representational property with no behaviour counts as a capacity
   for `unit_disposition`.
 - The line between `forward_pass` and `conversation` for an injected state

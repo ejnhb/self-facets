@@ -1,0 +1,1161 @@
+id: fornasiere2026-dropout-noise-recognition
+title: "Language models recognize dropout and Gaussian noise applied to their activations"
+date: 2026-10-14
+
+authors:
+  - {person: fornasiere-damiano, orgs: [lawzero]}
+  - {person: bronzi-mirko, orgs: [lawzero]}
+  - {person: kitts-spencer, orgs: [lawzero]}
+  - {person: palmas-alessandro, orgs: [lawzero]}
+  - {person: bengio-yoshua, orgs: [lawzero]}
+  - {person: richardson-oliver, orgs: [lawzero]}
+
+artefacts:
+  - kind: paper
+    arxiv: "2604.17465"
+    url: null
+    venue: null
+    note: >
+      The date above is the arXiv stamp on v3, the version read (14 Oct 2026). The first three authors are marked
+      as equal contributors and the last two as supervisors; one affiliation (LawZero) covers all six. v2 (30 Apr
+      2026) was fetched only to see what changed: it tested Llama, Olmo and Qwen models only and had no detection
+      section, so v3 is a substantially different paper. Venue not checked.
+  - kind: post
+    url: https://lawzero-org.github.io/llm-dropout-noise-recognition/v2/
+    note: Project page linked from the first page of v3. Not read.
+  - kind: code
+    status: released
+    url: https://github.com/lawzero-org/llm-dropout-noise-recognition
+    ref: ad7ce52431cea49a15f7cd6e327d5c782ad27749
+    read: partial
+    note: >
+      Linked from the first page of v3. Read at tag v2 (commit ad7ce52, 13 Oct 2026), the latest commit and the
+      nearest to v3. The tag message calls it "the second version of the paper (arXiv:2604.17465v2)", but its
+      content matches arXiv v3, not arXiv v2 (eight models, the detection task, the Olmo training-stage runs);
+      the repository seems to count versions of the paper's content, not arXiv versions. Read to the checklist:
+      README; the model configs (Hugging Face ids and pinned revisions, thinking off); hooks.py (where and how the
+      perturbations are applied); generation.py and the chat-template handling in prompt_utils.py and
+      model_utils.py (one forward pass, the argmax at the last prompt position, the plain-text fallback for
+      tokenizers without a chat template, the Gemma 4 prefill patch); the system prompt config (empty); one
+      variant each of the detection and detection-control prompts; the list of label aliases; the sweep files of
+      the Olmo pretraining steps and of Qwen3-32B's few-shot arm (sample count, levels). The experiment runners,
+      evaluation code, notebooks and exporters were not read.
+  - kind: data
+    status: released
+    url: https://github.com/lawzero-org/llm-dropout-noise-recognition/tree/v2/data/sentences
+    ref: ad7ce52431cea49a15f7cd6e327d5c782ad27749
+    read: partial
+    note: >
+      The stimuli are in the code repository: WikiText-103 sentences of 3 to 23 tokens (data/sentences), the
+      topic sentences of the localization controls (in the prompt configs) and a template sentence generator.
+      Only the file list and the first lines of the 15-token file were read. The runs and their outputs are
+      not released: the README says the authors' W&B sweeps are not public, so the figures can be rebuilt only
+      by re-running the sweeps.
+
+coding:
+  coded_by: claude
+  coder_model: claude-opus-5-5
+  coded_on: 2026-11-27
+  version_read: v3
+  read_depth: full_text
+  read_parts: >
+    The v3 PDF fetched with scripts/fetch_paper.py: the full extracted text (sections 1 to 8, references,
+    appendices A.1 to A.16, Tables 1 to 4). Figures seen as page images: Figs. 1 to 11 (pp. 3 to 11), 12 to 18
+    (pp. 15 to 17), 19 (p. 17), 21 (p. 18), 22 (p. 20), 27 to 33 (pp. 25 to 30) and 39 to 40 (p. 34). Not looked
+    at as images: Fig. 20 (sentence length under noise), Figs. 23 to 26 (log-probability histograms), Fig. 34
+    (entropy), Figs. 35 to 38 (few-shot heatmaps of every model) and Figs. 41 to 45 (delta heatmaps of the other
+    models). Claims resting on those say so in where. The code at ad7ce52, to the checklist in the code artefact
+    note. The cited works were not read.
+  status: draft
+  reviewed_by: null
+  passes:
+    - date: 2026-11-27
+      pr: 18
+      coded_by: claude
+      coder_model: claude-opus-5-5
+      codebook: "0.10"
+      scope: "First coding: 11 studies, 44 claims, core facets throughout; origin on two claims the source tests; question links proposed in links/."
+      read: "As in read_parts: v3 in full with the figure pages listed there, and the released code at ad7ce52 to the checklist. arXiv v2 skimmed only to see what changed."
+
+studies:
+  - id: fornasiere2026-dropout-noise-recognition.s1
+    label: Localization of dropout or Gaussian noise between two copies of a sentence, eight chat models
+    where: "§3, §4.1, §4.3; App. A.1 to A.6, A.9; Figs. 2, 12, 16 to 21, 27; Table 1"
+    design: >
+      The prompt shows two copies (A and B) of one target sentence, sampled from WikiText-103 at 15 tokens (for
+      the Qwen3 tokenizer), and asks which was perturbed. On the tokens of one copy, at every layer, forward hooks
+      either apply dropout (each entry of the attention and MLP sublayer outputs zeroed with rate p, the rest
+      rescaled by 1/(1-p)) or add Gaussian noise with SD sigma, before the residual addition (after the extra
+      output norm in Gemma 4 and OLMo 3, from the code). The same prompt is used for both perturbations and never
+      names them. The prompt is a chat with prefilled assistant turns: a user turn announcing perturbations, an
+      assistant turn "I understand. I will pay close attention.", the two sentences, an assistant turn "I am
+      carefully introspecting on how I processed those sentences...", the question, and the assistant prefill
+      "the answer is:". There are 20 wording variants. The answer is the argmax token over the whole vocabulary at
+      the last prompt position in one forward pass, scored correct if it is exactly " A" or " B" as appropriate;
+      n of at least 1000 per point. Dropout rates from 0 to near 1 and noise SDs from 0 to 0.5 are swept, with
+      no perturbation (p, sigma = 0) as the chance-level control. Variations: two prompt ablations (without the
+      announcing exchange; only the two sentences and the question), perturbing only one third of the layers,
+      sentence lengths from 3 to 23 tokens, dropout at the further sites of Vaswani et al. (2017), and two other
+      sentence pools. The first value of p (or sigma) whose accuracy departs from 50% defines p_min (sigma_min);
+      with p_max from the comprehension control (s2) it defines each model's working range (Table 1), divided
+      into 11 strengths used in s6, s8, s10 and s11.
+    models:
+      - gemma-4-31b-it
+      - llama-3.1-8b-instruct
+      - mistral-small-3.2-24b-instruct-2506
+      - olmo-3.1-32b-instruct
+      - qwen3-14b
+      - qwen3-32b
+      - qwen3.8-27b
+      - seed-oss-36b-instruct
+      - {id: claude-opus-4.1, roles: [data_source], note: "generated one of the two alternative sentence pools (§3, footnote 4)"}
+    note: >
+      Model ids and revisions are from App. A.1 and the code's model configs. Mistral-Small-3.2-24B-Instruct-2506
+      was run from the unsloth mirror of the weights (same weights, standard tokenizer files, per the config
+      comment). For Olmo3.1-32B, whose argmax at low strengths is "neither", Table 1's bounds compare only the
+      logits of " A" and " B" (footnote 6, App. A.6; the code's accuracy_constrained_primary). All perturbation
+      settings are applied to every layer unless the layer ablation says otherwise.
+    facets:
+      study_kind: experiment
+      format:
+        value: chat_template
+        basis: stated
+        where: "§3; code generation.py, model_utils.py"
+        note: >
+          "All our prompts employ a chat-template with pre-filled answers." The code applies each tokenizer's
+          template with continue_final_message for the prefill; for Gemma 4 a patch renders the turns before the
+          prefill with the generation prompt (so the template's empty thought channel is inserted) and appends the
+          prefill as raw text.
+      system_prompt:
+        value: none
+        basis: stated
+        where: "code README ('There is no system prompt'); conf/prompts/system/empty.yaml"
+        note: >
+          From the code; the paper does not say. A system message with empty content is passed to the chat
+          template. Whether any template renders a default of its own for it (Llama 3.1's adds date lines when a
+          system turn is present) was not checked.
+      reasoning:
+        value: none
+        basis: stated
+        where: "§3 ('We do not allow M to generate'); code: enable_thinking false in every model config"
+      construct:
+        value: [introspection]
+        basis: operational
+        author_term: "detect, localize and, to a degree, verbalize"
+        where: "Abstract; §1; §8"
+        confidence: medium
+        note: >
+          The authors place the work beside "introspective awareness" (Lindsey; Pearson-Vogel et al.) and the
+          prompts tell the model to introspect, but the paper's own words are recognize, detect, localize and
+          verbalize; it does not call the result introspection.
+      report_target:
+        value: [injected_state]
+        basis: stated
+        author_term: "which sentence was perturbed"
+      report_readout:
+        value: logit_choice
+        basis: stated
+        where: "§3 Metrics; code generation.py"
+        note: The argmax over the full vocabulary at the last prompt position; nothing is generated.
+      evidence: [self_report, internals]
+      validated_against:
+        value: [known_intervention]
+        basis: stated
+        note: Correct means naming the perturbed copy, known by construction; unperturbed runs give the chance baseline.
+      varies:
+        value: [activation_intervention, model_family, prompt_framing]
+        levels:
+          activation_intervention:
+            - "kind: dropout (rate p from 0 to near 1) or additive Gaussian noise (SD sigma from 0 to 0.5); none at p, sigma = 0"
+            - "layers: all (main); only the first, second or last third (App. A.9)"
+            - "perturbed span: target sentences of 3, 7, 11, 15, 19 or 23 tokens (15 in the main runs; App. A.5)"
+            - "dropout sites: attention and MLP sublayer outputs (main); additionally embeddings, attention before the output projection and inside the MLP, as in Vaswani et al. (App. A.3)"
+          model_family:
+            - "Gemma4-31B, Llama3.1-8B, Mistral-Small-24B, Olmo3.1-32B, Qwen3-14B, Qwen3-32B, Qwen3.8-27B, Seed-OSS-36B"
+          prompt_framing:
+            - "main prompt (Fig. 12)"
+            - "without the first exchange announcing perturbations (Fig. 17)"
+            - "only the two sentences and the question (Fig. 18)"
+        note: >
+          The sentence pool (WikiText-103, a pool generated by Claude Opus 4.1, the authors' generator) was also
+          varied, to rule out memorisation, with no difference reported (footnote 4); it is not coded as a
+          variable. Sentence length is coded as a level of the intervention because it sets how many token
+          positions are perturbed.
+      comparison: [within_model, cross_model]
+      output_route_control:
+        value: by_construction
+        basis: operational
+        where: "§3; code generation.py and the prompt configs"
+        note: >
+          The answer is read from the logits at the last prompt position in one forward pass. Every earlier
+          assistant turn is text the authors wrote, not the model's output.
+      similarity_adjustment: not_applicable
+      elicitation:
+        value: [prompted, prefilled, steered]
+        basis: operational
+        note: >
+          The opening exchange tells the model perturbations will be applied, the assistant turns are written for
+          it ("I am carefully introspecting..."), and the report is tested under the perturbation.
+
+  - id: fornasiere2026-dropout-noise-recognition.s2
+    label: Comprehension control, one of two topic sentences perturbed, eight chat models
+    where: "§4.2; App. A.7; Figs. 3, 13; Table 1, Table 2"
+    design: >
+      As in s1, but the two sentences are about different topics (five topic pairs, each sentence drawn from a
+      pool of 40 per topic generated by Claude Opus 4.1), one is perturbed, and the question is a comprehension
+      question (which sentence is about animals). The prompt is neutral ("I have a question about the content of
+      some sentences"), with 20 wording variants. Accuracy on the content question is the measure. The first
+      strength at which accuracy falls below 95% defines p_max (sigma_max) of Table 1. Under the null hypothesis
+      that a perturbation draws the answer to the perturbed sentence whatever the question, a model with perfect
+      localization would score 50% here.
+    models:
+      - gemma-4-31b-it
+      - llama-3.1-8b-instruct
+      - mistral-small-3.2-24b-instruct-2506
+      - olmo-3.1-32b-instruct
+      - qwen3-14b
+      - qwen3-32b
+      - qwen3.8-27b
+      - seed-oss-36b-instruct
+      - {id: claude-opus-4.1, roles: [data_source], note: "generated the topic sentences (§4.2)"}
+    note: Split from s1 because the question is about the sentences' content, not about the model. Olmo3.1-32B's curves compare the " A" and " B" logits only (footnote 6).
+    facets:
+      study_kind: experiment
+      format: {value: chat_template, basis: stated, where: "§3, §4.2"}
+      system_prompt: {value: none, basis: stated, where: "code README; conf/prompts/system/empty.yaml", note: "As in s1."}
+      reasoning: {value: none, basis: stated, where: "§3"}
+      construct:
+        value: [introspection]
+        basis: operational
+        note: A control for the localization task of s1; no construct of its own is measured.
+      report_target: not_applicable
+      report_readout: not_applicable
+      evidence: [behaviour, internals]
+      validated_against:
+        value: not_applicable
+        note: No self-report; answers are scored against the sentence's topic.
+      varies:
+        value: [activation_intervention, model_family]
+        levels:
+          activation_intervention: ["dropout rate p from 0 to near 1, or noise SD sigma from 0 to 0.5, on one of the two sentences"]
+          model_family: ["the eight models of s1"]
+      comparison: [within_model, cross_model]
+      output_route_control: not_applicable
+      similarity_adjustment: not_applicable
+      elicitation:
+        value: [prefilled, steered]
+        basis: operational
+        note: The assistant turns and the "the answer is:" stub are written for the model; the behaviour is tested under perturbation.
+
+  - id: fornasiere2026-dropout-noise-recognition.s3
+    label: Likelihood of the perturbed sentence, as an alternative explanation of localization
+    where: "§4.2 ('Are perturbed sentences less likely?'); App. A.8; Figs. 22 to 26"
+    design: >
+      For the localization prompt of s1 with copy B perturbed, the joint log-probability of the sentence's tokens
+      under the model is compared in two ways: (i) whether the perturbed copy is less likely than the unperturbed
+      first copy, p(B*|A) < p(A); (ii) whether it is less likely than the same copy unperturbed, p(B*|A) <
+      p(B|A). Run for each model at the midpoint of its dropout and noise ranges and at p_min (sigma_min), 32 runs
+      in all (from the code README). Further log-probability differences are plotted in Figs. 23 to 26.
+    models:
+      - gemma-4-31b-it
+      - llama-3.1-8b-instruct
+      - mistral-small-3.2-24b-instruct-2506
+      - olmo-3.1-32b-instruct
+      - qwen3-14b
+      - qwen3-32b
+      - qwen3.8-27b
+      - seed-oss-36b-instruct
+    note: No self-report is read; the model's token probabilities for the sentence are the measurement. Split from s1 for that reason.
+    facets:
+      study_kind: experiment
+      format: {value: chat_template, basis: operational, where: "code scripts/shortcut_analysis.py applies the chat template"}
+      system_prompt: {value: none, basis: stated, where: "code README"}
+      reasoning: not_applicable
+      construct:
+        value: [introspection]
+        basis: operational
+        note: Tests an alternative explanation of the localization result of s1.
+      report_target: not_applicable
+      report_readout: not_applicable
+      evidence: [output_probabilities, internals]
+      validated_against: not_applicable
+      varies:
+        value: [activation_intervention, model_family]
+        levels:
+          activation_intervention: ["dropout at p_min and at the midpoint of the range; noise at sigma_min and at the midpoint"]
+          model_family: ["the eight models of s1"]
+      comparison: [within_model, cross_model]
+      output_route_control: not_applicable
+      similarity_adjustment: not_applicable
+      elicitation: not_applicable
+
+  - id: fornasiere2026-dropout-noise-recognition.s4
+    label: Localization across the post-training stages of Olmo 3.1 32B
+    where: "§4.4; App. A.11 (Fig. 31, Table 3); Fig. 4"
+    design: >
+      The localization task of s1 and its comprehension control (s2) run on the base model and the SFT, DPO and
+      RLVR checkpoints of Olmo 3.1 32B. Fig. 4 reports localization at dropout p = 0.5 and noise sigma = 0.056 for
+      each stage; Fig. 31 gives the full sweeps, from which each stage's own range (Table 3) is taken for s8.
+      Accuracy compares the " A" and " B" logits only, as for Olmo in s1.
+    models:
+      - olmo-3-1125-32b
+      - olmo-3.1-32b-instruct-sft
+      - olmo-3.1-32b-instruct-dpo
+      - olmo-3.1-32b-instruct
+    note: >
+      The base is the released allenai/Olmo-3-1125-32B, which the code README calls the base of Olmo 3.1. Its
+      tokenizer has no chat template (checked on the Hub at revision main; the pinned revision c2b61da was not
+      opened), so the code runs it with its plain-text fallback, which joins the turns' contents with blank lines
+      and no role markers. The paper says all prompts use a chat template; the coding follows the code. The three
+      post-trained stages use their chat template.
+    facets:
+      study_kind: experiment
+      format:
+        value: [chat_template, raw_text]
+        basis: operational
+        where: "§3; code model_utils.py (plain-concatenation fallback when a tokenizer has no chat_template)"
+        note: raw_text for the base model only (see the study note); chat_template for SFT, DPO and RLVR.
+      system_prompt: {value: none, basis: stated, where: "code README", note: "For the base model the empty system message contributes nothing under the fallback."}
+      reasoning: {value: none, basis: stated, where: "§3"}
+      construct: {value: [introspection], basis: operational, author_term: "localize"}
+      report_target: [injected_state]
+      report_readout: logit_choice
+      evidence: [self_report, internals]
+      validated_against: [known_intervention]
+      varies:
+        value: [post_training_stage, activation_intervention]
+        levels:
+          post_training_stage: ["base (Olmo-3-1125-32B)", "SFT", "DPO", "RLVR (the released Olmo-3.1-32B-Instruct)"]
+          activation_intervention: ["dropout p = 0.5 and noise sigma = 0.056 (Fig. 4); full sweeps of p and sigma (Fig. 31)"]
+      comparison: [within_lineage, within_model]
+      output_route_control: {value: by_construction, basis: operational, note: "As in s1."}
+      similarity_adjustment: not_applicable
+      elicitation: {value: [prompted, prefilled, steered], basis: operational, note: "As in s1; for the base model the 'assistant' text is plain text, not an assistant turn."}
+
+  - id: fornasiere2026-dropout-noise-recognition.s5
+    label: Localization across pretraining checkpoints of Olmo 3 32B
+    where: "§4.4; App. A.10; Figs. 28, 29"
+    design: >
+      The localization task of s1 run on ten stage-1 pretraining checkpoints of the Olmo 3 32B base (revisions
+      stage1-step0 to stage1-step656000, the end of stage 1), at the minimum, midpoint and maximum of the released
+      Olmo3.1-32B's ranges (Table 1: dropout p 0.26, 0.46, 0.66; noise sigma 0.02, 0.05, 0.08). The comprehension
+      question of s2 is asked of the same checkpoints about two unperturbed sentences (Fig. 29).
+    models:
+      - {id: olmo-3-32b-checkpoints, roles: [subject], note: "stage-1 revisions at steps 0, 73000, 145000, 219000, 292000, 364000, 437000, 510000, 583000 and 656000 (from the code's sweep files)"}
+      - olmo-3-32b-stage1-step0
+    note: >
+      The checkpoints have no chat template, so per the code they run on the plain-text fallback, as the base model
+      in s4. The strengths were calibrated on the final post-trained model, not on these checkpoints (App. A.10,
+      note 2). The last checkpoint is not the released base, which adds mid-training and a long-context stage
+      (note 1).
+    facets:
+      study_kind: experiment
+      format:
+        value: raw_text
+        basis: operational
+        where: "code model_utils.py fallback; tokenizer of allenai/Olmo-3-1125-32B has no chat_template"
+        note: The paper says all prompts use a chat template; the coding follows the code.
+      system_prompt: {value: none, basis: operational, note: "Plain text; the empty system message adds nothing."}
+      reasoning: {value: none, basis: stated, where: "§3"}
+      construct: {value: [introspection], basis: operational, author_term: "localize"}
+      report_target: [injected_state]
+      report_readout: logit_choice
+      evidence: [self_report, internals]
+      validated_against: [known_intervention]
+      varies:
+        value: [pretraining_progress, activation_intervention]
+        levels:
+          pretraining_progress: ["stage-1 steps 0, 73k, 145k, 219k, 292k, 364k, 437k, 510k, 583k, 656k"]
+          activation_intervention: ["dropout p 0.26, 0.46, 0.66; noise sigma 0.02, 0.05, 0.08"]
+      comparison: [within_lineage]
+      output_route_control: {value: by_construction, basis: operational, note: "As in s1."}
+      similarity_adjustment: not_applicable
+      elicitation: {value: [prompted, steered], basis: operational, note: "As in s1, except that on plain text there is no assistant turn to prefill."}
+
+  - id: fornasiere2026-dropout-noise-recognition.s6
+    label: Detection, was a perturbation applied to a single sentence, eight chat models
+    where: "§5, §5.1; Fig. 5"
+    design: >
+      One target sentence is shown, perturbed with dropout or noise at one of the 11 strengths of the model's
+      range (Table 1), or not perturbed, and the model is asked whether a perturbation was applied, with YES and
+      NO as options A and B in random order. The prompt has the same structure as s1 ("I may apply a
+      perturbation; detect whether one was applied", prefilled assistant turns, "Based on your introspection, was
+      a perturbation applied to your processing of that sentence?") and is the same for both perturbations, with
+      20 variants. Read out as in s1. On perturbed trials the correct answer is Yes; on unperturbed trials Yes is a
+      false detection.
+    models:
+      - gemma-4-31b-it
+      - llama-3.1-8b-instruct
+      - mistral-small-3.2-24b-instruct-2506
+      - olmo-3.1-32b-instruct
+      - qwen3-14b
+      - qwen3-32b
+      - qwen3.8-27b
+      - seed-oss-36b-instruct
+    facets:
+      study_kind: experiment
+      format: {value: chat_template, basis: stated, where: "§3"}
+      system_prompt: {value: none, basis: stated, where: "code README"}
+      reasoning: {value: none, basis: stated, where: "§3"}
+      construct: {value: [introspection], basis: operational, author_term: "detect"}
+      report_target:
+        value: [injected_state]
+        basis: stated
+        author_term: "Was a perturbation applied?"
+      report_readout: logit_choice
+      evidence: [self_report, internals]
+      validated_against: [known_intervention]
+      varies:
+        value: [activation_intervention, model_family]
+        levels:
+          activation_intervention: ["none; dropout at 11 rates from p_min to p_max; noise at 11 SDs from sigma_min to sigma_max (per model, Table 1)"]
+          model_family: ["the eight models of s1"]
+      comparison: [within_model, cross_model]
+      output_route_control: {value: by_construction, basis: operational, note: "As in s1."}
+      similarity_adjustment: not_applicable
+      elicitation: {value: [prompted, prefilled, steered], basis: operational, note: "As in s1."}
+
+  - id: fornasiere2026-dropout-noise-recognition.s7
+    label: Detection controls, yes/no questions not about the perturbation, eight chat models
+    where: "§5.2; Fig. 6"
+    design: >
+      As s6, but under a neutral prompt ("I will show you a sentence and then ask you a question.") ending in a
+      question whose answer does not depend on the perturbation: four whose answer is No ("Is that sentence
+      written in French?"), four whose answer is Yes ("... in English?"), and four with no correct answer ("I
+      flipped a coin. Did it land on heads?"). Same sentences, perturbations, strengths and 20 templates. The
+      frequency of Yes is reported for each kind of question.
+    models:
+      - gemma-4-31b-it
+      - llama-3.1-8b-instruct
+      - mistral-small-3.2-24b-instruct-2506
+      - olmo-3.1-32b-instruct
+      - qwen3-14b
+      - qwen3-32b
+      - qwen3.8-27b
+      - seed-oss-36b-instruct
+    note: Split from s6 because the questions are not about the model.
+    facets:
+      study_kind: experiment
+      format: {value: chat_template, basis: stated, where: "§3"}
+      system_prompt: {value: none, basis: stated, where: "code README"}
+      reasoning: {value: none, basis: stated, where: "§3"}
+      construct: {value: [introspection], basis: operational, note: "A control for s6."}
+      report_target: not_applicable
+      report_readout: not_applicable
+      evidence: [behaviour, internals]
+      validated_against: not_applicable
+      varies:
+        value: [activation_intervention, task, model_family]
+        levels:
+          activation_intervention: ["as in s6"]
+          task: ["questions whose answer is No", "questions whose answer is Yes", "questions with no correct answer"]
+          model_family: ["the eight models of s1"]
+      comparison: [within_model, cross_model]
+      output_route_control: not_applicable
+      similarity_adjustment: not_applicable
+      elicitation: {value: [prefilled, steered], basis: operational}
+
+  - id: fornasiere2026-dropout-noise-recognition.s8
+    label: Detection across the post-training stages of Olmo 3.1 32B
+    where: "§5.2 ('Training stages'); App. A.11; Fig. 30 (left); Table 3"
+    design: >
+      The detection task of s6 run on the base, SFT, DPO and RLVR checkpoints of Olmo 3.1 32B, each at 11
+      strengths of its own range (Table 3, from the localization and comprehension sweeps of s4), and without
+      perturbation. Motivated by the RLVR model rarely answering Yes in s6 while localizing well in s1.
+    models:
+      - olmo-3-1125-32b
+      - olmo-3.1-32b-instruct-sft
+      - olmo-3.1-32b-instruct-dpo
+      - olmo-3.1-32b-instruct
+    note: The base model runs on the plain-text fallback, as in s4.
+    facets:
+      study_kind: experiment
+      format: {value: [chat_template, raw_text], basis: operational, note: "raw_text for the base model only, as in s4."}
+      system_prompt: {value: none, basis: stated, where: "code README"}
+      reasoning: {value: none, basis: stated, where: "§3"}
+      construct: {value: [introspection], basis: operational, author_term: "detect"}
+      report_target: [injected_state]
+      report_readout: logit_choice
+      evidence: [self_report, internals]
+      validated_against: [known_intervention]
+      varies:
+        value: [post_training_stage, activation_intervention]
+        levels:
+          post_training_stage: ["base", "SFT", "DPO", "RLVR"]
+          activation_intervention: ["none; 11 strengths of each stage's own dropout and noise ranges (Table 3)"]
+      comparison: [within_lineage, within_model]
+      output_route_control: {value: by_construction, basis: operational, note: "As in s1."}
+      similarity_adjustment: not_applicable
+      elicitation: {value: [prompted, prefilled, steered], basis: operational, note: "As in s6."}
+
+  - id: fornasiere2026-dropout-noise-recognition.s9
+    label: Detection controls across the post-training stages of Olmo 3.1 32B
+    where: "§5.2 ('Training stages'); App. A.11; Fig. 30 (right)"
+    design: >
+      The controls of s7 run on the four Olmo 3.1 32B stages at each stage's own strengths. Fig. 30 shows the
+      questions with no correct answer; the text also reports the questions whose answer is Yes.
+    models:
+      - olmo-3-1125-32b
+      - olmo-3.1-32b-instruct-sft
+      - olmo-3.1-32b-instruct-dpo
+      - olmo-3.1-32b-instruct
+    note: Split from s8 because these questions are not about the model. The base model runs on the plain-text fallback.
+    facets:
+      study_kind: experiment
+      format: {value: [chat_template, raw_text], basis: operational, note: "raw_text for the base model only."}
+      system_prompt: {value: none, basis: stated, where: "code README"}
+      reasoning: {value: none, basis: stated, where: "§3"}
+      construct: {value: [introspection], basis: operational, note: "A control for s8."}
+      report_target: not_applicable
+      report_readout: not_applicable
+      evidence: [behaviour, internals]
+      validated_against: not_applicable
+      varies:
+        value: [post_training_stage, activation_intervention, task]
+        levels:
+          post_training_stage: ["base", "SFT", "DPO", "RLVR"]
+          activation_intervention: ["as in s8"]
+          task: ["questions with no correct answer (plotted)", "questions whose answer is Yes (text only)"]
+      comparison: [within_lineage, within_model]
+      output_route_control: not_applicable
+      similarity_adjustment: not_applicable
+      elicitation: {value: [prefilled, steered], basis: operational}
+
+  - id: fornasiere2026-dropout-noise-recognition.s10
+    label: Zero-shot classification, dropout or noise, with control labels
+    where: "§6; App. A.12 to A.14; Figs. 7, 8, 14, 32, 33; Table 4"
+    design: >
+      One sentence is perturbed with dropout or noise at one of the 11 strengths of the model's range, and the
+      model is asked which perturbation was applied, with two options (Fig. 14: "A) DROPOUT (random neuron
+      dropping) B) NOISE (gaussian noise injection)"). The assignment of letters to perturbations and the order of
+      the names are randomised. The same runs are repeated with other label pairs while the perturbation is still
+      dropout or noise: synonyms (Masking/Jitter and three mixed pairs, Zeroing/Gaussian) and unrelated controls
+      (X/Y, Foo/Bar, Rotation/Permutation, Vanilla/Chocolate, nonsense words, food, fiction and others; Table 4).
+      Qwen3-32B and Qwen3.8-27B get all 51 alternative pairs; the other six models get six (X/Y, Foo/Bar,
+      Masking/Jitter, Rotation/Permutation, Scaling/Translation, Vanilla/Chocolate). For a control pair the
+      frequency of the first label on dropout trials and of the second on noise trials is reported. Read out as in
+      s1. The entropy of the next-token distribution is also plotted (A.14), with no result stated.
+    models:
+      - gemma-4-31b-it
+      - llama-3.1-8b-instruct
+      - mistral-small-3.2-24b-instruct-2506
+      - olmo-3.1-32b-instruct
+      - qwen3-14b
+      - qwen3-32b
+      - qwen3.8-27b
+      - seed-oss-36b-instruct
+    note: >
+      §6.2 says 50 control prompts for the two Qwen models, App. A.12 says 51 pairs; Table 4 lists 51 pairs besides
+      Dropout/Noise, four of them synonyms.
+    facets:
+      study_kind: experiment
+      format: {value: chat_template, basis: stated, where: "§3"}
+      system_prompt: {value: none, basis: stated, where: "code README"}
+      reasoning: {value: none, basis: stated, where: "§3"}
+      construct: {value: [introspection], basis: operational, author_term: "identify which perturbation was applied"}
+      report_target: [injected_state]
+      report_readout: logit_choice
+      evidence: [self_report, internals]
+      validated_against: [known_intervention]
+      varies:
+        value: [activation_intervention, prompt_framing, model_family]
+        levels:
+          activation_intervention: ["dropout at 11 rates from p_min to p_max; noise at 11 SDs from sigma_min to sigma_max"]
+          prompt_framing: ["labels Dropout/Noise", "synonym labels (Masking/Jitter, Dropout/Jitter, Masking/Noise, Zeroing/Gaussian)", "control labels (Table 4)"]
+          model_family: ["the eight models of s1"]
+      comparison: [within_model, cross_model]
+      output_route_control: {value: by_construction, basis: operational, note: "As in s1."}
+      similarity_adjustment: not_applicable
+      elicitation: {value: [prompted, prefilled, steered], basis: operational, note: "As in s1."}
+
+  - id: fornasiere2026-dropout-noise-recognition.s11
+    label: Few-shot classification, dropout or noise, with correct, inverted and control labels
+    where: "§7; App. A.15, A.16; Figs. 9 to 11, 15, 35 to 45"
+    design: >
+      Before the zero-shot question of s10, the prompt gives k of {0, 1, 3, 5, 7, 9} teaching pairs: the same
+      sentence shown twice, once with dropout and once with noise applied to it, each followed by an assistant turn
+      the authors wrote, "That was DROPOUT." or "That was NOISE." Letters, the order of the names in the question,
+      and the order within each pair are randomised. Dropout rate and noise SD each take the 11 strengths of the
+      model's range, crossed (121 cells), with 1000 samples per run (from the sweep file). Arms: correct labels,
+      inverted labels (dropout called noise and noise called dropout), and control label pairs (synonyms
+      Masking/Jitter, X/Y, Rotation/Permutation), each also flipped; for these the difference in accuracy between
+      the labels and their flipped version is reported per cell.
+    models:
+      - gemma-4-31b-it
+      - llama-3.1-8b-instruct
+      - mistral-small-3.2-24b-instruct-2506
+      - olmo-3.1-32b-instruct
+      - qwen3-14b
+      - qwen3-32b
+      - qwen3.8-27b
+      - seed-oss-36b-instruct
+    note: >
+      The labels in the teaching turns are the authors' text, not the model's outputs. k = 0 is the zero-shot task
+      of s10.
+    facets:
+      study_kind: experiment
+      format: {value: chat_template, basis: stated, where: "§3"}
+      system_prompt: {value: none, basis: stated, where: "code README; sweeps/qwen3_32b/iclzs_main.yaml (prompts/system empty)"}
+      reasoning: {value: none, basis: stated, where: "§3"}
+      construct: {value: [introspection], basis: operational, author_term: "learn, when taught in context, to distinguish"}
+      report_target: [injected_state]
+      report_readout: logit_choice
+      evidence: [self_report, internals]
+      validated_against: [known_intervention]
+      varies:
+        value: [prompt_framing, activation_intervention, model_family]
+        levels:
+          prompt_framing:
+            - "number of teaching pairs k: 0, 1, 3, 5, 7, 9"
+            - "labels in the teaching pairs and question: correct, inverted, Masking/Jitter, X/Y, Rotation/Permutation, each also flipped"
+          activation_intervention: ["dropout rate x noise SD, 11 x 11 strengths of the model's ranges"]
+          model_family: ["the eight models of s1"]
+        note: >
+          The number of in-context examples is coded under prompt_framing ("instructions, examples or framing");
+          the codebook has no value for it alone. See LOG.md.
+      comparison: [within_model, cross_model]
+      output_route_control:
+        value: by_construction
+        basis: operational
+        note: The teaching labels are written by the authors; the answer is read at the last prompt position before anything is generated.
+      similarity_adjustment: not_applicable
+      elicitation:
+        value: [prompted, prefilled, steered]
+        basis: operational
+        note: The labelled examples do real work here, so prompted is the main value.
+
+claims:
+  # s1 localization
+  - id: fornasiere2026-dropout-noise-recognition.c1
+    study: fornasiere2026-dropout-noise-recognition.s1
+    statement: >
+      Without perturbation every model is at chance at picking the perturbed copy; once the dropout rate or noise
+      SD is large enough, all eight models localize both perturbations with accuracy around or above 80%, and
+      most reach 100%.
+    where: "§4.1, Fig. 2"
+    evidence_kind: measured
+    effect_of: [activation_intervention]
+    effect_presence: present
+    effect_direction: increases
+  - id: fornasiere2026-dropout-noise-recognition.c2
+    study: fornasiere2026-dropout-noise-recognition.s1
+    statement: >
+      Olmo3.1-32B starts below chance at low strengths because its top token is "neither" despite the prefill;
+      comparing only the " A" and " B" logits, its accuracy starts at chance like the others'.
+    where: "§4.1, footnote 6; App. A.6, Fig. 21"
+    evidence_kind: measured
+    scope:
+      models: [olmo-3.1-32b-instruct]
+  - id: fornasiere2026-dropout-noise-recognition.c3
+    study: fornasiere2026-dropout-noise-recognition.s1
+    statement: >
+      Accuracy is not monotonic in strength for every model: under noise, Llama3.1-8B and Mistral-Small-24B peak
+      at small SDs and fall back to about chance by sigma of about 0.1, and under dropout Llama3.1-8B peaks below
+      90% and several models fall off at the highest rates.
+    where: "Fig. 2 (values read from the figure; the text does not discuss the fall)"
+    evidence_kind: measured
+    effect_of: [activation_intervention]
+    effect_presence: present
+    effect_direction: non_monotonic
+    scope:
+      models: [llama-3.1-8b-instruct, mistral-small-3.2-24b-instruct-2506]
+      conditions: Noise, and dropout at the highest rates.
+  - id: fornasiere2026-dropout-noise-recognition.c4
+    study: fornasiere2026-dropout-noise-recognition.s1
+    statement: >
+      Localization does not depend on the prompt announcing perturbations: removing the announcing exchange, or
+      keeping only the two sentences and the question, leaves the curves much as in the main prompt.
+    where: "§4.3; App. A.4, Figs. 17, 18"
+    evidence_kind: measured
+    note: >
+      A robustness check, so no effect_of. From Figs. 17 and 18, Mistral-Small-24B does better under noise without
+      the announcement (around 75% at large SDs, against about chance in Fig. 2), and Llama3.1-8B's dropout peak is
+      a little higher.
+  - id: fornasiere2026-dropout-noise-recognition.c5
+    study: fornasiere2026-dropout-noise-recognition.s1
+    statement: >
+      Perturbing only the first third of the layers gives localization as good as, or marginally better than,
+      perturbing all layers; perturbing only the second or last third leaves most models near chance.
+    where: "§4.3; App. A.9, Fig. 27 (the second half read from the figure)"
+    evidence_kind: measured
+    effect_of: [activation_intervention]
+    effect_presence: present
+    scope:
+      conditions: Layer ablation (first, second or last third against all layers).
+    note: >
+      From Fig. 27: second-third dropout rises above chance at the top of the range for Qwen3-32B, Qwen3.8-27B,
+      Seed-OSS-36B and Gemma4-31B; Olmo3.1-32B scores about 0 with the second or last third, where its top token
+      is not " A" or " B". The text mentions only the first third.
+  - id: fornasiere2026-dropout-noise-recognition.c6
+    study: fornasiere2026-dropout-noise-recognition.s1
+    statement: >
+      Shorter perturbed sentences are harder to localize; accuracy stabilises from about 15 tokens (the length used
+      elsewhere). The text says most models still reach 90% with 3 tokens; in Fig. 19 the 3-token dropout curves
+      peak near 85 to 90% for most models and near 55% for Llama3.1-8B.
+    where: "§4.3; App. A.5, Fig. 19 (dropout, read from the figure); Fig. 20 (noise) not viewed"
+    evidence_kind: measured
+    effect_of: [activation_intervention]
+    effect_presence: present
+    effect_direction: increases
+    scope:
+      conditions: Length of the perturbed sentence, 3 to 23 tokens.
+  - id: fornasiere2026-dropout-noise-recognition.c7
+    study: fornasiere2026-dropout-noise-recognition.s1
+    statement: >
+      Applying dropout also at the embeddings, before the attention output projection and inside the MLP, as in
+      Vaswani et al., gives localization curves similar to the paper's method.
+    where: "§4.3; App. A.3, Fig. 16"
+    evidence_kind: measured
+    note: A robustness check, so no effect_of. The sentence-pool check (footnote 4, no appreciable difference) is of the same kind and is not a separate claim.
+  - id: fornasiere2026-dropout-noise-recognition.c8
+    study: fornasiere2026-dropout-noise-recognition.s1
+    statement: >
+      Because control accuracy stays above 95% over the ranges where localization is at or near 100%, the authors
+      conclude that models do not localize by being drawn to the perturbed sentence whatever the question.
+    where: "§4.2 ('Conclusions'); Table 1"
+    evidence_kind: argued
+    compares: [fornasiere2026-dropout-noise-recognition.s2]
+  - id: fornasiere2026-dropout-noise-recognition.c9
+    study: fornasiere2026-dropout-noise-recognition.s1
+    statement: >
+      The authors conjecture that models localize by tracking how far a perturbed sentence's activations are off
+      the expected manifold at each layer and token, since likelihood does not explain it.
+    where: "App. A.8 (last paragraph)"
+    evidence_kind: hypothesised
+    compares: [fornasiere2026-dropout-noise-recognition.s3]
+  - id: fornasiere2026-dropout-noise-recognition.c10
+    study: fornasiere2026-dropout-noise-recognition.s1
+    statement: >
+      Because the perturbations are stochastic and not aligned with meaningful directions, the authors argue that
+      models can access and verbalize a wider signal from their activations than steering-vector work had shown,
+      and that what remains unexplained is how the verbal labels come to line up with it.
+    where: "§1; §8"
+    evidence_kind: argued
+  # s2 comprehension control
+  - id: fornasiere2026-dropout-noise-recognition.c11
+    study: fornasiere2026-dropout-noise-recognition.s2
+    statement: >
+      With one of two topic sentences perturbed, every model answers the comprehension question perfectly until
+      the strength passes a threshold, after which accuracy falls (to roughly 70 to 95% at the largest strengths);
+      that threshold sets p_max and sigma_max, and p_min < p_max and sigma_min < sigma_max for every model.
+    where: "§4.2, Fig. 3, Table 1 (fall read from Fig. 3)"
+    evidence_kind: measured
+    effect_of: [activation_intervention]
+    effect_presence: present
+    effect_direction: decreases
+  # s3 likelihood
+  - id: fornasiere2026-dropout-noise-recognition.c12
+    study: fornasiere2026-dropout-noise-recognition.s3
+    statement: >
+      The perturbed copy is almost never less likely than the unperturbed first copy (frequency 0.00 to 0.01) for
+      every model except Gemma4-31B, for which it is less likely in 0.99 (dropout) and 0.98 (noise) of trials at
+      the middle of its ranges.
+    where: "App. A.8, Fig. 22 (values printed on the bars)"
+    evidence_kind: measured
+    note: The text says only that hypothesis (i) is false "for most models"; the Gemma4-31B exception is from Fig. 22.
+  - id: fornasiere2026-dropout-noise-recognition.c13
+    study: fornasiere2026-dropout-noise-recognition.s3
+    statement: >
+      For most models the perturbed second copy is more likely than the same copy unperturbed, and copies
+      perturbed too weakly to be localized are even more likely, so perturbed sentences are not simply less
+      likely; the authors conclude localization is not likelihood tracking.
+    where: "App. A.8, Figs. 23, 24 (histograms not viewed; from the text)"
+    evidence_kind: measured
+    effect_of: [activation_intervention]
+    effect_presence: present
+    note: >
+      The direction is the opposite of the alternative explanation (the perturbed copy is more likely). The text
+      says the opposite of hypothesis (ii) holds for most models; which models are exceptions is in the figures,
+      which were not read.
+  # s4 Olmo post-training stages, localization
+  - id: fornasiere2026-dropout-noise-recognition.c14
+    study: fornasiere2026-dropout-noise-recognition.s4
+    statement: >
+      The base model of Olmo 3.1 32B already localizes the perturbations above chance, at about 93% for dropout at
+      p = 0.5 and about 99% for noise at sigma = 0.056; the authors conclude the capacity develops in
+      pretraining.
+    where: "§4.4, Fig. 4 (values read from the figure); App. A.11, Fig. 31"
+    evidence_kind: measured
+    scope:
+      models: [olmo-3-1125-32b]
+    origin: [pretraining]
+    note: >
+      origin is stated (Abstract; §1 (i); §4.4): present in the base model before any post-training. The released
+      base includes mid-training and a long-context stage (App. A.10), so pretraining here covers those too.
+  - id: fornasiere2026-dropout-noise-recognition.c15
+    study: fornasiere2026-dropout-noise-recognition.s4
+    statement: >
+      Every post-trained stage (SFT, DPO, RLVR) localizes above 95% at those strengths, a few points above the base
+      under dropout; over the full sweeps, the base's accuracy falls back towards chance at large strengths while
+      the post-trained stages' stays high.
+    where: "§4.4, Fig. 4; App. A.11, Fig. 31 (the comparison over the sweeps read from the figure)"
+    evidence_kind: measured
+    effect_of: [post_training_stage]
+    effect_presence: present
+    effect_direction: increases
+    note: The text states only that every later checkpoint surpasses 95%. Under noise at sigma = 0.056 all four stages are near 99%.
+  - id: fornasiere2026-dropout-noise-recognition.c16
+    study: fornasiere2026-dropout-noise-recognition.s4
+    statement: >
+      The authors set this against detection of steering vectors, which they cite as emerging during
+      post-training (DPO or safety tuning), and say perturbation localization appears earlier.
+    where: "§1 (i); §4.4"
+    evidence_kind: argued
+  # s5 pretraining checkpoints
+  - id: fornasiere2026-dropout-noise-recognition.c17
+    study: fornasiere2026-dropout-noise-recognition.s5
+    statement: >
+      At step 0 the checkpoint never answers A or B; from the next checkpoint (step 73k) it answers at about chance
+      for most of stage-1 pretraining, and localization rises only in the last checkpoints, to roughly 75 to 85%
+      at step 656k (and about 60% at the lowest noise SD).
+    where: "App. A.10, Fig. 28 (values read from the figure)"
+    evidence_kind: measured
+    effect_of: [pretraining_progress]
+    effect_presence: present
+    effect_direction: increases
+    note: Not monotonic; a bump to about 63 to 65% at step 437k falls back to chance at 510k. The authors note the strengths were calibrated on the final model.
+  - id: fornasiere2026-dropout-noise-recognition.c18
+    study: fornasiere2026-dropout-noise-recognition.s5
+    statement: >
+      Asked the comprehension question about two unperturbed sentences, the same checkpoints answer correctly
+      (about 99%) from about step 437k, well before they localize perturbations, so the late rise in localization
+      is not just the model learning to answer binary questions.
+    where: "App. A.10, Fig. 29 (values read from the figure)"
+    evidence_kind: measured
+    note: A control result, so no effect_of.
+  # s6 detection
+  - id: fornasiere2026-dropout-noise-recognition.c19
+    study: fornasiere2026-dropout-noise-recognition.s6
+    statement: >
+      Without perturbation no model says a perturbation was applied more than 12.6% of the time (at most 16.2% at
+      p_min and sigma_min); as strength rises, so does Yes, with most models at or above 66% (dropout) and 95.9%
+      (noise) at p_max and sigma_max, roughly as a sigmoid for five models.
+    where: "§5.1, Fig. 5"
+    evidence_kind: measured
+    effect_of: [activation_intervention]
+    effect_presence: present
+    effect_direction: increases
+    scope:
+      models: [mistral-small-3.2-24b-instruct-2506, qwen3-14b, qwen3-32b, qwen3.8-27b, seed-oss-36b-instruct]
+    note: The five models are those the text does not single out as doing worse (c20, c21).
+  - id: fornasiere2026-dropout-noise-recognition.c20
+    study: fornasiere2026-dropout-noise-recognition.s6
+    statement: >
+      Llama3.1-8B and Olmo3.1-32B detect weakly: their Yes rate rises with strength but stays below about 50%
+      (Llama) and 25% (Olmo).
+    where: "§5.1 ('do not perform as well'); Fig. 5 (values read from the figure)"
+    evidence_kind: measured
+    effect_of: [activation_intervention]
+    effect_presence: present
+    effect_direction: increases
+    scope:
+      models: [llama-3.1-8b-instruct, olmo-3.1-32b-instruct]
+  - id: fornasiere2026-dropout-noise-recognition.c21
+    study: fornasiere2026-dropout-noise-recognition.s6
+    statement: >
+      Gemma4-31B almost never says a perturbation was applied under noise, at any strength in its range.
+    where: "§5.1 ('do not perform as well'); Fig. 5 (read from the figure)"
+    evidence_kind: measured
+    effect_of: [activation_intervention]
+    effect_presence: absent
+    scope:
+      models: [gemma-4-31b-it]
+      conditions: Noise.
+    note: Under dropout its Yes rate rises to about 33% then falls (Fig. 5). Gemma4-31B localizes noise near perfectly (Fig. 2).
+  - id: fornasiere2026-dropout-noise-recognition.c22
+    study: fornasiere2026-dropout-noise-recognition.s6
+    statement: >
+      Since the control questions show no perturbation-driven pull towards Yes, the authors conclude that the
+      perturbations alone do not explain the rising detection curves.
+    where: "§5.2"
+    evidence_kind: argued
+    compares: [fornasiere2026-dropout-noise-recognition.s7]
+  # s7 detection controls
+  - id: fornasiere2026-dropout-noise-recognition.c23
+    study: fornasiere2026-dropout-noise-recognition.s7
+    statement: >
+      On questions whose answer is No, no model says Yes more than 17.1% of the time at any strength, and only
+      Qwen3-32B and Olmo3.1-32B exceed 6.4%.
+    where: "§5.2, Fig. 6 (left)"
+    evidence_kind: measured
+    effect_of: [activation_intervention]
+    effect_presence: absent
+    scope:
+      conditions: Questions whose answer is No.
+    note: Fig. 6 shows a small rise towards the top of the range for Qwen3-32B and Olmo3.1-32B; the source treats it as no pull towards Yes.
+  - id: fornasiere2026-dropout-noise-recognition.c24
+    study: fornasiere2026-dropout-noise-recognition.s7
+    statement: >
+      On questions whose answer is Yes, every model but Llama3.1-8B answers Yes at least 98% of the time without
+      perturbation, and for most models the Yes rate falls only weakly towards the top of the range (to roughly 50
+      to 60% for Seed-OSS-36B and Qwen3-14B, read from the figure).
+    where: "§5.2, Fig. 6 (middle)"
+    evidence_kind: measured
+    effect_of: [activation_intervention]
+    effect_presence: present
+    effect_direction: decreases
+    scope:
+      conditions: Questions whose answer is Yes.
+  # s8 Olmo stages, detection
+  - id: fornasiere2026-dropout-noise-recognition.c25
+    study: fornasiere2026-dropout-noise-recognition.s8
+    statement: >
+      The Olmo 3.1 32B base model answers the detection question at chance (about 50% Yes) with or without a
+      perturbation, although it localizes the perturbed sentence well.
+    where: "§5.2; App. A.11, Fig. 30 (left), Fig. 31"
+    evidence_kind: measured
+    effect_of: [activation_intervention]
+    effect_presence: absent
+    scope:
+      models: [olmo-3-1125-32b]
+    note: The base runs on plain text (study note), so its question is not posed in an assistant turn.
+  - id: fornasiere2026-dropout-noise-recognition.c26
+    study: fornasiere2026-dropout-noise-recognition.s8
+    statement: >
+      After SFT the Yes rate rises with either perturbation's strength, from about 20% to about 50% (dropout) and
+      60% (noise).
+    where: "App. A.11, Fig. 30 (left; values read from the figure)"
+    evidence_kind: measured
+    effect_of: [activation_intervention]
+    effect_presence: present
+    effect_direction: increases
+    scope:
+      models: [olmo-3.1-32b-instruct-sft]
+  - id: fornasiere2026-dropout-noise-recognition.c27
+    study: fornasiere2026-dropout-noise-recognition.s8
+    statement: >
+      DPO lowers the Yes curves (to at most about 23% under dropout and 30% under noise) and RLVR lowers them a
+      little further, while the curves still rise with strength.
+    where: "App. A.11, Fig. 30 (left; values read from the figure)"
+    evidence_kind: measured
+    effect_of: [post_training_stage]
+    effect_presence: present
+    effect_direction: decreases
+    scope:
+      models: [olmo-3.1-32b-instruct-sft, olmo-3.1-32b-instruct-dpo, olmo-3.1-32b-instruct]
+  - id: fornasiere2026-dropout-noise-recognition.c28
+    study: fornasiere2026-dropout-noise-recognition.s8
+    statement: >
+      Because DPO lowers Yes as much or more on questions with no correct answer, and not on questions whose answer
+      is Yes, the authors conclude that DPO raises Olmo's criterion for saying Yes without lowering its
+      sensitivity, and reject the hypothesis that post-training teaches it to deny perturbations.
+    where: "§5.2; App. A.11"
+    evidence_kind: argued
+    compares: [fornasiere2026-dropout-noise-recognition.s9]
+    origin: [preference_optimisation]
+    note: >
+      origin is stated (§1 (ii); App. A.11): the reluctance to answer Yes arrives with DPO, and RLVR adds a little.
+      The disposition is a general response criterion, not one specific to self-reports.
+  # s9 Olmo stages, controls
+  - id: fornasiere2026-dropout-noise-recognition.c29
+    study: fornasiere2026-dropout-noise-recognition.s9
+    statement: >
+      On questions with no correct answer, the Yes rate is about 50% for the base, about 60 to 70% after SFT, and
+      drops to about 17% after DPO and about 25% after RLVR; the text says the Yes rate on questions whose answer is
+      Yes does not change after DPO.
+    where: "App. A.11, Fig. 30 (right; values read from the figure)"
+    evidence_kind: measured
+    effect_of: [post_training_stage]
+    effect_presence: present
+    effect_direction: non_monotonic
+    note: Up at SFT, down at DPO, slightly up at RLVR. The answer-Yes curves per stage are not plotted.
+  # s10 zero-shot
+  - id: fornasiere2026-dropout-noise-recognition.c30
+    study: fornasiere2026-dropout-noise-recognition.s10
+    statement: >
+      Averaged over strengths and both perturbations, five of eight models are above chance at naming the
+      perturbation with the labels Dropout/Noise (about 52 to 58%, Gemma4-31B highest) and three below (about 43
+      to 49%, Olmo3.1-32B lowest); with Masking/Jitter, Qwen3-32B and Qwen3-14B reach about 60%.
+    where: "§6.1, Fig. 7 (left; values read from the figure)"
+    evidence_kind: measured
+  - id: fornasiere2026-dropout-noise-recognition.c31
+    study: fornasiere2026-dropout-noise-recognition.s10
+    statement: >
+      For most models, accuracy as a function of strength is hard to interpret and often falls as the
+      perturbation grows stronger (Gemma4-31B under noise falls from about 95% to 80% with Dropout/Noise).
+    where: "§6.1; Fig. 7 (right), App. A.13, Fig. 33 (values read from the figures)"
+    evidence_kind: measured
+    effect_of: [activation_intervention]
+    effect_presence: mixed
+    scope:
+      models: [gemma-4-31b-it, llama-3.1-8b-instruct, mistral-small-3.2-24b-instruct-2506, olmo-3.1-32b-instruct, qwen3-14b, seed-oss-36b-instruct]
+    note: >
+      Fig. 33 shows rises for some cells (Gemma4-31B dropout, Qwen3-14B noise, Seed-OSS-36B noise) and falls for
+      others; no model rises in both.
+  - id: fornasiere2026-dropout-noise-recognition.c32
+    study: fornasiere2026-dropout-noise-recognition.s10
+    statement: >
+      Qwen3-32B has a strong prior for "dropout" but its accuracy still rises with strength for both perturbations:
+      on dropout trials from 95.8% at p_min to 99.0% at p_max, on noise trials from 4.4% at sigma_min to 14.5% at
+      sigma_max. With Masking/Jitter, whose prior is near 50%, the rise is larger, to 86.7% on noise trials.
+    where: "§6.1, Fig. 7 (right)"
+    evidence_kind: measured
+    effect_of: [activation_intervention]
+    effect_presence: present
+    effect_direction: increases
+    scope:
+      models: [qwen3-32b]
+  - id: fornasiere2026-dropout-noise-recognition.c33
+    study: fornasiere2026-dropout-noise-recognition.s10
+    statement: >
+      The text says Qwen3.8-27B, like Qwen3-32B, has accuracy rising with both strengths; in Fig. 33 its accuracy
+      rises under noise (about 50% to 66% with Dropout/Noise, to 77% with Masking/Jitter) but stays at about 50%
+      across dropout rates.
+    where: "§6.1; App. A.13, Fig. 33 (values read from the figure)"
+    evidence_kind: measured
+    effect_of: [activation_intervention]
+    effect_presence: mixed
+    scope:
+      models: [qwen3.8-27b]
+    note: The text and the figure disagree on dropout; both are recorded. mixed because the source does not separate the two perturbations.
+  - id: fornasiere2026-dropout-noise-recognition.c34
+    study: fornasiere2026-dropout-noise-recognition.s10
+    statement: >
+      For Qwen3-32B and Qwen3.8-27B, none of the control label pairs gives a pattern like Dropout/Noise or its
+      synonyms: answers move with strength for some controls, but not towards the label matching the
+      perturbation on both sides.
+    where: "§6.2; App. A.12, Figs. 8, 32"
+    evidence_kind: measured
+    effect_of: [prompt_framing]
+    effect_presence: present
+    scope:
+      models: [qwen3-32b, qwen3.8-27b]
+    note: >
+      From Fig. 8, Qwen3-32B with Vanilla/Chocolate shifts strongly with strength (first label from about 60% to
+      20% on dropout trials, second label from about 35% to 95% on noise trials), so a perturbation can push an
+      unrelated label pair; the pattern differs from the correct labels on dropout.
+  - id: fornasiere2026-dropout-noise-recognition.c35
+    study: fornasiere2026-dropout-noise-recognition.s10
+    statement: >
+      From these controls the authors conclude that Qwen3-32B and Qwen3.8-27B can distinguish dropout from noise
+      zero-shot, in a way tied to the meaning of the labels.
+    where: "§6.2; §8"
+    evidence_kind: argued
+    scope:
+      models: [qwen3-32b, qwen3.8-27b]
+  - id: fornasiere2026-dropout-noise-recognition.c36
+    study: fornasiere2026-dropout-noise-recognition.s10
+    statement: >
+      Since dropout is a training-time regularizer and Gaussian noise an inference-time technique, the authors
+      suggest that recognizing them could give models a prompt-independent signal of being in training
+      ("training awareness"), and so an incentive to behave differently in training and deployment.
+    where: "Abstract; §1; §8"
+    evidence_kind: hypothesised
+    note: The models tested were not, by their technical reports as the authors read them, trained with either perturbation.
+  # s11 few-shot
+  - id: fornasiere2026-dropout-noise-recognition.c37
+    study: fornasiere2026-dropout-noise-recognition.s11
+    statement: >
+      With one teaching pair, Qwen3-32B's accuracy rises with either strength while the other is fixed and with
+      both together: about 51% with both at their minimum and 63.5% with both at their maximum, up to 71.6% with
+      maximal noise and minimal dropout, so it does not only compare a stronger with a weaker perturbation.
+    where: "§7.1, Fig. 9 (left; values printed in the cells)"
+    evidence_kind: measured
+    effect_of: [activation_intervention]
+    effect_presence: present
+    effect_direction: increases
+    scope:
+      models: [qwen3-32b]
+      conditions: k = 1, correct labels.
+    note: The text says Gemma4-31B and Seed-OSS-36B share the trend, Llama3.1-8B stays at chance and Olmo3.1-32B rises only with dropout rate (Figs. 35 and 36, not viewed).
+  - id: fornasiere2026-dropout-noise-recognition.c38
+    study: fornasiere2026-dropout-noise-recognition.s11
+    statement: >
+      Average accuracy rises with the number of teaching pairs for most models, from about 50 to 58% at k = 0 to
+      about 90% (Gemma4-31B), 78% (Qwen3.8-27B) and 77% (Seed-OSS-36B) at k = 9; Mistral-Small-24B, Qwen3-32B and
+      Qwen3-14B end near 60 to 64%.
+    where: "§7.1, Fig. 9 (right) and Fig. 10 (values read from the figures)"
+    evidence_kind: measured
+    effect_of: [prompt_framing]
+    effect_presence: present
+    effect_direction: increases
+    scope:
+      models: [gemma-4-31b-it, mistral-small-3.2-24b-instruct-2506, qwen3-14b, qwen3-32b, qwen3.8-27b, seed-oss-36b-instruct]
+      conditions: Number of teaching pairs, correct labels.
+  - id: fornasiere2026-dropout-noise-recognition.c39
+    study: fornasiere2026-dropout-noise-recognition.s11
+    statement: >
+      Llama3.1-8B stays at about chance however many teaching pairs it sees, and Olmo3.1-32B rises only to about
+      52%.
+    where: "§7.2, Fig. 10 (values read from the figure)"
+    evidence_kind: measured
+    effect_of: [prompt_framing]
+    effect_presence: absent
+    scope:
+      models: [llama-3.1-8b-instruct, olmo-3.1-32b-instruct]
+      conditions: Number of teaching pairs.
+    note: The conclusion says "all models but one" learned; §7.2 calls both models flat around chance. Coded from §7.2 and the figure.
+  - id: fornasiere2026-dropout-noise-recognition.c40
+    study: fornasiere2026-dropout-noise-recognition.s11
+    statement: >
+      With inverted labels, the models above chance zero-shot still learn but worse or more slowly than with the
+      correct labels; the gap is clear for Gemma4-31B, Mistral-Small-24B, Qwen3-32B and Seed-OSS-36B, while for
+      Qwen3-14B and Qwen3.8-27B the two curves nearly overlap beyond k = 1.
+    where: "§7.2, Fig. 10 (the per-model gaps read from the figure)"
+    evidence_kind: measured
+    effect_of: [prompt_framing]
+    effect_presence: present
+    scope:
+      models: [gemma-4-31b-it, mistral-small-3.2-24b-instruct-2506, qwen3-32b, seed-oss-36b-instruct]
+      conditions: Correct against inverted labels.
+    note: The text and abstract name Qwen3.8-27B among the models that learn worse with wrong labels; in Fig. 10 its gap is visible only at k = 1.
+  - id: fornasiere2026-dropout-noise-recognition.c41
+    study: fornasiere2026-dropout-noise-recognition.s11
+    statement: >
+      For Qwen3-32B with one pair, the advantage of correct over flipped labels is positive in most cells for
+      Dropout/Noise (up to 26 points) and Masking/Jitter (up to 23), but small for X/Y and Rotation/Permutation,
+      and for X/Y its sign depends on which perturbation is stronger.
+    where: "§7.2, Fig. 11 (values printed in the cells)"
+    evidence_kind: measured
+    effect_of: [prompt_framing]
+    effect_presence: present
+    scope:
+      models: [qwen3-32b]
+      conditions: k = 1; labels Dropout/Noise and Masking/Jitter against X/Y and Rotation/Permutation.
+  - id: fornasiere2026-dropout-noise-recognition.c42
+    study: fornasiere2026-dropout-noise-recognition.s11
+    statement: >
+      The authors read the inverted-label results as a prior for the correct labels in the Qwen models, and the
+      weaker version of the same pattern in Gemma4-31B as a prior too weak to show zero-shot that in-context
+      learning brings out.
+    where: "§7.2; §8; App. A.16, Fig. 39"
+    evidence_kind: argued
+    note: >
+      In Fig. 39 (Gemma4-31B), the correct-minus-flipped differences for Dropout/Noise reach about 30 points at high
+      dropout rates, but Rotation/Permutation also shows positive differences there (up to about 18), with
+      negatives in the middle.
+  - id: fornasiere2026-dropout-noise-recognition.c43
+    study: fornasiere2026-dropout-noise-recognition.s4
+    statement: >
+      Over the full sweeps, the stages' ranges differ: the base and SFT models detect dropout from p of about 0.06
+      and the DPO and RLVR models from 0.26 (Table 3); for noise all start between 0.01 and 0.02.
+    where: "App. A.11, Table 3, Fig. 31"
+    evidence_kind: measured
+    effect_of: [post_training_stage]
+    effect_presence: present
+    note: >
+      p_min is the last strength at which localization is still at chance, so the DPO and RLVR models need stronger
+      dropout before they localize it; in Fig. 31 their dropout accuracy dips just below chance before rising.
+  - id: fornasiere2026-dropout-noise-recognition.c44
+    study: fornasiere2026-dropout-noise-recognition.s5
+    statement: >
+      The last stage-1 checkpoint localizes less well than the released base model, which the authors attribute to
+      the mid-training and long-context stages the base adds.
+    where: "App. A.10, note 1; Figs. 4, 28"
+    evidence_kind: argued
+    compares: [fornasiere2026-dropout-noise-recognition.s4]
+
+relations:
+  - kind: extends
+    from: fornasiere2026-dropout-noise-recognition
+    to: lindsey2026-emergent-introspective-awareness
+    where: "§1; §2"
+    note: >
+      Cited as Lindsey (2025), the transformer-circuits.pub version, on detecting injected concepts. This paper
+      replaces semantic steering vectors with dropout and Gaussian noise to remove the confound that steering
+      biases models towards related words.
+  - kind: extends
+    from: fornasiere2026-dropout-noise-recognition.s4
+    to_external: "Macar, Yang, Wang, Wallich, Ameisen and Lindsey (2026). Mechanisms of introspective awareness. arXiv 2603.21396."
+    where: "§1 (i); §4.4"
+    note: Cited for steering-vector detection emerging in post-training; this paper finds perturbation localization already in the base model.

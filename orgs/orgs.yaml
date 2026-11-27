@@ -157,7 +157,7 @@
 - id: deepseek
   name: DeepSeek
   kind: company
-  note: Developer of DeepSeek-V3 (Lu et al. 2026), DeepSeek-V4-Flash (Hao and Ho 2026) and DeepSeek-R1-Distill-Qwen-32B (Moreno Cencerrado et al. 2026, Hugging Face organisation deepseek-ai) and DeepSeek LLM 67B Chat (G. and Lindsey 2026). Kind not taken from a source; check before relying on it.
+  note: Developer of DeepSeek-V3 (Lu et al. 2026), DeepSeek-V4-Flash (Hao and Ho 2026), DeepSeek-R1-Distill-Qwen-32B (Moreno Cencerrado et al. 2026, Hugging Face organisation deepseek-ai) and DeepSeek LLM 67B Chat (G. and Lindsey 2026). Kind not taken from a source; check before relying on it.
 - id: moonshot-ai
   name: Moonshot AI
   kind: company

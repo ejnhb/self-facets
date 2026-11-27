@@ -62,6 +62,20 @@ below, and committed. Each record has a pass entry (PR 14) saying exactly what w
 the comparison should surface by itself at the question or framing layer, rather than being coded into either
 study.
 
+**To watch as papers are added** (owner, 2026-11-27):
+
+- Granularity: whether the splitting into studies, claims and effect fields is the right level of detail. Judge it
+  from the blind tests: per facet and field, coder agreement, time per paper, and whether any question,
+  definition or reading uses it. One that fails all three after twenty or thirty papers is a candidate to merge or
+  drop.
+- Scale: records are about 60 KB per paper, so hundreds of papers is tens of megabytes of YAML; PDFs and the built
+  database are never committed. What grows badly is `conflict_facet_diff`, which compares conflicting claim pairs
+  facet by facet (6,298 rows from four papers, roughly quadratic in claims per question). Around fifty papers,
+  compute it per question on demand instead of building it whole.
+- Sparsity: if facets get too fine, papers that overlap in practice can end up with claims that never meet on a
+  question or a conflict. It may be handled at the reading level, or may not happen; check whether similar
+  designs coded by different coders land on shared questions and comparable facet values.
+
 **Blind test 2** (set up the same day): branch `blind-binder`, one commit with no history, Binder et al.'s record,
 links, pilot notes, design notes and changelog removed, the relations to it turned into citations, and registry
 entries only it used dropped; `BRIEF.md` at its root. Coders from other model families code the paper from the

@@ -1,0 +1,46 @@
+# Links from li2025-metacognitive-monitoring-control's claims to questions: which question a claim bears on, and with what stance.
+# A link is a judgement by whoever poses or maintains the question, not part of what the paper reports.
+# Proposed by the first coder (claude-opus-5-5, 2026-11-27) to existing questions only; for the question poser to confirm.
+source: li2025-metacognitive-monitoring-control
+links:
+- claim: li2025-metacognitive-monitoring-control.c5
+  question: q-report-matches-probe
+  stance: against
+  note: The ideal observer is a logistic regression on the same model's activations predicting the same labels; the model's own reports fall well short of it on every axis.
+- claim: li2025-metacognitive-monitoring-control.c2
+  question: q-report-matches-direct-measure
+  stance: supports
+  note: >
+    For the LR axis the reports agree with the activation reading at about 0.8 averaged over layers and about 0.85 to
+    0.9 in middle layers, well above chance. Whether that is "close" is the poser's call; c3 (late PCs near chance)
+    is the opposing case from the same runs, so the two differ only on the target axis (task).
+- claim: li2025-metacognitive-monitoring-control.c3
+  question: q-report-matches-direct-measure
+  stance: against
+  note: Labels from PC 128 and PC 512 are reported near chance; see c2's note.
+- claim: li2025-metacognitive-monitoring-control.c3
+  question: q-introspection-success-generalises
+  stance: against
+  note: Within one kind of report (an activation projection, own_internal_state), success on the LR and early PC axes does not carry over to late PC axes of the same layer.
+- claim: li2025-metacognitive-monitoring-control.c7
+  question: q-introspection-success-generalises
+  stance: against
+  note: The authors' conclusion that only a low-dimensional subset of activation directions can be reported.
+- claim: li2025-metacognitive-monitoring-control.c8
+  question: q-privileged-self-access
+  stance: supports
+  note: >
+    Argued only. The authors hold that labels defined on the model's own activations cannot be predicted from
+    training-data patterns, but no condition gives an outside reader the same sentences and labels.
+- claim: li2025-metacognitive-monitoring-control.c23
+  question: q-instructed-control-of-internal-state
+  stance: supports
+  note: >
+    Implicit control: the sentence is fixed and not generated, so the shift in the target projection is apart from
+    what the model outputs. The instructed contrast is imitate 1 against imitate 0. The explicit-control claims (s2)
+    are not linked, since there the shift may come through the sentence the model writes, which the authors say
+    accounts for much of it (c25).
+- claim: li2025-metacognitive-monitoring-control.c25
+  question: q-instructed-control-of-internal-state
+  stance: supports
+  note: Implicit control is present though much weaker than explicit control.

@@ -2,6 +2,44 @@
 
 Newest first. Each entry: what changed, what is open, what needs a decision.
 
+## 2026-11-27: Li, Xiong et al. 2025 (neurofeedback: reporting and controlling activations)
+
+Coder: claude (claude-opus-5-5), from AGENTS.md alone; the user asked for the paper, its figures and code only, and for
+links to existing questions.
+
+**Added**
+
+- `sources/li2025-metacognitive-monitoring-control.yaml` (arXiv 2505.13763v2, NeurIPS 2025): three studies, 31 claims.
+  s1 reporting (labels from the projection of the model's own activations onto an LR or PC axis, learned in context,
+  read from logits); s2 explicit control (the model writes a sentence to shift the projection); s3 implicit control
+  (the sentence is fixed, so any shift is apart from the output). s2 and s3 split because `elicitation` differs
+  (prefilled in s3). Core facets only: no linked question needs an interpretive facet.
+- Code read at 0f56b43 (two days before v2); data ship in the same repository. Paper and code differ on the label
+  threshold (median against zero), the sentence split (600/600 against 900/600), the multi-level labels (eight against
+  six) and the smallest Qwen model (1B in the text, 1.5B in Fig. 5a and the code). Recorded in the study notes; the
+  paper followed, the code for the Qwen id.
+- `links/li2025-metacognitive-monitoring-control.yaml`: eight proposed links to existing questions.
+- Registry: five people; Llama 3.2 1B and 3B Instruct, Qwen2.5 3B Instruct (no base models).
+- Network: arxiv.org was blocked in the Default environment; a personal environment `self-facets` allowing arxiv.org
+  and export.arxiv.org was created with the user's approval so `scripts/fetch_paper.py` works.
+
+**Open**
+
+- Figs. B.12 to B.21 (pp. 26 to 28, per-layer control panels) and the schematics were not viewed.
+- The code has a cross-model reporting script (labels from one model, reported by another) with no results in the
+  paper. If the authors ever report it, it would give s1 a self-against-other contrast.
+
+**For the owner to decide**
+
+- c2 (LR axis reported at about 0.8 to 0.9) supports and c3 (late PCs near chance) opposes
+  `q-report-matches-direct-measure`, and the pair differs only on task (the target axis). AGENTS.md says such a
+  conflict means the question is too coarse; a child question on what the axis (variance explained, semantic
+  alignment) does to reportability would fix it. Not added, since this pass was to link to existing questions only.
+- Control effects grow with model size (c14, c27), but `q-introspection-increases-with-capability` is framed on the
+  introspection definition, so control claims cannot reach it. A sibling for self-regulation could take them.
+- Proposed during the freeze (no facet file edited): no layer facet. Which layer an activation axis is defined at is
+  coded as a level of `task` here, as Lindsey's readout layer was left uncoded; both papers vary it centrally.
+
 ## 2026-11-27: AGENTS.md; code and data availability; the freeze
 
 Coder: claude (claude-opus-5-5), working with the owner.

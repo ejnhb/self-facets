@@ -46,3 +46,20 @@
 - id: song-siyuan
   name: Siyuan Song
   orcid: null
+
+# Added with Li, Xiong et al. 2025 (arXiv 2505.13763)
+- id: li-ji-an
+  name: Li Ji-An
+  orcid: null
+- id: xiong-hua-dong
+  name: Hua-Dong Xiong
+  orcid: null
+- id: wilson-robert
+  name: Robert C. Wilson
+  orcid: null
+- id: mattar-marcelo
+  name: Marcelo G. Mattar
+  orcid: null
+- id: benna-marcus
+  name: Marcus K. Benna
+  orcid: null

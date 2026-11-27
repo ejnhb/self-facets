@@ -1,0 +1,12 @@
+The data and documentation in this repository are licensed under the Creative Commons Attribution 4.0
+International licence (CC BY 4.0): https://creativecommons.org/licenses/by/4.0/legalcode
+
+This covers the records and everything coded or written for them: sources/, links/, questions/, codebook/,
+definitions/, readings/, views/, models/, people/, orgs/, datasets/, templates/, design/, pilot/ and the
+Markdown files at the root. The code (scripts/ and .github/) is under the MIT licence in LICENSE.
+
+Copyright (c) 2026 Oscar Amalfitano and contributors.
+
+Attribution: cite "self-facets" with the repository URL and the commit or release used. The records describe
+published papers; the papers themselves remain under their own licences, and nothing here reproduces them
+beyond short quotations.

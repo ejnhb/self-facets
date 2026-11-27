@@ -106,5 +106,5 @@ draft records as leads, and check the source before citing a claim from here.
 
 ## Licence
 
-Code is under the MIT licence (see `LICENSE`). The licence for the data and
-codebook is not yet settled.
+Code (`scripts/`, `.github/`) is under the MIT licence (see `LICENSE`). The records, codebook, questions,
+definitions, readings, registries and documentation are under CC BY 4.0 (see `LICENSE-DATA`).

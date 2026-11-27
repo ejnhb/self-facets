@@ -88,10 +88,6 @@
   kind: university
 
 # Added with Kim et al. 2026 (arXiv 2607.28607)
-- id: google
-  name: Google
-  kind: company
-  note: Kim et al. (2026) print "Google, Paradigms of Intelligence Team". Also the developer of Gemma 2.
 - id: northwestern
   name: Northwestern University
   kind: university
@@ -122,7 +118,7 @@
 - id: google
   name: Google
   kind: company
-  note: Developer of Gemma 4, by the Hugging Face namespace google/ in the code of Fornasiere et al. 2026.
+  note: Developer of Gemma 4, by the Hugging Face namespace google/ in the code of Fornasiere et al. 2026. Kim et al. (2026) print "Google, Paradigms of Intelligence Team"; also the developer of Gemma 2.
 - id: bytedance-seed
   name: ByteDance Seed
   kind: company

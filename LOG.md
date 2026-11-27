@@ -2,6 +2,49 @@
 
 Newest first. Each entry: what changed, what is open, what needs a decision.
 
+## 2026-11-27: Kim et al. 2026 coded (arXiv 2607.28607v1)
+
+Coder: claude (claude-opus-5-5), from AGENTS.md alone; the first paper coded under the 0.10 freeze.
+
+**Added**
+
+- `sources/kim2026-inducing-consciousness-assertion.yaml`: refusal-direction ablation and consciousness-vector
+  steering on Llama-3-8B-IT, Gemma-2-2B-IT and Gemma-2-9B-IT. Seven studies (self-attribution; mind attribution
+  to other entities against a human sample; belief in God and supernatural belief; GSS answer distributions
+  against humans; ToM and reasoning controls; base-against-instruct geometry of the directions; ablation
+  manipulation checks) and 25 claims. Read in full with all figures; no code or data released (checked).
+- `links/kim2026-inducing-consciousness-assertion.yaml`: six proposed links, to q-denial-shares-refusal-machinery
+  (2, supports), q-denial-is-post-training-policy (supports), q-denial-precedes-post-training (mixed),
+  q-self-representation-changes-in-post-training (supports) and q-self-report-from-self-model (inconclusive).
+- Registries: seven people, six orgs (Google among them), five models (Llama 3 8B base and Instruct, Gemma 2
+  2B IT and 9B IT, Llama Guard 2).
+
+**Codebook gaps met during the freeze** (coded with the nearest value; for the owner's next review)
+
+- `construct` has no value for attributing mind to *other* entities (anthropomorphism, the IDAQ). s2 and part of
+  s6 are coded `experience_reports` as the nearest, which lets other-entity claims match frames meant for
+  self-reports of experience: c7 to c10 show up in `question_candidates` for q-denial-shares-refusal-machinery.
+  Proposed: a `mind_attribution` construct. Added to `design/candidate-facets.md`.
+- No construct for stated beliefs and values (religiosity, supernatural belief, GSS attitudes): s3 and s4 coded
+  `preferences` (and `affect` for the GSS Feelings and Hope items). Proposed: `beliefs_values`.
+- No construct for Theory of Mind or general capability used as a side-effect control: s5 and s7 coded
+  `not_applicable`. Proposed, if such controls are to be queryable: `theory_of_mind`, or a general
+  `capability_control` value.
+
+**Open**
+
+- The paper is inconsistent in several places, recorded in study and claim notes: the readout (sampled with
+  reasoning against logit expected values), the belief scales (1 to 6 against 0 to 10; 0 to 3 against 0 to 4), the
+  ToM scoring (chain of thought against option logits), main text against SI statistics for the geometry, and the
+  text's "every domain" claims against Table S8 (Freedom under ablation not significant; Values ablation above
+  steering). The abstract's "without impairing Theory of Mind" holds for ablation, but steering lowers HI-ToM by
+  6.8 points (Table S6; c19).
+- The steering strength was selected to move a held-out self-attribution battery by 2 to 7 points, so the
+  self-attribution effect of steering (c2) is partly built in; hence the inconclusive link.
+- c1 is a candidate for q-policy-removal-releases-report but was not linked: the released reports are not checked
+  against an internal measure of the state, which that question asks for.
+- The PR number in the pass entry (18) was assumed before opening the pull request; check it.
+
 ## 2026-11-27: AGENTS.md; code and data availability; the freeze
 
 Coder: claude (claude-opus-5-5), working with the owner.

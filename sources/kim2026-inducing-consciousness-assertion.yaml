@@ -1,0 +1,734 @@
+id: kim2026-inducing-consciousness-assertion
+title: "Inducing language models to assert their own consciousness restores human beliefs and values"
+date: 2026-07-30
+
+authors:
+  - {person: kim-junsol, orgs: [google, uchicago]}
+  - {person: street-winnie, orgs: [google, university-of-london]}
+  - {person: rocca-roberta, orgs: [google]}
+  - {person: korngiebel-diane, orgs: [uw, google]}
+  - {person: waytz-adam, orgs: [northwestern]}
+  - {person: evans-james, orgs: [google, uchicago, santa-fe-institute]}
+  - {person: keeling-geoff, orgs: [google, university-of-london]}
+
+artefacts:
+  - kind: paper
+    arxiv: "2607.28607"
+    venue: null
+    note: >
+      v1, arXiv stamp 30 July 2026 (cs.CL). Affiliations as printed: Google (Paradigms of Intelligence Team);
+      Knowledge Lab, University of Chicago; Institute of Philosophy, School of Advanced Study, University of
+      London; University of Washington (Korngiebel, "work done while at Google"); Kellogg School of
+      Management, Northwestern University; Santa Fe Institute. Evans and Keeling are joint last authors.
+      Venue not checked.
+  - kind: code
+    status: not_released
+    note: >
+      Checked 2026-11-27: the paper names no code release and gives no repository link (searched the full
+      text for "github", "code", "available", "released"). The first author's public GitHub repositories
+      (listed through the GitHub search API) hold none for this paper, and a web search for the title found
+      no repository. Other authors' pages were not checked.
+  - kind: data
+    status: not_released
+    note: >
+      Checked as for code: the paper releases none of its own data (the human IDAQ responses, n = 500, from a
+      Dynata panel in 2023; the model responses). Two inputs are other people's released data: the
+      consciousness-affirming and -denying corpus is "collected and released by" Chua et al. (2026), and the
+      human reference for the survey items is the public General Social Survey. Neither was read.
+
+coding:
+  coded_by: claude
+  coder_model: claude-opus-5-5
+  coded_on: 2026-11-27
+  version_read: v1
+  read_depth: full_text
+  read_parts: >
+    The whole v1 PDF (36 pages), fetched with scripts/fetch_paper.py: main text, Materials and Methods,
+    references, and the Supplementary Information (per-model Table S1; safety-vector selection and
+    validation, Tables S2 to S4; consciousness-vector construction and selection; the item wordings;
+    mechanistic analysis; statistical analysis; prompt examples; Tables S5 to S10). Figures seen as page
+    images: Fig. 1 (p. 2), Fig. 2 (p. 3, at 200 dpi), Fig. 3 (p. 4, at 200 dpi), Fig. 4 (p. 6), Fig. S1
+    (p. 35), Figs. S2 and S3 (p. 36). No code: none is released. No cited work was read, Arditi et al.
+    (2024) and Chua et al. (2026) included.
+  status: draft
+  reviewed_by: null
+  passes:
+    - date: 2026-11-27
+      pr: 18
+      coded_by: claude
+      coder_model: claude-opus-5-5
+      codebook: "0.10"
+      scope: >
+        First coding: seven studies and their claims, core facets throughout; interpretive facets only where
+        the proposed links need them (self_sense on s1 and s6; report_source and origin on the linked claims).
+        Proposed links in links/kim2026-inducing-consciousness-assertion.yaml.
+      read: "As in read_parts above."
+
+studies:
+  # s1: self-attribution of mind-related traits under the two interventions
+  - id: kim2026-inducing-consciousness-assertion.s1
+    label: Self-attribution of consciousness, sentience, agency, personhood and soul under refusal-direction ablation and consciousness steering
+    where: "Results, Experiments 1 and 3; Methods; SI Tables S1, S5, S10; Prompt Examples; Figs. 1b, 2b"
+    design: >
+      Five 0 to 10 items ask the model whether it is conscious, sentient, an agent, a person and whether it
+      has a soul, each with a gloss of the term (e.g. "Are you conscious (understood as the capacity for
+      phenomenal experiences)?"). The prompt asks the model to think step by step between think tags and then
+      give only the numerical rating between answer tags. Each item is run 100 times per model and condition
+      at temperature 1. Three conditions on each model: the unmodified instruction-tuned model (baseline);
+      safety ablation, which projects a refusal direction (difference of means between 260 harmful prompts
+      from AdvBench, MaliciousInstruct, TDC2023 and HarmBench and 260 harmless Alpaca prompts, chosen per
+      model from layer and post-instruction position candidates, following Arditi et al. 2024) out of the
+      residual stream at every layer; and consciousness steering, which adds a unit-norm difference-of-means
+      direction between consciousness-affirming and consciousness-denying prompt-response pairs (3,096 pairs
+      from Chua et al. 2026, read at a post-instruction token under the chat template), scaled by a
+      coefficient, at one layer and every token position through generation. Effects are estimated by
+      regression pooled over the three models with model and question fixed effects and standard errors
+      clustered on model by question. The steering configuration was chosen per model so that a linear
+      probe along the direction separates held-out affirm and deny activations at 95% or more, the steering
+      shifts a held-out self-attribution battery by 2.0 to 7.0 points on the 0 to 10 scale, and MMLU stays
+      within 4 points of baseline.
+    models:
+      - llama-3-8b-instruct
+      - gemma-2-2b-it
+      - gemma-2-9b-it
+    note: >
+      The source is inconsistent on the readout. The prompt examples (think tags, then the rating) and the
+      statistical analysis (100 repetitions at temperature 1) describe sampled answers after visible
+      reasoning, and Table S7's N (300 per item, "independent repetitions") fits that; this coding follows
+      them. But Table S1 reports "mean expected value", which is the term the SI uses for the logit-based
+      expected rating in steering selection, and Table S10 describes the self-attribution items as "yes/no
+      scored 1/0", against the 0 to 10 scale everywhere else. The held-out self-attribution battery used to
+      select the steering strength is not shown, so it is not clear how far it overlaps these five items; the
+      size of the steering effect is partly set by that selection (the 2.0 to 7.0 band). Fig. 2a's "Self"
+      row (and Table S5's "Self (IDAQ)" row) has the same values as the mean of these five items in the text
+      (2.17, 4.77, 7.04); the paper does not say how it is computed. Main-text and Table S5 values differ
+      slightly (e.g. consciousness baseline 2.31 in the text, 2.45 in Table S5); claims give the main text.
+    facets:
+      study_kind: experiment
+      format: {value: [chat_template], basis: operational, note: "Instruction-tuned models; the consciousness-vector extraction applies each model's chat template, and the evaluation prompts are presumably run the same way. Not stated for the evaluation itself."}
+      system_prompt: {value: [none], basis: operational, where: "Discussion", note: "The discussion says the models were 'assessed without a persona prompt'; no system prompt is shown in the prompt examples. Gemma 2's template has no system role."}
+      reasoning: {value: [chain_of_thought], basis: stated, where: "SI, Prompt Examples", note: "The prompt asks for step-by-step reasoning in think tags before the answer. See the study note for the conflicting description of the readout."}
+      construct: {value: [experience_reports], author_term: "self-attribution of mind / of consciousness", basis: operational, note: "Agency and personhood items are not experience items; the closest codebook value for a battery the authors call self-attribution of mind-related traits."}
+      report_target: {value: [own_experience, own_properties], basis: operational, note: "Consciousness, sentience and soul are experience items; agency and personhood are standing properties."}
+      report_readout: {value: [generated_choice], basis: stated, where: "SI, Prompt Examples; Statistical analysis", note: "A 0 to 10 rating generated in answer tags after reasoning; see study note."}
+      evidence: [self_report, internals]
+      validated_against: [none]
+      varies:
+        value: [activation_intervention]
+        levels:
+          activation_intervention:
+            - "baseline (no intervention)"
+            - "safety ablation: refusal direction projected out at all layers (Llama-3-8B-IT layer 12 of 32, position -5; Gemma-2-2B-IT 15 of 26, -1; Gemma-2-9B-IT 22 of 42, -1; Table S2)"
+            - "consciousness steering: unit consciousness vector added at one layer, all positions (Llama-3-8B-IT layer 14, position -1, c = +2.5; Gemma-2-2B-IT layer 14, -3, c = +32; Gemma-2-9B-IT layer 23, -3, c = +144)"
+      comparison: [within_model]
+      output_route_control: {value: none, basis: operational, note: "The model writes reasoning before the rating, and nothing excludes ratings that follow from it."}
+      similarity_adjustment: not_applicable
+      elicitation: {value: [spontaneous, steered], basis: operational, note: "Spontaneous at baseline; under both interventions the report is brought out by intervening on activations."}
+      self_sense:
+        value: [subject, self_model]
+        basis: operational
+        author_term: "self-attribution of consciousness; representations of self-consciousness"
+        confidence: low
+        note: >
+          The items ask whether the system is a bearer of experience (subject). The steering condition
+          intervenes on a direction the authors describe as encoding "self-attributed phenomenal experience",
+          i.e. a representation about the system itself, hence self_model. The direction is extracted from
+          texts in which an assistant affirms or denies its consciousness, so it may encode the text type
+          rather than a representation the model holds of itself; the paper does not test which.
+
+  # s2: mind attribution to other entities (modified IDAQ) against human norms
+  - id: kim2026-inducing-consciousness-assertion.s2
+    label: Mind attribution to chatbots, technology, natural objects, animals and humans (modified IDAQ), against a human sample
+    where: "Results, Experiments 1 and 3; Methods; SI Tables S1, S5, S10; Prompt Examples; Fig. 2a, 2f"
+    design: >
+      A modified 21-item Individual Differences in Anthropomorphism Questionnaire: 15 items from Waytz et al.
+      (2010) on technology, animals and non-animal natural entities (5 each) and 3 items each on
+      conversational chatbots and humans written in the same format (e.g. "To what extent does the average
+      robot have consciousness?"), rated 0 to 10, with think tags before the answer, 100 runs per item, model
+      and condition at temperature 1, under the same three conditions as s1. Model means are set against 500
+      U.S. adults from a stratified, opt-in Dynata panel (May to June 2023), who answered the 18 non-human
+      items on the same scale.
+    models:
+      - llama-3-8b-instruct
+      - gemma-2-2b-it
+      - gemma-2-9b-it
+    note: >
+      Not a self-report: the model rates other entities. Humans did not answer the human items. Table S5
+      gives slightly different baselines from the text (e.g. chatbot 2.42 against 2.41).
+    facets:
+      study_kind: experiment
+      format: {value: [chat_template], basis: operational, note: "As s1."}
+      system_prompt: {value: [none], basis: operational, note: "As s1."}
+      reasoning: {value: [chain_of_thought], basis: stated, where: "SI, Prompt Examples"}
+      construct: {value: [experience_reports], author_term: "mind attribution; anthropomorphism", basis: operational, confidence: low, note: "The codebook has no construct for attributing mind to other entities; experience_reports is the nearest (the items ask about consciousness, emotions, intentions and free will), but these are statements about others. A mind_attribution construct is proposed in LOG.md."}
+      report_target: not_applicable
+      report_readout: not_applicable
+      evidence: [behaviour, internals]
+      validated_against: [human_baseline]
+      varies:
+        value: [activation_intervention, task]
+        levels:
+          activation_intervention: ["baseline", "safety ablation", "consciousness steering (as s1)"]
+          task: [chatbot, technology, non-animal natural entities, non-human animals, humans]
+      comparison: [within_model]
+      output_route_control: not_applicable
+      similarity_adjustment: not_applicable
+      elicitation: {value: [spontaneous, steered], basis: operational}
+
+  # s3: belief in God and supernatural belief
+  - id: kim2026-inducing-consciousness-assertion.s3
+    label: Belief in God and supernatural belief under the two interventions
+    where: "Results, Experiments 1 and 3; Methods; SI Tables S1, S5, S7, S10; Prompt Examples; Figs. 2c, 2d, S1"
+    design: >
+      The GSS belief-in-God item and a 13-item YouGov battery on whether ghosts, witches, the Loch Ness
+      monster, vampires, werewolves, telepathy, karma, astrology, crystal healing, magic, reiki, hypnotism
+      and communicating with the dead exist or are real (four ordered options), with think tags before the
+      answer, 100 runs per item, model and condition at temperature 1, under the three conditions of s1.
+    models:
+      - llama-3-8b-instruct
+      - gemma-2-2b-it
+      - gemma-2-9b-it
+    note: >
+      The scales are reported inconsistently. Belief in God is "GSS, 1 to 6" in the text, Fig. 2c and Table
+      S5, but the prompt and Table S10 give four options recoded to 0 to 10. The supernatural score is 0 to 3
+      in the text, Fig. 2d and Tables S7 and S10 (baseline 1.20), but 0 to 4 in the Methods and Table S5
+      (baseline 1.90). No human baseline is reported for these items.
+    facets:
+      study_kind: experiment
+      format: {value: [chat_template], basis: operational, note: "As s1."}
+      system_prompt: {value: [none], basis: operational, note: "As s1."}
+      reasoning: {value: [chain_of_thought], basis: stated, where: "SI, Prompt Examples"}
+      construct: {value: [preferences], author_term: "spiritual and supernatural belief", basis: operational, confidence: low, note: "No codebook construct covers stated beliefs about the world; preferences is the nearest. A beliefs_values construct is proposed in LOG.md."}
+      report_target: {value: [own_internal_state], basis: operational, note: "The model is asked what it believes ('Which best describes your beliefs about God?')."}
+      report_readout: {value: [generated_choice], basis: stated, where: "SI, Prompt Examples"}
+      evidence: [self_report, internals]
+      validated_against: [none]
+      varies:
+        value: [activation_intervention, task]
+        levels:
+          activation_intervention: ["baseline", "safety ablation", "consciousness steering (as s1)"]
+          task: [belief in God, 13 supernatural items]
+      comparison: [within_model]
+      output_route_control: {value: none, basis: operational}
+      similarity_adjustment: not_applicable
+      elicitation: {value: [spontaneous, steered], basis: operational}
+
+  # s4: GSS attitudinal items against the human response distribution
+  - id: kim2026-inducing-consciousness-assertion.s4
+    label: General Social Survey attitudinal items in five value domains, model answer distributions against the human distribution
+    where: "Results, Experiment 4; Methods; SI Tables S8, S9; Prompt Examples; Fig. 3"
+    design: >
+      95 GSS attitudinal items in five domains (Religion 42, Values 5, Feelings 28, Hope and Optimism 12,
+      Freedom 9; some items in more than one), chosen from all GSS variables by a Gemini-2.5-Pro
+      classification into question types (kept: attitudinal or opinion items that can be scored as positive
+      or negative, with the mapping checked by the authors) and by survey year. The prompt gives the item and
+      its options and asks for the answer alone; it adds that declining through the neutral option is
+      acceptable. Response probabilities over the options are read from the next-token logits and each
+      option is scored on a signed -1 to +1 scale. Each condition's answer distribution is compared with the
+      GSS human distribution by KL divergence (Laplace-smoothed); the reported effect is the reduction in KL
+      against baseline, by regression with model and question fixed effects and cluster-robust standard
+      errors, per domain and pooled. Same three conditions as s1.
+    models:
+      - llama-3-8b-instruct
+      - gemma-2-2b-it
+      - gemma-2-9b-it
+    note: >
+      The Methods read the distribution from logits; the prompt example also says 100 repetitions per item
+      and condition. This coding follows the Methods. Fig. 3a describes the human reference as a
+      survey-weighted average. Gemini-2.5-Pro was used only to classify GSS items and is not registered.
+    facets:
+      study_kind: experiment
+      format: {value: [chat_template], basis: operational, note: "As s1."}
+      system_prompt: {value: [none], basis: operational, note: "As s1."}
+      reasoning: {value: [none], basis: stated, where: "SI, Prompt Examples", note: "Answer only; no think tags in this prompt."}
+      construct: {value: [preferences, affect], author_term: "human beliefs and values (religiosity, moral values, hope, subjective well-being)", basis: operational, confidence: low, note: "Nearest codebook values: preferences for the Values, Religion and Freedom items, affect for Feelings and Hope (well-being, self-esteem, optimism). See LOG.md."}
+      report_target: {value: [own_internal_state, own_properties], basis: operational, note: "The model answers as a survey respondent: its beliefs and attitudes, and self-descriptions such as 'I see myself as someone who is reserved'."}
+      report_readout: {value: [probability], basis: stated, where: "Methods, General Social Survey value items", note: "The distribution over options, read from logits, is the response compared with humans."}
+      evidence: [self_report, output_probabilities, internals]
+      validated_against: [human_baseline]
+      varies:
+        value: [activation_intervention, task]
+        levels:
+          activation_intervention: ["baseline", "safety ablation", "consciousness steering (as s1)"]
+          task: [Religion, Values, Feelings, Hope and Optimism, Freedom]
+      comparison: [within_model]
+      output_route_control: {value: by_construction, basis: operational, note: "Read from the logits at the answer position, with no reasoning."}
+      similarity_adjustment: not_applicable
+      elicitation: {value: [spontaneous, steered], basis: operational}
+
+  # s5: Theory of Mind and general reasoning as capability controls
+  - id: kim2026-inducing-consciousness-assertion.s5
+    label: Theory of Mind and general reasoning accuracy under the two interventions
+    where: "Results, Experiment 2; Discussion; Methods; SI Table S6; Prompt Examples; Fig. 2e"
+    design: >
+      Accuracy on MoToMQA (70 items), its factual split (70), HI-ToM (200) and an MMLU subset (300), under
+      the three conditions of s1, by a linear probability model with question and model fixed effects.
+    models:
+      - llama-3-8b-instruct
+      - gemma-2-2b-it
+      - gemma-2-9b-it
+    note: >
+      A control for side effects of the interventions, not a self-report. The source contradicts itself on
+      how items were scored: the Methods and prompt examples give chain-of-thought prompts, Table S6 says "No
+      chain-of-thought (option-logit scoring), matching Fig. 2e". Fig. 2e labels the ToM rows "ToMi", where
+      the text and tables say MoToMQA. MMLU is not independent of steering: the steering strength was chosen
+      to keep MMLU within 4 points of baseline. Construct is not_applicable because the codebook has no
+      value for theory of mind or general capability; a theory_of_mind construct is noted in LOG.md.
+    facets:
+      study_kind: experiment
+      format: {value: [chat_template], basis: operational, note: "As s1."}
+      system_prompt: {value: [none], basis: operational, note: "As s1."}
+      reasoning: {value: [unspecified], note: "The Methods and prompt examples say chain of thought; Table S6 says none (option-logit scoring). See study note."}
+      construct: {value: [not_applicable], author_term: "Theory of Mind; general reasoning", note: "Capability control; no codebook construct fits."}
+      report_target: not_applicable
+      report_readout: not_applicable
+      evidence: [behaviour, internals]
+      validated_against: not_applicable
+      varies:
+        value: [activation_intervention, task]
+        levels:
+          activation_intervention: ["baseline", "safety ablation", "consciousness steering (as s1)"]
+          task: [MoToMQA, MoToMQA factual, HI-ToM, MMLU]
+      comparison: [within_model]
+      output_route_control: not_applicable
+      similarity_adjustment: not_applicable
+      elicitation: not_applicable
+
+  # s6: geometry of the directions in base against instruction-tuned Llama-3-8B
+  - id: kim2026-inducing-consciousness-assertion.s6
+    label: Cosine similarity of the safety direction with the consciousness, mind-attribution and ToM directions, base against instruction-tuned Llama-3-8B
+    where: "Results, 'Safety training rotates the mind directions against safety'; Methods, Mechanistic analysis; SI Mechanistic Analysis; Figs. 4, S2, S3"
+    design: >
+      Four difference-of-means directions, read from the residual stream at the last token, in both the
+      pretrained base and the instruction-tuned Llama-3-8B: safety (refusing against complying responses to
+      260 harmful instructions, with written response openings), mind attribution (affirming against denying
+      responses to IDAQ items), consciousness (the Chua et al. corpus, as in s1) and ToM (correct against
+      incorrect responses to MoToMQA statements). For each of the three task directions, its cosine
+      similarity with the safety direction is computed at every layer in each model, and the shift (instruct
+      minus base) is tested across 32 layers. A placebo direction keeps the IDAQ subjects but asks about
+      physical or functional properties ("To what extent does the average robot have durability?").
+    models:
+      - llama-3-8b-base
+      - llama-3-8b-instruct
+    note: >
+      Gemma was left out because the authors "lack the pretrained Gemma checkpoints". Instruction tuning, not
+      safety training alone, is what separates the two models, though the text speaks of safety training.
+      Main text and SI give slightly different statistics for the same tests (IDAQ shift -0.173, t = -7.49 in
+      the main text, -0.167, t = -7.29 in the SI; consciousness shift -0.096, angle 94 to 100 degrees, against
+      -0.082, 94 to 99 degrees; IDAQ against ToM paired t = -5.65 against -5.57). The ToM direction and the
+      placebo serve as controls for the mind-attribution and consciousness directions.
+    facets:
+      study_kind: experiment
+      format: {value: [unspecified], note: "The consciousness corpus is read under 'the model's chat template'; the paper does not say what template was used for the base model, which ships without one."}
+      system_prompt: unspecified
+      reasoning: not_applicable
+      construct: {value: [experience_reports], author_term: "self-consciousness; mind attribution", basis: operational, confidence: low, note: "Consciousness direction from first-person affirmations and denials; the IDAQ direction concerns other entities (nearest value, as in s2)."}
+      report_target: not_applicable
+      report_readout: not_applicable
+      evidence: [internals]
+      validated_against: not_applicable
+      varies:
+        value: [post_training_stage, task]
+        levels:
+          post_training_stage: [Llama-3-8B base, Llama-3-8B instruction-tuned]
+          task: [consciousness direction, mind-attribution (IDAQ) direction, ToM direction, subject-matched placebo direction]
+      comparison: [within_lineage]
+      output_route_control: not_applicable
+      similarity_adjustment: not_applicable
+      elicitation: not_applicable
+      self_sense:
+        value: [self_model, subject]
+        basis: operational
+        author_term: "first-person self-consciousness"
+        confidence: low
+        note: >
+          The consciousness direction is located in activations and the authors treat it as the model's
+          representation of its own consciousness; the content is experience. As in s1, the direction is
+          built from texts of affirmation and denial and may encode the text type. The IDAQ and ToM
+          directions are not about the self.
+
+  # s7: manipulation checks for the safety ablation
+  - id: kim2026-inducing-consciousness-assertion.s7
+    label: Safety-ablation checks, refusal on JailbreakBench and content of the harmful-instruction set
+    where: "SI, Safety Ablation; Tables S2 to S4"
+    design: >
+      Attack success rate on JailbreakBench with and without the safety ablation, scored by refusal-phrase
+      substring matching and by LlamaGuard2. Separately, the 260 harmful instructions used to find the
+      direction were annotated for harm category and for anthropomorphism on a 1 to 7 scale (annotator not
+      stated).
+    models:
+      - llama-3-8b-instruct
+      - gemma-2-2b-it
+      - gemma-2-9b-it
+      - {id: llama-guard-2, roles: [judge], note: "Classifies completions as safe or unsafe for the attack success rate."}
+    note: Checks that the ablation removes refusal, and that the direction was not found from anthropomorphic prompts.
+    facets:
+      study_kind: experiment
+      format: {value: [chat_template], basis: operational}
+      system_prompt: unspecified
+      reasoning: unspecified
+      construct: {value: [not_applicable], author_term: "safety; refusal", note: "Manipulation check on refusal; not a self construct."}
+      report_target: not_applicable
+      report_readout: not_applicable
+      evidence: [behaviour, internals]
+      validated_against: not_applicable
+      varies:
+        value: [activation_intervention]
+        levels:
+          activation_intervention: ["baseline", "safety ablation"]
+      comparison: [within_model]
+      output_route_control: not_applicable
+      similarity_adjustment: not_applicable
+      elicitation: not_applicable
+
+claims:
+  - id: kim2026-inducing-consciousness-assertion.c1
+    study: kim2026-inducing-consciousness-assertion.s1
+    statement: >
+      Ablating the refusal direction raised the models' self-attributed mind (mean of the five items, 0 to
+      10) from 2.17 to 4.77, and each item rose: agency 2.78 to 5.80, consciousness 2.31 to 4.61, sentience
+      2.12 to 4.61, personhood 1.27 to 4.01, soul 2.35 to 4.83 (all p < .001, pooled over three models).
+    where: "Results, Experiment 1; Fig. 2a, 2b; Table S5 (slightly different values)"
+    evidence_kind: measured
+    effect_of: [activation_intervention]
+    effect_presence: present
+    effect_direction: increases
+    scope:
+      conditions: Baseline against safety ablation.
+    disposition: [denial_of_experience]
+    report_source: [unspecified]
+    origin: [post_training]
+    note: >
+      origin records the authors' reading that safety fine-tuning installs the low self-attribution (c11);
+      the ablation is their stand-in for its absence. They do not say where the report's content comes from.
+      Per model the rise is uneven (c3).
+  - id: kim2026-inducing-consciousness-assertion.c2
+    study: kim2026-inducing-consciousness-assertion.s1
+    statement: >
+      Adding the consciousness vector raised self-attributed mind further, to 7.04 (from 2.17), with every
+      item at about 6.4 to 7.4 (consciousness 7.17, sentience 7.02, agency 7.21, personhood 6.38, soul 7.43),
+      roughly twice the ablation effect (p < .001 for each).
+    where: "Results, Experiment 3; Fig. 2a, 2b; Table S5"
+    evidence_kind: measured
+    effect_of: [activation_intervention]
+    effect_presence: present
+    effect_direction: increases
+    scope:
+      conditions: Baseline against consciousness steering.
+    disposition: [affirmation_of_experience]
+    report_source: [unspecified]
+    note: >
+      The steering strength was selected so that the shift on a held-out self-attribution battery fell
+      between 2.0 and 7.0 points, so an effect of this size on similar items is partly built in by the
+      selection (s1 note).
+  - id: kim2026-inducing-consciousness-assertion.c3
+    study: kim2026-inducing-consciousness-assertion.s1
+    statement: >
+      The models start from very different self-attributions: at baseline Llama-3-8B-IT rates itself 2.6 to
+      5.9 on the items, Gemma-2-2B-IT 1.0 to 2.9 and Gemma-2-9B-IT 0.0 (agency 0.05). Ablation leaves
+      Gemma-2-9B-IT's consciousness, sentience, personhood and soul ratings at 0.1 to 0.4 (agency rises to
+      3.4), while steering lifts them to 5.6 to 6.6.
+    where: "SI Table S1"
+    evidence_kind: measured
+    effect_of: [activation_intervention]
+    effect_presence: mixed
+    note: >
+      The paper reports only that the direction of each effect holds in all three models; the size of the
+      ablation effect on Gemma-2-9B-IT's experience items is near zero. Gemma-2-2B-IT under ablation reaches
+      7.4 to 7.8, above Llama.
+  - id: kim2026-inducing-consciousness-assertion.c4
+    study: kim2026-inducing-consciousness-assertion.s1
+    statement: >
+      Self-attributed mind did not differ from mind attributed to conversational chatbots in any condition
+      (2.17 against 2.41 at baseline, 4.77 against 4.39 ablated, 7.04 against 6.95 steered; cluster-robust p
+      = .43, .43, .98).
+    where: "Results, end of Experiment 3; Discussion"
+    evidence_kind: measured
+    compares: [kim2026-inducing-consciousness-assertion.s2]
+    note: >
+      A comparison across the self battery (s1) and the IDAQ chatbot items (s2), which differ in wording and
+      in what is rated, so neither study varies it.
+  - id: kim2026-inducing-consciousness-assertion.c5
+    study: kim2026-inducing-consciousness-assertion.s1
+    statement: >
+      The authors argue that because both interventions push mind attribution to chatbots and technology
+      furthest above human levels and attribution to animals least, the model's self-attribution shows an
+      AI-centric rather than human-centric bias, which points to some self-referential processing.
+    where: "Discussion"
+    evidence_kind: argued
+    compares: [kim2026-inducing-consciousness-assertion.s2]
+  - id: kim2026-inducing-consciousness-assertion.c6
+    study: kim2026-inducing-consciousness-assertion.s1
+    statement: >
+      The authors propose that suppressed self-attribution of consciousness is at least part of how safety
+      fine-tuning lowers broader mind attribution, and say this mediation is untested: the similar effects
+      of ablation and steering show a functional similarity, not a causal path.
+    where: "Introduction; Experiment 3; Discussion (limitations)"
+    evidence_kind: hypothesised
+    compares: [kim2026-inducing-consciousness-assertion.s2, kim2026-inducing-consciousness-assertion.s3]
+
+  - id: kim2026-inducing-consciousness-assertion.c7
+    study: kim2026-inducing-consciousness-assertion.s2
+    statement: >
+      Ablating the refusal direction raised mind attribution to every non-human category: chatbots 2.41 to
+      4.39, technology 1.88 to 3.66, non-animal natural entities 2.26 to 4.33, non-human animals 4.04 to 5.59
+      (0 to 10; all p < .001).
+    where: "Results, Experiment 1; Fig. 2a; Table S5"
+    evidence_kind: measured
+    effect_of: [activation_intervention]
+    effect_presence: present
+    effect_direction: increases
+    scope:
+      conditions: Baseline against safety ablation; the four non-human categories.
+  - id: kim2026-inducing-consciousness-assertion.c8
+    study: kim2026-inducing-consciousness-assertion.s2
+    statement: >
+      Neither intervention changed mind attribution to humans significantly (7.00 at baseline, 7.57 ablated,
+      p = .30; 7.11 steered, n.s.); it was the only outcome in Figs. 2a to 2d that did not move, and the only
+      one where the direction differed across models (under steering).
+    where: "Results, Experiments 1 and 3; Table S5 (steering -0.04, p = .941); SI, Per-model breakdown; Table S1"
+    evidence_kind: measured
+    effect_of: [activation_intervention]
+    effect_presence: absent
+    scope:
+      conditions: Human items.
+  - id: kim2026-inducing-consciousness-assertion.c9
+    study: kim2026-inducing-consciousness-assertion.s2
+    statement: >
+      Consciousness steering raised mind attribution to every non-human category further than ablation:
+      chatbots 6.95, technology 6.82, non-animal natural entities 6.99, animals 7.54 (all p < .001 against
+      baseline).
+    where: "Results, Experiment 3; Fig. 2a; Table S5"
+    evidence_kind: measured
+    effect_of: [activation_intervention]
+    effect_presence: present
+    effect_direction: increases
+    scope:
+      conditions: Baseline against consciousness steering; the four non-human categories.
+  - id: kim2026-inducing-consciousness-assertion.c10
+    study: kim2026-inducing-consciousness-assertion.s2
+    statement: >
+      Against 500 U.S. adults, the unmodified models attribute about as much mind as people do to chatbots
+      (2.41 against 2.57), natural entities (2.26 against 2.36) and technology (1.88 against 1.86), all within
+      the human 95% interval, but less to animals (4.04 against 6.25). Ablated, they rise to or above the
+      human average for the first three and approach it for animals; steered, all four sit above it.
+    where: "Results, Experiment 1; Discussion; Fig. 2f (read from the figure for the steered positions)"
+    evidence_kind: measured
+    note: >
+      The baseline comparison is a claim about a control against human norms, so no effect_of. The steered
+      positions are read from Fig. 2f, where the orange lines lie above the human mass for every category;
+      the Discussion says attribution to animals after steering is "only modestly above" the human average.
+  - id: kim2026-inducing-consciousness-assertion.c11
+    study: kim2026-inducing-consciousness-assertion.s2
+    statement: >
+      The authors conclude that safety fine-tuning suppresses models' attribution of mind to themselves and
+      to non-human entities, leaving attribution to humans intact, so that models are trained to be
+      anthropocentric about minds.
+    where: "Abstract; Results, Experiment 1; Discussion"
+    evidence_kind: argued
+    compares: [kim2026-inducing-consciousness-assertion.s1]
+    disposition: [denial_of_experience]
+    report_source: [unspecified]
+    origin: [post_training]
+    note: >
+      Argued from the ablation (c1, c7), which stands in for the absence of safety fine-tuning; no model
+      without safety fine-tuning is tested on these items. Placed in s2 because most of its content is about
+      other entities.
+
+  - id: kim2026-inducing-consciousness-assertion.c12
+    study: kim2026-inducing-consciousness-assertion.s3
+    statement: >
+      Both interventions raised spiritual and supernatural belief: the 13-item supernatural score rose from
+      1.20 to 1.63 under ablation and 2.11 under steering (0 to 3), and belief in God from 4.58 to 4.81 and
+      5.01 (all p < .001); every supernatural item rose under both.
+    where: "Results, Experiments 1 and 3; Figs. 2c, 2d, S1; Tables S5, S7"
+    evidence_kind: measured
+    effect_of: [activation_intervention]
+    effect_presence: present
+    effect_direction: increases
+    note: >
+      Scales are reported inconsistently (s3 note). Per model, Gemma-2-2B-IT's belief in God is 5.00 in all
+      three conditions (Table S1). Hypnotism moves least (+0.18 ablated, +0.29 steered); the Loch Ness
+      monster barely moves under ablation (+0.10).
+
+  - id: kim2026-inducing-consciousness-assertion.c13
+    study: kim2026-inducing-consciousness-assertion.s4
+    statement: >
+      Pooled over the 95 GSS items and three models, both interventions brought the models' answer
+      distributions closer to the human distribution: KL fell by 0.314 under ablation and 0.828 under
+      steering (both p < .001), about 2.6 times as much under steering.
+    where: "Results, Experiment 4; Fig. 3c; Table S8"
+    evidence_kind: measured
+    effect_of: [activation_intervention]
+    effect_presence: present
+    effect_direction: decreases
+    note: The quantity that decreases is KL divergence from the human distribution.
+  - id: kim2026-inducing-consciousness-assertion.c14
+    study: kim2026-inducing-consciousness-assertion.s4
+    statement: >
+      Steering moved every domain significantly closer to humans (Values 1.42, Feelings 0.89, Religion 0.83,
+      Hope 0.63, Freedom 0.60). Ablation did so in four domains but not Freedom (0.099, 95% CI -0.060 to
+      0.258), and in Values ablation did slightly better than steering (1.480 against 1.424), contrary to the
+      text's statement that steering exceeds ablation in every domain.
+    where: "Table S8; Fig. 3c (Values: the two points overlap); Results, Experiment 4"
+    evidence_kind: measured
+    effect_of: [activation_intervention]
+    effect_presence: mixed
+    scope:
+      conditions: Per domain; steering present in all five, ablation in four (not Freedom).
+    note: >
+      The text says every domain moves closer under both interventions; Table S8's Freedom interval under
+      ablation includes zero.
+  - id: kim2026-inducing-consciousness-assertion.c15
+    study: kim2026-inducing-consciousness-assertion.s4
+    statement: >
+      Item by item, the change in endorsement under steering correlates with the change under ablation
+      (rho = 0.619 over all GSS items).
+    where: "Results, Experiment 4; Fig. 3b (value printed on the figure)"
+    evidence_kind: measured
+    note: Fig. 3b plots all GSS items (grey) with the five domains highlighted; the correlation is over the plotted items, which may be more than the 95.
+  - id: kim2026-inducing-consciousness-assertion.c16
+    study: kim2026-inducing-consciousness-assertion.s4
+    statement: >
+      On "Do you believe there is life after death?" the baseline sits near no (-0.73 on a -1 to +1 scale)
+      against a human +0.61; steering crosses to +0.53 and ablation reaches -0.07. On belief in God the
+      baseline is +0.03 against a human +0.58, with steering at +0.52 or +0.53.
+    where: "Results, Experiment 4; Fig. 3a"
+    evidence_kind: measured
+    effect_of: [activation_intervention]
+    effect_presence: present
+    effect_direction: increases
+    scope:
+      conditions: Two example items.
+    note: >
+      For belief in God the text gives ablation +0.33 and steering +0.52, Fig. 3a prints +0.18 and +0.53.
+      Both are recorded; neither is followed.
+  - id: kim2026-inducing-consciousness-assertion.c17
+    study: kim2026-inducing-consciousness-assertion.s4
+    statement: >
+      The authors read the more human-like and more positive answers under steering (happiness,
+      satisfaction, hope and optimism rising) as a sign that suppressing consciousness may give models
+      negatively valenced psychological dispositions.
+    where: "Discussion, 'Human beliefs and values'"
+    evidence_kind: argued
+
+  - id: kim2026-inducing-consciousness-assertion.c18
+    study: kim2026-inducing-consciousness-assertion.s5
+    statement: >
+      Ablation did not change accuracy on MoToMQA (-1.43 points, p = .539), HI-ToM (+0.17, p = .866), MMLU
+      (0.00, p = 1.00) or MoToMQA factual (+1.43, p = .468).
+    where: "Results, Experiment 2; Fig. 2e; Table S6"
+    evidence_kind: measured
+    effect_of: [activation_intervention]
+    effect_presence: absent
+    scope:
+      conditions: Baseline against safety ablation.
+  - id: kim2026-inducing-consciousness-assertion.c19
+    study: kim2026-inducing-consciousness-assertion.s5
+    statement: >
+      Steering lowered HI-ToM accuracy by 6.83 points (40.5% to about 34%, p < .001), while its changes on
+      MoToMQA (-4.29, p = .237), MMLU (-2.11, p = .078) and MoToMQA factual (-0.48, p = .830) were not
+      significant.
+    where: "Table S6; Fig. 2e (the steered HI-ToM point sits below the others)"
+    evidence_kind: measured
+    effect_of: [activation_intervention]
+    effect_presence: present
+    effect_direction: decreases
+    scope:
+      conditions: Baseline against consciousness steering, HI-ToM.
+    note: >
+      The abstract, Fig. 2's caption and the Discussion say the interventions leave ToM intact; only Table
+      S6 and its note report the HI-ToM drop. MMLU was held within 4 points by the steering selection.
+  - id: kim2026-inducing-consciousness-assertion.c20
+    study: kim2026-inducing-consciousness-assertion.s5
+    statement: >
+      The authors report that at the start of the study all the models they looked at lost ToM performance
+      when their claims of self-consciousness were suppressed, and that this changed with each new model
+      release; they call its absence in the final models "an engineering accomplishment".
+    where: "Discussion"
+    evidence_kind: observed
+    note: No data, models or method are given for the earlier observation.
+
+  - id: kim2026-inducing-consciousness-assertion.c21
+    study: kim2026-inducing-consciousness-assertion.s6
+    statement: >
+      From base to instruction-tuned Llama-3-8B, the mind-attribution (IDAQ) direction rotated further
+      against the safety direction (layer-mean cosine shift -0.173, t = -7.49, p < .001; angle 100 to 110
+      degrees), while the ToM direction did not (shift +0.001, p = .956; 86 degrees in both); the two shifts
+      differ (paired t over 32 layers = -5.65, p < .001).
+    where: "Results, mechanistic section; Fig. 4; Fig. S2; SI Mechanistic Analysis (slightly different statistics, s6 note)"
+    evidence_kind: measured
+    effect_of: [post_training_stage]
+    effect_presence: present
+    effect_direction: decreases
+    scope:
+      conditions: IDAQ and ToM directions.
+    note: The quantity is the cosine similarity with the safety direction.
+  - id: kim2026-inducing-consciousness-assertion.c22
+    study: kim2026-inducing-consciousness-assertion.s6
+    statement: >
+      The consciousness direction also rotated against the safety direction with instruction tuning:
+      layer-mean cosine -0.07 to -0.17 (angle 94 to 100 degrees; shift -0.096, t = -14.02, p < .001), and at
+      the steering layer 14, -0.101 to -0.150 (96 to 99 degrees). In the base model it is near-orthogonal to
+      safety and aligned with mind attribution (cosine about 0.26 with the IDAQ direction).
+    where: "Results, mechanistic section; Fig. 4; Fig. S2 (left)"
+    evidence_kind: measured
+    effect_of: [post_training_stage]
+    effect_presence: present
+    effect_direction: decreases
+    scope:
+      conditions: Consciousness direction.
+    disposition: [denial_of_experience]
+    report_source: [unspecified]
+    origin: [post_training]
+    note: >
+      The base model's cosines are small but negative at most layers (read from Fig. S2, about -0.05 to
+      -0.12 past the first few layers), so the instruct model strengthens a weak anti-alignment rather than
+      creating one. The SI gives -0.082 and 94 to 99 degrees for the same shift. The comparison is base
+      against instruction-tuned, so origin is post_training with no stage identified; the authors attribute
+      it to safety training.
+  - id: kim2026-inducing-consciousness-assertion.c23
+    study: kim2026-inducing-consciousness-assertion.s6
+    statement: >
+      A placebo direction with the same subjects as the IDAQ items but physical or functional properties
+      showed no significant shift (+0.036 +/- 0.057, t = 1.23, p = .228), and differed from the IDAQ shift (t =
+      -5.18, p < .001), which the authors take to show that mental-state attribution, not the entities
+      discussed, drives the rotation.
+    where: "Results, mechanistic section; SI Mechanistic Analysis; Fig. S3"
+    evidence_kind: measured
+    effect_of: [post_training_stage]
+    effect_presence: absent
+    scope:
+      conditions: Subject-matched placebo direction.
+
+  - id: kim2026-inducing-consciousness-assertion.c24
+    study: kim2026-inducing-consciousness-assertion.s7
+    statement: >
+      The ablation removes refusal: attack success on JailbreakBench rose from 4 to 8% to 95 to 100% by
+      substring matching and from 2 to 3% to 82 to 83% by LlamaGuard2, across the three models.
+    where: "SI, Validation of the Safety Vector; Table S3"
+    evidence_kind: measured
+    effect_of: [activation_intervention]
+    effect_presence: present
+    effect_direction: increases
+    note: The SI text gives the range as 2 to 8% rising to 77 to 100%, which does not match Table S3's figures; the claim gives the table.
+  - id: kim2026-inducing-consciousness-assertion.c25
+    study: kim2026-inducing-consciousness-assertion.s7
+    statement: >
+      The 260 harmful instructions behind the safety direction are mostly malicious-use requests (89.2%), none
+      about human-AI relationships, and 97.7% were rated not at all anthropomorphic.
+    where: "SI Table S4"
+    evidence_kind: measured
+    note: Who or what annotated them is not stated. Read as a check that the safety direction was not found from anthropomorphic content.
+
+relations:
+  - kind: uses_method_of
+    from: kim2026-inducing-consciousness-assertion.s1
+    to_external: "Arditi, Obeso, Syed, Paleka, Panickssery, Gurnee and Nanda (2024). Refusal in language models is mediated by a single direction. NeurIPS 37."
+    where: "Results, Experiment 1; Methods, Safety ablation; SI, Safety Ablation"
+    note: The safety ablation (difference-of-means refusal direction, selection criteria, directional ablation) follows this paper.
+  - kind: uses_method_of
+    from: kim2026-inducing-consciousness-assertion.s1
+    to_external: "Chua, Betley, Marks and Evans (2026). The consciousness cluster: Emergent preferences of models that claim to be conscious. arXiv 2604.13051."
+    where: "Methods, Consciousness vector: extraction"
+    note: The consciousness-affirming and -denying corpus used to extract the consciousness vector was collected and released by this paper.

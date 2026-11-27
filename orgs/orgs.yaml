@@ -86,3 +86,29 @@
 - id: ut-austin
   name: The University of Texas at Austin
   kind: university
+
+# Added with Kim et al. 2026 (arXiv 2607.28607)
+- id: google
+  name: Google
+  kind: company
+  note: Kim et al. (2026) print "Google, Paradigms of Intelligence Team". Also the developer of Gemma 2.
+- id: northwestern
+  name: Northwestern University
+  kind: university
+  note: Kim et al. (2026) print "Kellogg School of Management, Northwestern University".
+- id: santa-fe-institute
+  name: Santa Fe Institute
+  kind: nonprofit
+  note: Kind not taken from a source.
+- id: uchicago
+  name: University of Chicago
+  kind: university
+  note: Kim et al. (2026) print "Knowledge Lab, University of Chicago".
+- id: university-of-london
+  name: University of London
+  kind: university
+  note: Kim et al. (2026) print "Institute of Philosophy, School of Advanced Study, University of London".
+- id: uw
+  name: University of Washington
+  kind: university
+  note: Kim et al. (2026) print "Department of Biomedical Informatics and Medical Education and Department of Bioethics and Humanities, School of Medicine, University of Washington".

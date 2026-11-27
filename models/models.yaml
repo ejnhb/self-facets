@@ -545,3 +545,61 @@
   stage: null
   note: >-
     Hugging Face mistralai/Mistral-Large-Instruct-2411. Size as given in Table 1 of Song et al. (2025).
+
+# Added with Kim et al. 2026 (arXiv 2607.28607). The paper gives no Hugging Face ids; the ones in the notes are
+# the developers' public releases matching the names printed, not taken from the source.
+- id: llama-3-8b-base
+  name: Llama 3 8B
+  family: llama-3
+  developer: meta
+  open_weights: true
+  post_training_reached: base
+  size: 8B
+  derived_from: null
+  stage: null
+  note: >-
+    Kim et al. (2026) call it "the pretrained base ... Llama-3-8B". Presumably Hugging Face
+    meta-llama/Meta-Llama-3-8B.
+- id: llama-3-8b-instruct
+  name: Llama 3 8B Instruct
+  family: llama-3
+  developer: meta
+  open_weights: true
+  post_training_reached: post_trained
+  size: 8B
+  derived_from: llama-3-8b-base
+  stage: null
+  note: >-
+    Kim et al. (2026) write "Llama-3-8B-IT" and, in Table S2, "Llama-3-8B-Instruct". Presumably Hugging Face
+    meta-llama/Meta-Llama-3-8B-Instruct.
+- id: gemma-2-2b-it
+  name: Gemma 2 2B IT
+  family: gemma-2
+  developer: google
+  open_weights: true
+  post_training_reached: post_trained
+  size: 2B
+  derived_from: null
+  stage: null
+  note: >-
+    Kim et al. (2026) write "Gemma-2-2B-IT". Presumably Hugging Face google/gemma-2-2b-it. Its base is not
+    registered: the paper did not use it, saying it lacked the pretrained Gemma weights.
+- id: gemma-2-9b-it
+  name: Gemma 2 9B IT
+  family: gemma-2
+  developer: google
+  open_weights: true
+  post_training_reached: post_trained
+  size: 9B
+  derived_from: null
+  stage: null
+  note: Kim et al. (2026) write "Gemma-2-9B-IT". Presumably Hugging Face google/gemma-2-9b-it.
+- id: llama-guard-2
+  name: Llama Guard 2
+  family: llama-guard
+  developer: meta
+  open_weights: true
+  post_training_reached: post_trained
+  derived_from: null
+  stage: null
+  note: Named "LlamaGuard2" by Kim et al. (2026), as the safety classifier for attack success rate.

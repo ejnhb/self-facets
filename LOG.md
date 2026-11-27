@@ -43,7 +43,7 @@ Coder: claude (claude-opus-5-5), from AGENTS.md alone; the first paper coded und
   self-attribution effect of steering (c2) is partly built in; hence the inconclusive link.
 - c1 is a candidate for q-policy-removal-releases-report but was not linked: the released reports are not checked
   against an internal measure of the state, which that question asks for.
-- The PR number in the pass entry (18) was assumed before opening the pull request; check it.
+- Pull request 20.
 
 ## 2026-11-27: AGENTS.md; code and data availability; the freeze
 

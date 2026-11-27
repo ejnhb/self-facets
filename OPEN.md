@@ -189,5 +189,11 @@ right, so frames on it pick up claims they were not meant for; where that happen
   parallel additions conflict.
 - **Sparsity:** whether similar designs coded by different coders land on shared questions and comparable facet
   values.
+- **Inconsistencies within papers:** coders often find a paper disagreeing with itself (text against figure, table
+  or released data), mostly revision drift: a figure regenerated and the sentence about it not. They are recorded
+  in free-text notes only. A structured bookkeeping field (where, which two parts, which was followed) would make
+  them countable, for example to see whether the rate changes as agent-assisted checking spreads. Agent checking
+  also makes them cheaper to find, so a rising detected rate would not mean a rising real rate. An idea, not yet
+  needed.
 - **Scope:** which areas of research the repo covers, later. Betley and Kim needed values outside the
   introspection literature the codebook was built from.

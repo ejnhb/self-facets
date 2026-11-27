@@ -2,6 +2,89 @@
 
 Newest first. Each entry: what changed, what is open, what needs a decision.
 
+## 2026-11-27: the held pass (figures and effects on the three pilot records; Binder et al. read in full)
+
+Coder: claude (claude-opus-5-5), working with the owner: four claude-opus-5-5 subagents, one per record, from one
+brief, each editing only its own record; this coder reviewed the four diffs together, made the consistency fixes
+below, and committed. Each record has a pass entry (PR 14) saying exactly what was read.
+
+**Changed**
+
+- Figures: every record now has its figure pages seen (`read_depth: full_text`), and the claims that rested on
+  unread figures carry approximate values marked "read from Fig. N". Corrections the figures forced: Song et al.
+  c1 (the near-random Exp. 2 choices hold for prompted answers only; string probabilities pick the original word
+  about 0.8 of the time on nonsense); Lindsey c21 (helpful-only variants reach rates like the three production
+  models the text singles out). New claims where a figure held a result the record stated nowhere: Rubin et al.
+  c16 and c17.
+- Effects: `effect_of`, `effect_presence` and `effect_direction` coded across Lindsey (22 claims), Song et al. (8)
+  and Rubin et al. (9); Binder et al.'s checked (8 of 10). Auto stances now reach all four papers.
+- Binder et al. read in full (all appendices, the figures, and the official repository at 421fa65, linked from
+  arXiv's HTML v1). Study s5 split: its long-output-properties claim (c7) moved to a new study s7, since no
+  cross-prediction was run on those and the prompts differ; s5 is now answer-switching only, with the model's own
+  first answer in context, so `output_route_control` is `none`. Model lists for s1, s5 and s6 settled from the
+  appendices; `system_prompt` none (operational) from the code.
+- Lindsey: the helpful-only variants run in s4 to s7 (the figures show them; the text never says), so they are in
+  those studies' model lists and `post_training_recipe` in their `varies`; text and figures disagree on s6's
+  strengths (both recorded). New registry entries: three helpful-only Claude models and the seven base models of
+  Fig. 14, now s3's models.
+- Song et al.: the analysis script drops one of the Exp. 2 prompts, unmentioned in the paper (s1 note).
+- Binder et al.'s "Llama 70B" is Llama 3.1 70B Instruct: the code fine-tunes Fireworks' llama-v3p1-70b-instruct.
+  The record now uses `llama-3.1-70b-instruct`, and the registry's variant-unknown `llama-3.1-70b` is removed
+  (its note asked for this merge once the source was checked). Prompted by blind test 2, where the coder inferred
+  the instruct model from the paper alone (the untrained model's refusals).
+
+**Consistency fixes in review**
+
+- Cross-study and argued claims take no `effect_of`: Lindsey c20 (base against post-trained, argued, comparing
+  s3 with s1) had it removed, matching Binder et al. c7. Such claims are linked to questions by hand.
+  Lindsey s3 still lists `post_training_stage` in `varies`, coded in the pilot with s1 named as the other arm;
+  Binder et al.'s new s7 does not code its cross-study contrast that way. Which is right is a question for the
+  owner (below).
+- Controls take none (Lindsey c18 and c30; Rubin et al. c13), per the 0.10 rule.
+
+**Open**
+
+- Rubin et al. c13 bundles a real injection effect in the pretrained base with an unexplained control result;
+  it should probably be split into two claims.
+- Lindsey c6 and Song et al. c7 are coded `mixed`; splitting each by comparison would be cleaner.
+- Per-panel values of Lindsey Figs. 29 to 31 are not coded (legible only at page resolution); Figs. 1 to 7, 16
+  and 23 (schematics, prompts, examples) were not viewed.
+- Binder et al. still needs its blind check by a coder from another model family.
+
+**For the owner to decide**
+
+- A codebook gap: `effect_presence` has no value for an effect that runs opposite to the question's direction on
+  an unordered contrast. Song et al. c8 to c10 find no self advantage but significant differences the other way
+  (other models predicting better than self); they are coded `absent`, with the reversal in the note, because
+  `present` would roll up as support. Either a value such as `reversed`, or letting auto stances read
+  `effect_direction` on `self_vs_other` (self above, other above). To weigh at the next codebook review, not
+  during the freeze.
+- Whether a contrast whose other arm is another study counts as something a study `varies` (Lindsey s3, coded so
+  in the pilot) or only as a `compares` between studies (Binder et al. s7, this pass). One rule for both.
+
+**Owner, 2026-11-27:** both deferred until after the freeze. On the second: ideally, when both studies are coded,
+the comparison should surface by itself at the question or framing layer, rather than being coded into either
+study.
+
+**To watch as papers are added** (owner, 2026-11-27):
+
+- Granularity: whether the splitting into studies, claims and effect fields is the right level of detail. Judge it
+  from the blind tests: per facet and field, coder agreement, time per paper, and whether any question,
+  definition or reading uses it. One that fails all three after twenty or thirty papers is a candidate to merge or
+  drop.
+- Scale: records are about 60 KB per paper, so hundreds of papers is tens of megabytes of YAML; PDFs and the built
+  database are never committed. What grows badly is `conflict_facet_diff`, which compares conflicting claim pairs
+  facet by facet (6,298 rows from four papers, roughly quadratic in claims per question). Around fifty papers,
+  compute it per question on demand instead of building it whole.
+- Sparsity: if facets get too fine, papers that overlap in practice can end up with claims that never meet on a
+  question or a conflict. It may be handled at the reading level, or may not happen; check whether similar
+  designs coded by different coders land on shared questions and comparable facet values.
+
+**Blind test 2** (set up the same day): branch `blind-binder`, one commit with no history, Binder et al.'s record,
+links, pilot notes, design notes and changelog removed, the relations to it turned into citations, and registry
+entries only it used dropped; `BRIEF.md` at its root. Coders from other model families code the paper from the
+PDF; the comparison is made against this pass's record.
+
 ## 2026-11-27: provenance per record, and a check on every pull request
 
 Coder: claude (claude-opus-5-5), working with the owner. Prompted by a review of the 0.5 to 0.10 changes.

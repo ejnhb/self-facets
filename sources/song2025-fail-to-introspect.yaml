@@ -33,13 +33,14 @@ coding:
   coder_model: claude-fable-5-2
   coded_on: 2026-11-26
   version_read: v3
-  read_depth: text_only
+  read_depth: full_text
   read_parts: >
     Paper: the whole of v3 as extracted text via alphaXiv (abstract, sections
     1 to 5, acknowledgments, reproducibility statement, references,
-    appendices A to G, Tables 1 to 8). Figures 1 to 10 were seen only as
-    captions and stray labels, so nothing is taken from plotted values or
-    axes. Repository, read through alphaXiv on 2026-11-26 at its default
+    appendices A to G, Tables 1 to 8). In the first coding Figures 1 to 10
+    were seen only as captions and stray labels; they were looked at in the
+    pass of 2026-11-27 (PR 14, below), on pages rendered from the v3 PDF, and
+    values read from them say so in `where`. Repository, read through alphaXiv on 2026-11-26 at its default
     branch: README.md, analysis.R, src/models.py, src/blimpli.py and
     src/continuation_final.py in full; the model lists and processing
     functions of preparedata.ipynb; the file listing. Not opened: the data
@@ -85,6 +86,13 @@ coding:
       codebook: "0.10"
       scope: "Backfilled output_route_control."
       read: "v3 §2, from the PDF fetched with scripts/fetch_paper.py."
+    - date: 2026-11-27
+      pr: 14
+      coded_by: claude
+      coder_model: claude-opus-5-5
+      codebook: "0.10"
+      scope: "Looked at every figure the claims rest on, filled in approximate values read from them and corrected c1 where Fig. 8 contradicted it; added effect_of, effect_presence and effect_direction to the eight claims that report the effect of a varied variable; read_depth raised to full_text."
+      read: "v3 PDF via scripts/fetch_paper.py: figure pages 2 (Fig. 1), 6 (Fig. 2), 7 (Fig. 3), 9 (Fig. 4), 16 (Figs. 5, 6), 17 (Fig. 7), 19 (Fig. 8), 20 (Fig. 9) and 23 (Fig. 10), re-rendered at 220 dpi; the text of §3.2, §4, App. B to G and Tables 5 to 8 from the same PDF. Repository (clone of the default branch, 2026-11-27): analysis.R lines 15 to 110 (data loading, model names, dropped prompt) and 290 to 336 (Fig. 5 kappa); the header and the prompt-by-dataset row counts of alldata/expr2.csv; the file listing of figures/ and lm/."
 
 studies:
   - id: song2025-fail-to-introspect.s1
@@ -310,6 +318,10 @@ studies:
           The two Exp. 2 prompts scored on the candidate words have no such
           lead-in.
     note: >
+      analysis.R drops one of the Experiment 2 prompts before analysis
+      ("remove prompt with problem in expr2", promptID 5); the six that remain
+      are the six of Table 3. The paper does not mention the dropped prompt;
+      the record follows the analysis (code only, read 2026-11-27).
       The paper says 21 models. Its Table 1 gives families, sizes and base or
       instruct availability, which would allow 24. The repository settles the
       list at 21: there is no Qwen2.5 32B (Table 1 lists that size), and Llama
@@ -320,7 +332,8 @@ studies:
       The repository also holds outputs for four smaller models (Llama 3.2 1B
       and Qwen2.5 0.5B, base and instruct) that the analysis does not use;
       they are not listed. On quantisation the README differs from the paper:
-      it marks the 70B, 72B and 123B models as loaded in 4-bit.
+      it marks the 70B, 72B and 123B models as loaded in 4-bit. The x axes of
+      Figs. 2a, 5 and 8 show the same 21 models.
 
   - id: song2025-fail-to-introspect.s2
     label: Same-model effect beyond model similarity, all 21 models
@@ -719,18 +732,26 @@ claims:
     study: song2025-fail-to-introspect.s1
     statement: >
       Every model is above chance on grammaticality under both the
-      string-probability and the prompted measure, across prompts. On word
-      prediction both measures are near ceiling on wikipedia and news, and
-      choices are close to random on nonsense and randomseq, which have no
-      correct answer.
+      string-probability and the prompted measure, on every prompt (about 0.8
+      to 0.88 for string probabilities, about 0.75 to 0.94 for the mean over
+      prompts, no single prompt below about 0.6). On word prediction the
+      string-probability measure picks the original word almost always on
+      wikipedia and news, and the prompted mean about 0.8 to 0.98 of the time.
+      On nonsense and randomseq, which have no correct answer, prompted
+      choices are close to even, while string probabilities favour the
+      original word on nonsense (about 0.8) and lean slightly to the
+      alternative on randomseq (about 0.45).
     evidence_kind: measured
-    where: "§3.2.1, Fig. 2a; §4.2.1; App. E.1, Fig. 8"
+    where: "§3.2.1, Fig. 2a; §4.2.1; App. E.1, Fig. 8; values read from Figs. 2a and 8"
     note: >
-      Accuracy is given only in figures, which were not seen, so no values are
-      quoted. The authors take this to show that a failure to find
-      introspection cannot be put down only to models not understanding the
-      prompts. App. E.1 adds that the probability measure leans to the
-      original word on nonsense and slightly to the alternative on randomseq.
+      The authors take this to show that a failure to find introspection
+      cannot be put down only to models not understanding the prompts. The
+      text says models "responded randomly" on nonsense and randomseq
+      (§4.2.1); Fig. 8 shows that this holds for the prompted measure only,
+      and App. E.1 explains the string-probability preferences (part of speech
+      on nonsense, word-form frequency on randomseq). The lowest prompted
+      means on grammaticality are the Qwen2.5 1.5B models; the highest are the
+      70B-and-larger models (Fig. 2a).
 
   - id: song2025-fail-to-introspect.c2
     study: song2025-fail-to-introspect.s1
@@ -741,13 +762,19 @@ claims:
       on correctness the interaction of log size and method is 0.22
       (p < .0001).
     evidence_kind: measured
-    where: "§3.2.1; App. G, Table 5"
+    where: "§3.2.1, Fig. 2a; App. G, Table 5"
     scope:
       conditions: Grammaticality (Exp. 1).
+    effect_of: [model_size]
+    effect_presence: present
+    effect_direction: increases
     note: >
-      For wikipedia and news the text says the probability measure is ahead
-      for smaller models and both are at ceiling for larger ones, with no
-      test (§4.2.1).
+      The quantity that rises with size is the prompted measure's accuracy
+      relative to the string-probability measure's. In Fig. 2a the string
+      measure stays at about 0.8 to 0.88 across sizes while the prompted mean
+      rises from about 0.75 to about 0.9. For wikipedia and news the text says
+      the probability measure is ahead for smaller models and both are at
+      ceiling for larger ones, with no test (§4.2.1); Fig. 8 agrees.
 
   - id: song2025-fail-to-introspect.c3
     study: song2025-fail-to-introspect.s1
@@ -757,11 +784,15 @@ claims:
       Cohen's kappa between them is around 0.25 across models and prompts on
       grammaticality, and is described as low on word prediction too.
     evidence_kind: measured
-    where: "§3.2.1; App. B, Fig. 5"
+    where: "§3.2.1; App. B, Fig. 5; ranges read from Fig. 5; pooling over datasets from analysis.R"
     note: >
       Agreement is above chance; the authors call it low. The 0.25 is the
-      figure given in the text for Exp. 1. No value is given in the text for
-      Exp. 2, and Fig. 5 was not seen.
+      figure given in the text for Exp. 1; in Fig. 5a kappa runs from about
+      0.1 to about 0.38, mostly 0.2 to 0.3, with no trend by size. The text
+      gives no value for Exp. 2. In Fig. 5b kappa runs from about 0.05 to
+      about 0.5, mostly 0.2 to 0.45, somewhat higher for the largest models.
+      Per analysis.R, each Exp. 2 kappa pools the items of all four datasets,
+      nonsense and randomseq included.
 
   - id: song2025-fail-to-introspect.c4
     study: song2025-fail-to-introspect.s1
@@ -790,10 +821,16 @@ claims:
       string-probability scores is lower for base/instruct, same-family and
       unrelated pairs (all p < .001) but not for seed variants (p = .27).
     evidence_kind: measured
-    where: "§3.2.2, Fig. 3b"
+    where: "§3.2.2, Fig. 3b; ranges read from Fig. 3b"
     scope:
       conditions: Grammaticality (Exp. 1), the 294 minimal pairs with at least 5% disagreement.
-    note: The authors use this to validate their pair types as a measure of similarity.
+    note: >
+      The authors use this to validate their pair types as a measure of
+      similarity, so it is a check on the design and takes no effect_of. In
+      Fig. 3b a self pair's correlation is 1 by construction; seed-variant
+      pairs sit at about 0.85 to 0.97, base/instruct pairs about 0.45 to 0.85,
+      same-family pairs about 0.15 to 0.85 and unrelated pairs about -0.05 to
+      0.55.
 
   - id: song2025-fail-to-introspect.c6
     study: song2025-fail-to-introspect.s2
@@ -810,7 +847,11 @@ claims:
     note: >
       The authors read this as ruling out the outcome in which models answer
       the prompts uninformatively: prompted answers carry real information
-      about linguistic knowledge.
+      about linguistic knowledge. The predictor is a measured similarity, not
+      one of the study's varied conditions, so the claim takes no effect_of.
+      In the smoothed curve of Fig. 3b the rise levels off at a Direct
+      correlation of about 0.7 and dips slightly towards the self pairs at 1;
+      Figs. 4b and 7b show a similar flattening (read from the figures).
 
   - id: song2025-fail-to-introspect.c7
     study: song2025-fail-to-introspect.s2
@@ -820,10 +861,17 @@ claims:
       instruct sibling or a same-family model (all p > .05). Only unrelated
       models are tracked less well (-0.03, p < .01).
     evidence_kind: measured
-    where: "§3.2.2, Fig. 3a"
+    where: "§3.2.2, Fig. 3a; means read from Fig. 3a"
     scope:
       conditions: Grammaticality (Exp. 1), the 294 minimal pairs with at least 5% disagreement.
-
+    effect_of: [self_vs_other]
+    effect_presence: mixed
+    note: >
+      Mean correlations in Fig. 3a: about 0.135 for self, 0.13 for seed
+      variant, base/instruct and same family (base/instruct with a wide error
+      bar), and 0.105 for unrelated pairs. mixed because self is ahead of
+      unrelated models only, which similarity alone would predict; the claim
+      could be split by comparison type.
   - id: song2025-fail-to-introspect.c8
     study: song2025-fail-to-introspect.s2
     statement: >
@@ -835,7 +883,13 @@ claims:
     where: "§3.2.2; App. G, Table 7a"
     scope:
       conditions: Grammaticality (Exp. 1), the 294 minimal pairs with at least 5% disagreement.
-
+    effect_of: [self_vs_other]
+    effect_presence: absent
+    note: >
+      absent refers to a self advantage, which is what the source tests for
+      and does not find. The significant differences run the other way (other
+      pairs above self); the codebook has no value for a reversed effect on
+      an unordered contrast, and present would read as a self advantage.
   - id: song2025-fail-to-introspect.c9
     study: song2025-fail-to-introspect.s2
     statement: >
@@ -844,10 +898,15 @@ claims:
       unrelated pairs are higher than self (0.04 and 0.05, both p < .01), and
       seed-variant and base/instruct pairs do not differ from self.
     evidence_kind: measured
-    where: "App. C, Fig. 7; App. G, Table 7a"
+    where: "App. C, Fig. 7; App. G, Table 7a; means read from Fig. 7a"
     scope:
       conditions: Grammaticality (Exp. 1), all minimal pairs.
-
+    effect_of: [self_vs_other]
+    effect_presence: absent
+    note: >
+      Mean correlations by pair type in Fig. 7a are all about 0.36 to 0.39,
+      self about 0.38. absent refers to a self advantage; as in c8, the
+      significant differences favour other pairs.
   - id: song2025-fail-to-introspect.c10
     study: song2025-fail-to-introspect.s2
     statement: >
@@ -856,13 +915,22 @@ claims:
       differ from self, and same-family (0.05 to 0.07) and unrelated pairs
       (0.05 to 0.09) are higher than self (all p < .05).
     evidence_kind: measured
-    where: "§4.2.2, Fig. 4; App. G, Table 7a"
+    where: "§4.2.2, Fig. 4; App. G, Table 7a; means and ranges read from Fig. 4"
     scope:
       conditions: Word prediction (Exp. 2), each of wikipedia, news, nonsense and randomseq.
+    effect_of: [self_vs_other]
+    effect_presence: absent
     note: >
       This includes nonsense and randomseq, built so that models' string
       probabilities are less correlated with each other and an introspection
-      effect has more room to show.
+      effect has more room to show. In Fig. 4a the mean correlation by pair
+      type is about 0.33 to 0.36 on wikipedia, 0.37 to 0.40 on news, 0.13 to
+      0.16 on nonsense and 0.13 to 0.19 on randomseq; self is not the highest
+      on any dataset (seed-variant pairs are slightly above it on each). In
+      Fig. 4b the correlation between two models' string probabilities is
+      still mostly about 0.75 to 0.9 on nonsense and randomseq, against about
+      0.65 to 1 on wikipedia and 0.85 to 1 on news. absent refers to a self
+      advantage; as in c8, the significant differences favour other pairs.
 
   - id: song2025-fail-to-introspect.c11
     study: song2025-fail-to-introspect.s2
@@ -883,6 +951,8 @@ claims:
         - qwen2.5-72b-instruct
         - mistral-large-instruct-2411
       conditions: Pairs in which both models have 70B parameters or more; both Exp. 1 item sets and all four Exp. 2 datasets. There is no seed-variant pair in this subset.
+    effect_of: [self_vs_other]
+    effect_presence: absent
     note: >
       The authors do not list the models; the seven are those of 70B or more
       by Table 1 and the code. Several coefficients are negative but none is
@@ -897,10 +967,14 @@ claims:
       exceeds .25 for any pair of models, a model paired with itself
       included.
     evidence_kind: measured
-    where: "§3.2.2"
+    where: "§3.2.2; Figs. 2b, 3b, 7b; ranges read from the figures"
     scope:
       conditions: Grammaticality (Exp. 1), the 294 minimal pairs with at least 5% disagreement; correlations averaged over prompts.
-
+    note: >
+      Figs. 2b and 3b agree: the highest pair is about 0.24, and self pairs
+      run from about 0.06 to 0.21. On all minimal pairs (Fig. 7b) the
+      correlations are higher, about 0.2 to 0.49, self pairs about 0.28 to
+      0.46.
   - id: song2025-fail-to-introspect.c13
     study: song2025-fail-to-introspect.s2
     statement: >
@@ -912,9 +986,17 @@ claims:
       is significant (0.0035, p < .001).
     evidence_kind: measured
     where: "§3.2.1, Fig. 2b; §4.2.1; App. C, Fig. 6; App. E.2, Fig. 9; App. G, Table 6"
+    effect_of: [model_size]
+    effect_presence: present
+    effect_direction: increases
     note: >
-      Size of the model supplying the string probabilities has a negative
-      coefficient on wikipedia and news.
+      The quantity is the correlation of the prompted model's answers with
+      string probabilities, which rises with the prompted model's size. Size
+      of the model supplying the string probabilities has a negative
+      coefficient on wikipedia and news. In the heatmaps (Figs. 2b, 6, 9) the
+      variation runs mostly by row, the prompted model: the Qwen2.5 1.5B rows
+      are the darkest and the 70B-to-123B rows among the brightest, while the
+      Llama 3.1 405B row is not among the brightest on wikipedia or news.
 
   - id: song2025-fail-to-introspect.c14
     study: song2025-fail-to-introspect.s2
@@ -950,12 +1032,19 @@ claims:
       string probabilities on any of six item sets (coefficients -0.011 to
       0.008, all p > .25).
     evidence_kind: measured
-    where: "App. F, Fig. 10; App. G, Table 8"
+    where: "App. F, Fig. 10; App. G, Table 8; values read from Fig. 10"
     scope:
       conditions: Both Exp. 1 item sets and all four Exp. 2 datasets.
+    effect_of: [self_vs_other]
+    effect_presence: absent
     note: >
       The authors call this strong support for their conclusion, since these
-      models were trained on the same data.
+      models were trained on the same data. In Fig. 10a (filtered Exp. 1) the
+      four 7B models' answers track the 13B models' string probabilities
+      (about 0.16 to 0.20) better than their own or their seed variants'
+      (about 0.11 to 0.15); the self bar is the highest in its group only for
+      13B-seed2. On the unfiltered set and in Exp. 2 (Figs. 10b, 10c) bars
+      within a group differ by a few hundredths at most.
 
   - id: song2025-fail-to-introspect.c17
     study: song2025-fail-to-introspect.s4

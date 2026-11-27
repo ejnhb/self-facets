@@ -54,6 +54,11 @@ CREATE TABLE sources (
     coded_by TEXT, coder_model TEXT, coded_on TEXT, version_read TEXT,
     read_depth TEXT, read_parts TEXT, status TEXT, reviewed_by TEXT
 );
+-- Every coding or change to a record, in order (coding.passes): who, with which model, against which codebook, and
+-- what was read. A checker can confirm it is not the model that coded what it checks.
+CREATE TABLE coding_passes (
+    source TEXT, n INTEGER, date TEXT, pr TEXT, coded_by TEXT, coder_model TEXT, codebook TEXT, scope TEXT, read TEXT
+);
 CREATE TABLE artefacts (source TEXT, kind TEXT, arxiv TEXT, url TEXT, venue TEXT, note TEXT);
 CREATE TABLE authorship (source TEXT, position INTEGER, person TEXT);
 CREATE TABLE affiliations (source TEXT, person TEXT, org TEXT);
@@ -260,6 +265,16 @@ def build(out_path):
                 text(coding.get("read_parts")), coding.get("status"), coding.get("reviewed_by"),
             ),
         )
+        for n, ps in enumerate(as_list(coding.get("passes")), 1):
+            pr = ps.get("pr")
+            db.execute(
+                "INSERT INTO coding_passes VALUES (?,?,?,?,?,?,?,?,?)",
+                (
+                    sid, n, text(ps.get("date")),
+                    ", ".join(map(str, pr)) if isinstance(pr, list) else (str(pr) if pr is not None else None),
+                    ps.get("coded_by"), ps.get("coder_model"), text(ps.get("codebook")), ps.get("scope"), ps.get("read"),
+                ),
+            )
         for art in as_list(src.get("artefacts")):
             db.execute(
                 "INSERT INTO artefacts VALUES (?,?,?,?,?,?)",

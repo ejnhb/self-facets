@@ -34,6 +34,42 @@ coding:
   read_parts: Main text, sections 1 to 6 and the start of 7, as extracted text via alphaXiv. Appendices and figures not read; figure numbers are quoted from the running text.
   status: draft
   reviewed_by: null
+  passes:                 # every coding or change, in order (CLAUDE.md, 'Mark your work')
+    - date: 2026-11-26
+      pr: [1, 2, 3]
+      coded_by: claude
+      coder_model: claude-fable-5-2
+      codebook: "0.1 to 0.3"
+      scope: "First coding, as the worked example (codebook 0.1), then recoded under 0.2 and 0.3."
+      read: "As in read_parts above (main text of v1)."
+    - date: 2026-11-26
+      pr: 6
+      coded_by: claude
+      coder_model: claude-opus-5-5
+      codebook: "0.6"
+      scope: "Backfilled the new core facets reasoning, system_prompt and report_readout; unit_position not_applicable where it was left out."
+      read: "v1 through alphaXiv's PDF page extraction: abstract, §1 to §5, App. A.1 to A.2.9, A.3.3, A.4.1 to A.4.2, A.5. Code not read, so system_prompt is unspecified."
+    - date: 2026-11-26
+      pr: 8
+      coded_by: claude
+      coder_model: claude-opus-5-5
+      codebook: "0.7"
+      scope: "Question links moved out of the record into links/; unit value persona renamed speaker where used."
+      read: "None; a mechanical change."
+    - date: 2026-11-26
+      pr: 9
+      coded_by: claude
+      coder_model: claude-opus-5-5
+      codebook: "0.8"
+      scope: "effect_presence and effect_direction on c1 to c9; model roles (comparison models in s2, s3, s5; Claude 3.5 Sonnet as data_source); similarity_adjustment on every study."
+      read: "No new reading recorded; coded from the record as it stood."
+    - date: 2026-11-26
+      pr: 12
+      coded_by: claude
+      coder_model: claude-opus-5-5
+      codebook: "0.10"
+      scope: "Backfilled output_route_control."
+      read: "v1 §2.1 to 2.2, from the PDF fetched with scripts/fetch_paper.py."
 
 studies:
   - id: binder2024-looking-inward.s1

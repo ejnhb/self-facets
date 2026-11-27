@@ -27,6 +27,14 @@ coding:                             # (R)
   read_parts: Which sections, appendices, figures and code were read.   # (C) required for partial; say it anyway
   status: draft                     # (R) only a human sets reviewed
   reviewed_by: null                 # (C) required when status is reviewed
+  passes:                           # (R) every coding or change to this record, in order; add one each time
+    - date: 2026-01-31              # (R)
+      pr: 0                         # (O) the pull request, or a list of them; tells apart instances of one model
+      coded_by: claude              # (R) or a person
+      coder_model: claude-model-id  # (C) when coded_by is a model
+      codebook: "0.10"              # (R) quoted; the codebook version the pass coded against
+      scope: What this pass coded or changed.   # (R)
+      read: What was read for this pass, or that nothing new was read.   # (R)
 
 studies:                            # one per set of results that share every facet value (CLAUDE.md)
   - id: familyYEAR-short-title.s1   # (R) numbered in order added; never renumbered

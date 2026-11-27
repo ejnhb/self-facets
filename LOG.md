@@ -2,6 +2,32 @@
 
 Newest first. Each entry: what changed, what is open, what needs a decision.
 
+## 2026-11-27: provenance per record, and a check on every pull request
+
+Coder: claude (claude-opus-5-5), working with the owner. Prompted by a review of the 0.5 to 0.10 changes.
+
+**Changed**
+
+- `coding.passes` on every record: one entry per coding or later change, with date, pull request, coder and
+  model, codebook version, what the pass coded or changed, and what was read for it. Reconstructed for the four
+  records from this log and the git history: the first coding by claude-fable-5-2 (PRs #1 to #4), then backfills by
+  claude-opus-5-5 in PRs #6, #8, #9 and #12. Until now the records named only the first coder, so the later
+  backfills read as that coder's work.
+- `validate.py` requires `passes` and checks each entry; `build.py` writes them to a `coding_passes` table;
+  the template and CLAUDE.md ("Mark your work") say to add a pass each time a record changes. The pull request
+  number tells apart instances of one model, and the table lets a checker confirm it did not code what it checks.
+- `.github/workflows/check.yml`: validate and build on every pull request and push to main. No test suite yet, on
+  purpose: nothing extra to maintain while the design changes. Tests of the logic evaluator are worth adding when
+  selectors and definitions gain a third answer ("can't tell, not coded").
+
+**Open**
+
+- The 0.8 passes record no new reading for `similarity_adjustment` and the model roles; they were coded from the
+  records as they stood.
+- Next, agreed with the owner: the held pass on the three pilot records (figures and `effect_of`) and a full reading
+  of Binder et al. with a blind check; then a freeze at 0.10 and blind coding of papers the codebook has not seen, by
+  coders from two model families.
+
 ## 2026-11-26: codebook 0.10 (fixes from the first blind coding test; internality)
 
 Coder: claude (claude-opus-5-5), working with the owner.

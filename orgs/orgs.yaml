@@ -87,6 +87,23 @@
   name: The University of Texas at Austin
   kind: university
 
+# Added with Fornasiere et al. 2026 (arXiv 2604.17465)
+- id: lawzero
+  name: LawZero
+  kind: nonprofit
+  note: >
+    The paper gives only the name and lawzero.org addresses. Kind not taken from a source; check before relying
+    on it.
+- id: google
+  name: Google
+  kind: company
+  note: Developer of Gemma 4, by the Hugging Face namespace google/ in the code of Fornasiere et al. 2026.
+- id: bytedance-seed
+  name: ByteDance Seed
+  kind: company
+  note: >
+    Developer of Seed-OSS, by the Hugging Face namespace ByteDance-Seed/ in the code of Fornasiere et al. 2026.
+    Kind not verified.
 # Added with Betley et al. 2025 (arXiv 2501.11120)
 - id: university-of-toronto
   name: University of Toronto

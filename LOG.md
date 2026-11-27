@@ -2,6 +2,50 @@
 
 Newest first. Each entry: what changed, what is open, what needs a decision.
 
+## 2026-11-27: Fornasiere et al. 2026 (arXiv 2604.17465v3), first coding
+
+Coder: claude (claude-opus-5-5), from the paper, its figures and its released code only, following AGENTS.md.
+
+**Added**
+
+- `sources/fornasiere2026-dropout-noise-recognition.yaml`: 11 studies, 44 claims. Dropout or Gaussian noise
+  applied to the attention and MLP outputs at one sentence; localization (s1), its comprehension control (s2),
+  the likelihood check (s3), Olmo 3.1 post-training stages (s4) and pretraining checkpoints (s5), detection (s6)
+  and its controls (s7), detection and controls across Olmo stages (s8, s9), zero-shot naming with control
+  labels (s10), few-shot naming with correct, inverted and control labels (s11). Code read at ad7ce52 (tag v2).
+- `links/fornasiere2026-dropout-noise-recognition.yaml`: 15 proposed links to three existing questions
+  (q-injected-state-report, q-introspection-differs-by-post-training, q-introspection-success-generalises).
+- Registry: six people, three orgs (lawzero, google, bytedance-seed), nine models (Gemma 4 31B, Mistral Small
+  3.2, three Olmo 3.1 32B stages, Qwen3 14B and 32B, Qwen3.8 27B, Seed-OSS 36B).
+
+**Learned**
+
+- The paper says every prompt uses a chat template, but the code falls back to plain concatenation when a
+  tokenizer has none, and the Olmo 3 32B base has none (checked on the Hub at main). So the base model (s4, s8,
+  s9) and the pretraining checkpoints (s5) are coded `raw_text`, from the code.
+- The repository's tag `v2` holds the code of arXiv v3 (its message says arXiv v2, which is an older, shorter
+  paper with three model families).
+- Text and figures disagree in places, all recorded on the claims: Qwen3.8-27B's zero-shot accuracy does not rise
+  with dropout rate in Fig. 33 (c33); its correct and inverted few-shot curves nearly overlap in Fig. 10 (c40);
+  the 3-token localization peaks in Fig. 19 are mostly below the 90% the text gives (c6); Gemma4-31B is the
+  exception to the first likelihood hypothesis, shown only in Fig. 22 (c12).
+
+**Open**
+
+- Figs. 20, 23 to 26, 34 to 38 and 41 to 45 not viewed; the claims that touch them say so.
+- Rubin et al.'s relation to this paper is a `to_external` citation; it could now point at this record (Rubin
+  cites an earlier version, so check which).
+- The pretraining-checkpoint result (c17) and the base-model result (c14) reach no question on emergence of
+  injected-state reporting in pretraining; a question poser may want one (q-introspection-differs-by-post-training
+  covers post-training only).
+
+**For the owner to decide** (codebook frozen; nothing changed)
+
+- `varies` has no value for the number of in-context examples (s11's k teaching pairs); coded under
+  `prompt_framing`, which also carries the label arms. `context` ("number of turns") was the alternative.
+- The localization and detection prompts are shared by two contrasting checks (a comprehension or yes/no control
+  with different questions). Split into separate studies here (s2, s7, s9) because their claims would otherwise
+  inherit `report_target: injected_state`; the cross-study conclusions are argued claims with `compares`.
 ## 2026-11-27: Betley et al. 2025 (arXiv 2501.11120v1) coded
 
 Coder: claude (claude-opus-5-5), from AGENTS.md alone, under the codebook freeze (0.10).

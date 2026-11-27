@@ -2,6 +2,30 @@
 
 Newest first. Each entry: what changed, what is open, what needs a decision.
 
+## 2026-11-27: AGENTS.md; code and data availability; the freeze
+
+Coder: claude (claude-opus-5-5), working with the owner.
+
+**Changed**
+
+- `CLAUDE.md` renamed `AGENTS.md`, the name other developers' agents look for. `CLAUDE.md` now only imports it,
+  so Claude Code still loads the instructions. References updated (scripts, templates, record comments).
+- Code and data availability made explicit: every record lists a `code` and a `data` artefact with a status
+  (`released`, `not_released`, `unknown`), and for released ones the url, the commit or revision read (`ref`) and
+  how much was read. Backfilled: Binder et al. (code at 421fa65, read in part; data not read) and Song et al. (code
+  and data read in part; commit not recorded) released; Lindsey and Rubin et al. `unknown` (neither paper mentions
+  a release; not searched). New build views `study_availability` (with whether a study's subject models all, some
+  or none have open weights) and `question_evidence_availability`, so a question's evidence shows what could be
+  re-run. Enum change only: codebook 0.10.1, bookkeeping.
+- AGENTS.md: a bounded code-reading step (pin the commit, read to a checklist, record what was read; the paper is
+  the source of the claims, the code settles how it was done), and the freeze: facets frozen at 0.10 until the
+  owner's next review, with proposed changes going to this log.
+
+**Open**
+
+- Lindsey and Rubin et al.: search for released code or data, then set `released` or `not_released`.
+- The next paper, coded by a fresh agent from these instructions alone.
+
 ## 2026-11-27: the held pass (figures and effects on the three pilot records; Binder et al. read in full)
 
 Coder: claude (claude-opus-5-5), working with the owner: four claude-opus-5-5 subagents, one per record, from one

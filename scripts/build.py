@@ -59,7 +59,9 @@ CREATE TABLE sources (
 CREATE TABLE coding_passes (
     source TEXT, n INTEGER, date TEXT, pr TEXT, coded_by TEXT, coder_model TEXT, codebook TEXT, scope TEXT, read TEXT
 );
-CREATE TABLE artefacts (source TEXT, kind TEXT, arxiv TEXT, url TEXT, venue TEXT, note TEXT);
+CREATE TABLE artefacts (
+    source TEXT, kind TEXT, arxiv TEXT, url TEXT, venue TEXT, note TEXT, status TEXT, ref TEXT, read TEXT
+);
 CREATE TABLE authorship (source TEXT, position INTEGER, person TEXT);
 CREATE TABLE affiliations (source TEXT, person TEXT, org TEXT);
 CREATE TABLE studies (id TEXT PRIMARY KEY, source TEXT, label TEXT, design TEXT, where_ TEXT, note TEXT);
@@ -117,6 +119,28 @@ CREATE TABLE relations (source TEXT, kind TEXT, from_ TEXT, to_ TEXT, to_externa
 CREATE TABLE claim_answers (claim TEXT, question TEXT, value TEXT);
 -- Pairs of claims under one which-question whose answers differ. shared_facets as in conflicts.
 CREATE TABLE which_conflicts (question TEXT, claim_a TEXT, claim_b TEXT, answers_a TEXT, answers_b TEXT, shared_facets INTEGER);
+
+-- What could be re-run or extended, per study: code and data availability of its source (status, and whether the
+-- coding read them), and whether its subject models have open weights (all, some, none).
+CREATE VIEW study_availability AS
+SELECT st.id AS study, st.source,
+       (SELECT status FROM artefacts WHERE source = st.source AND kind = 'code' LIMIT 1) AS code,
+       (SELECT read FROM artefacts WHERE source = st.source AND kind = 'code' LIMIT 1) AS code_read,
+       (SELECT status FROM artefacts WHERE source = st.source AND kind = 'data' LIMIT 1) AS data,
+       (SELECT read FROM artefacts WHERE source = st.source AND kind = 'data' LIMIT 1) AS data_read,
+       CASE
+         WHEN (SELECT COUNT(*) FROM study_models sm WHERE sm.study = st.id AND sm.role = 'subject') = 0 THEN NULL
+         WHEN (SELECT MIN(COALESCE(m.open_weights, 0)) FROM study_models sm JOIN models m ON m.id = sm.model
+               WHERE sm.study = st.id AND sm.role = 'subject') = 1 THEN 'all'
+         WHEN (SELECT MAX(COALESCE(m.open_weights, 0)) FROM study_models sm JOIN models m ON m.id = sm.model
+               WHERE sm.study = st.id AND sm.role = 'subject') = 1 THEN 'some'
+         ELSE 'none'
+       END AS open_weight_subjects
+FROM studies st;
+-- The same beside each claim linked to a question, so a question's evidence shows what could be reproduced.
+CREATE VIEW question_evidence_availability AS
+SELECT cq.question, cq.claim, cq.stance, c.study, sa.code, sa.code_read, sa.data, sa.data_read, sa.open_weight_subjects
+FROM claim_questions cq JOIN claims c ON c.id = cq.claim JOIN study_availability sa ON sa.study = c.study;
 
 -- Each stance turned into a stance on its tree's root (flipped under an inverse question).
 CREATE VIEW root_stances AS
@@ -277,8 +301,12 @@ def build(out_path):
             )
         for art in as_list(src.get("artefacts")):
             db.execute(
-                "INSERT INTO artefacts VALUES (?,?,?,?,?,?)",
-                (sid, art.get("kind"), art.get("arxiv"), art.get("url"), art.get("venue"), text(art.get("note"))),
+                "INSERT INTO artefacts VALUES (?,?,?,?,?,?,?,?,?)",
+                (
+                    sid, art.get("kind"), art.get("arxiv"), art.get("url"), art.get("venue"), text(art.get("note")),
+                    art.get("status"), text(art.get("ref")),
+                    None if art.get("read") is None else str(art.get("read")).lower(),
+                ),
             )
         for pos, author in enumerate(as_list(src.get("authors")), 1):
             db.execute("INSERT INTO authorship VALUES (?,?,?)", (sid, pos, author["person"]))

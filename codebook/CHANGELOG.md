@@ -1,5 +1,11 @@
 # Codebook changelog
 
+## 0.10.1 (2026-11-27; bookkeeping only, facets unchanged and frozen at 0.10)
+
+- **`availability_status`** (enums): `released`, `not_released` or `unknown`, on the `code` and `data` artefacts
+  every record now lists, with `url`, `ref` (the commit or revision read) and `read` (true, false, partial).
+  Absence used to be ambiguous between "none released" and "not checked".
+
 ## 0.10 (2026-11-26, proposed)
 
 From the first blind coding test (one paper, coded on a copy of the repo with its record removed, by two coders

@@ -30,6 +30,12 @@ enums:
     weights: Released model weights.
     other: Anything else. Describe in note.
 
+  # Whether a source's code or its data is available (artefacts of kind code and data).
+  availability_status:
+    released: Released by the authors; give the url, and the commit or revision read in ref.
+    not_released: Checked, and none is released (the paper says so, or a search of the paper and the authors' pages found none).
+    unknown: Not checked yet.
+
   org_kind:
     company: A company, including industry labs.
     university: A university or academic institute.

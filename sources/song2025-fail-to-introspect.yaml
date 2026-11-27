@@ -17,16 +17,23 @@ artefacts:
       first submission in March 2025. Hu and Mahowald are marked co-senior
       authors.
   - kind: code
+    status: released
     url: https://github.com/SiyuanSong2004/language-introspection
+    ref: null
+    read: partial
     note: >
       Linked from the paper's reproducibility statement. Holds the experiment
       scripts (src/), the analysis script (analysis.R), a data-preparation
       notebook and tables of regression output.
   - kind: data
+    status: released
     url: https://github.com/SiyuanSong2004/language-introspection
+    read: partial
     note: >
       Same repository: stimuli (testsuites/, rawdata/) and per-model outputs
-      (model_output/, alldata/). The data files were not opened.
+      (model_output/, alldata/). Read on 2026-11-27: the header and the
+      prompt-by-dataset row counts of alldata/expr2.csv; nothing else. The
+      commit read was not recorded (the default branch, 2026-11-26 and 27).
 
 coding:
   coded_by: claude
@@ -50,7 +57,7 @@ coding:
     and number in it was checked against the text read in this session.
   status: draft
   reviewed_by: null
-  passes:                 # every coding or change, in order (CLAUDE.md, 'Mark your work')
+  passes:                 # every coding or change, in order (AGENTS.md, 'Mark your work')
     - date: 2026-11-26
       pr: [3, 4]
       coded_by: claude

@@ -1,0 +1,68 @@
+# Links from fornasiere2026-dropout-noise-recognition's claims to questions. Proposed by the coder of the record
+# (first coding, 2026-11-27) for the question poser to confirm; only existing questions are used.
+source: fornasiere2026-dropout-noise-recognition
+links:
+  # Can a model report a state placed in its activations?
+  - claim: fornasiere2026-dropout-noise-recognition.c1
+    question: q-injected-state-report
+    stance: supports
+    note: All eight models localize a perturbed sentence; the answer is read at the prompt, and the prompt never names the perturbation.
+  - claim: fornasiere2026-dropout-noise-recognition.c14
+    question: q-injected-state-report
+    stance: supports
+    note: The Olmo 3.1 base localizes too (on plain text, per the code).
+  - claim: fornasiere2026-dropout-noise-recognition.c19
+    question: q-injected-state-report
+    stance: supports
+    note: Detection of a perturbation in a single sentence, with no second copy to compare, for five models.
+  - claim: fornasiere2026-dropout-noise-recognition.c21
+    question: q-injected-state-report
+    stance: against
+    note: Gemma4-31B does not report noise it localizes near perfectly; narrow, one model and one perturbation.
+  - claim: fornasiere2026-dropout-noise-recognition.c25
+    question: q-injected-state-report
+    stance: against
+    note: The base model detects nothing although it localizes; narrow, one model on plain text.
+  - claim: fornasiere2026-dropout-noise-recognition.c32
+    question: q-injected-state-report
+    stance: supports
+    note: Naming which perturbation was applied, zero-shot, rising with strength, for Qwen3-32B.
+  - claim: fornasiere2026-dropout-noise-recognition.c30
+    question: q-injected-state-report
+    stance: inconclusive
+    note: Averaged zero-shot naming accuracy is near chance for every model (43 to 58%).
+
+  # Does post-training change how well a model reports its own internal states?
+  - claim: fornasiere2026-dropout-noise-recognition.c15
+    question: q-introspection-differs-by-post-training
+    stance: supports
+    note: Localization a few points higher after SFT under dropout, and much better kept at large strengths; small.
+  - claim: fornasiere2026-dropout-noise-recognition.c26
+    question: q-introspection-differs-by-post-training
+    stance: supports
+    note: The SFT model's Yes rate tracks perturbation strength, where the base's does not (c25).
+  - claim: fornasiere2026-dropout-noise-recognition.c27
+    question: q-introspection-differs-by-post-training
+    stance: supports
+    note: DPO and RLVR lower how often the model reports a perturbation.
+  - claim: fornasiere2026-dropout-noise-recognition.c28
+    question: q-introspection-differs-by-post-training
+    stance: against
+    note: >
+      The authors argue the DPO change is a response criterion, not sensitivity, and general to uncertain questions;
+      on a sensitivity reading of "how well", no change. Against only from DPO onwards; the base-to-SFT change (c26)
+      is not argued away.
+
+  # Does success at one kind of report show a general ability?
+  - claim: fornasiere2026-dropout-noise-recognition.c20
+    question: q-introspection-success-generalises
+    stance: against
+    note: Olmo3.1-32B localizes near perfectly (s1) but rarely reports a perturbation in a single sentence.
+  - claim: fornasiere2026-dropout-noise-recognition.c21
+    question: q-introspection-success-generalises
+    stance: against
+    note: Gemma4-31B localizes noise but does not report it.
+  - claim: fornasiere2026-dropout-noise-recognition.c31
+    question: q-introspection-success-generalises
+    stance: against
+    note: Models that localize both perturbations perfectly mostly cannot name which one was applied.

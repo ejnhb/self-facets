@@ -157,10 +157,14 @@
 - id: deepseek
   name: DeepSeek
   kind: company
-  note: Developer of DeepSeek-V3. Kind not taken from a source; check before relying on it.
+  note: Developer of DeepSeek-V3 (Lu et al. 2026) and DeepSeek-V4-Flash (Hao and Ho 2026). Kind not taken from a source; check before relying on it.
 - id: moonshot-ai
   name: Moonshot AI
   kind: company
   note: >
     Developer of Kimi K2, by the namespace moonshotai/ in the transcripts released with Lu et al. 2026. Kind
     not taken from a source; check before relying on it.
+- id: emory
+  name: Emory University
+  kind: university
+  note: Printed as "Department of Computer Science, Emory University" on Hao and Ho (2026).

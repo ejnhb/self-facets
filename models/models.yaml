@@ -833,3 +833,64 @@
   stage: null
   note: >
     Printed "Kimi K2" by Lu et al. (2026); one transcript they release records moonshotai/kimi-k2-0905.
+# Added with Hao and Ho 2026 (arXiv 2610.39795). The paper calls these "base models" (the starting point for its
+# fine-tuning), but they are released chat models with reasoning. It gives no Hugging Face ids or revisions.
+- id: gpt-oss-120b
+  name: gpt-oss-120b
+  family: gpt-oss
+  developer: openai
+  open_weights: true
+  post_training_reached: post_trained
+  size: 120B
+  derived_from: null
+  stage: null
+  note: Printed "gpt-oss-120b" in Hao and Ho (2026). Developer from the name, not stated in the source.
+- id: muse-glimmer-30b
+  name: Muse-Glimmer-30B
+  family: muse-glimmer
+  developer: meta
+  open_weights: true
+  post_training_reached: post_trained
+  size: 30B
+  derived_from: null
+  stage: null
+  note: >
+    Printed "Muse-Glimmer-30B" in Hao and Ho (2026), who do not name the developer. Developer from the Hugging
+    Face repository meta-models/Muse-Glimmer-30B (found by search 2026-11-27; tagged image-text-to-text,
+    conversational); not checked that this is the checkpoint the paper used.
+- id: qwen3.8-flash-next
+  name: Qwen3.8-Flash-Next
+  family: qwen3.8
+  developer: qwen-team
+  open_weights: true
+  post_training_reached: post_trained
+  derived_from: null
+  stage: null
+  note: Printed "Qwen3.8-Flash-Next" in Hao and Ho (2026). Size not given. Developer from the name.
+- id: deepseek-v4-flash-0731
+  name: DeepSeek-V4-Flash (0731 release)
+  family: deepseek-v4
+  developer: deepseek
+  open_weights: true
+  post_training_reached: post_trained
+  derived_from: null
+  stage: null
+  note: Printed "DeepSeek-V4-Flash (0731 release)" in Hao and Ho (2026), App. C; also their judge. Size not given.
+- id: claude-opus-4.6
+  name: Claude Opus 4.6
+  family: claude-4.6
+  developer: anthropic
+  open_weights: false
+  post_training_reached: post_trained
+  derived_from: null
+  stage: null
+  note: Printed "Opus 4.6" in Hao and Ho (2026), who used it to write training answers. Snapshot not given.
+- id: claude-opus-5
+  name: Claude Opus 5
+  family: claude-5
+  developer: anthropic
+  open_weights: false
+  post_training_reached: post_trained
+  derived_from: null
+  stage: null
+  note: Printed "Opus 5" in Hao and Ho (2026), who used it to paraphrase and screen training data. Snapshot not given.

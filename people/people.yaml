@@ -75,6 +75,7 @@
   orcid: null
 - id: waytz-adam
   name: Adam Waytz
+  orcid: null
 # Added with Fornasiere et al. 2026 (arXiv 2604.17465)
 - id: bengio-yoshua
   name: Yoshua Bengio
@@ -93,6 +94,7 @@
   orcid: null
 - id: richardson-oliver
   name: Oliver Richardson
+  orcid: null
 # Added with Betley et al. 2025 (arXiv 2501.11120)
 - id: betley-jan
   name: Jan Betley

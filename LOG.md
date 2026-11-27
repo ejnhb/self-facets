@@ -2,6 +2,18 @@
 
 Newest first. Each entry: what changed, what is open, what needs a decision.
 
+## 2026-11-27: read_depth with partly viewed figures; two registry lines
+
+Coder: claude (claude-opus-5-5).
+
+- `read_depth: full_text` now means every figure a claim takes a result or value from was viewed, with unviewed
+  figures listed in `read_parts` (AGENTS.md, `codebook/enums.yaml`, the source template; codebook 0.10.2,
+  bookkeeping). Agreed with the owner. Checked against the records: four claims cite figures not viewed (Betley c16,
+  Fornasiere c6, c13, c37), each written from the text and saying so, so all eight records stay `full_text`.
+- `orcid: null` restored on richardson-oliver and waytz-adam, dropped when the step-1 PRs' registry conflicts were
+  resolved.
+- Open, for the owner: whether LOG.md is still needed alongside git history and pull request descriptions.
+
 ## 2026-11-27: Comsa and Shanahan (2025) coded; definition d-introspection-causal
 
 Coder: claude (claude-opus-5-5), from AGENTS.md alone, in one session.

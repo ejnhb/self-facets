@@ -148,8 +148,12 @@ facets are coded.
     the values are in the figure, not read.
   - A value read off a plot is approximate. Say "read from Fig. N" in `where`
     and do not give more precision than the plot shows.
-  - `read_depth` is `full_text` only if the figures were seen. Otherwise it is
-    `text_only`.
+  - `read_depth` is `full_text` when the whole text was read, appendices
+    included, and every figure a claim takes a result or value from was
+    viewed. List the figures not viewed in `read_parts`, and say so in the
+    `where` of any claim that cites one (such a claim is written from the
+    text alone). If a claim takes a result or value from a figure that was
+    not viewed, `read_depth` is `text_only`.
 - **`date` is the date of the version read.**
 - **Questions.** Before adding a question, look for one that fits. If an
   existing question is close but its wording excludes this design, add a

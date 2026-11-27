@@ -28,6 +28,10 @@ below, and committed. Each record has a pass entry (PR 14) saying exactly what w
   strengths (both recorded). New registry entries: three helpful-only Claude models and the seven base models of
   Fig. 14, now s3's models.
 - Song et al.: the analysis script drops one of the Exp. 2 prompts, unmentioned in the paper (s1 note).
+- Binder et al.'s "Llama 70B" is Llama 3.1 70B Instruct: the code fine-tunes Fireworks' llama-v3p1-70b-instruct.
+  The record now uses `llama-3.1-70b-instruct`, and the registry's variant-unknown `llama-3.1-70b` is removed
+  (its note asked for this merge once the source was checked). Prompted by blind test 2, where the coder inferred
+  the instruct model from the paper alone (the untrained model's refusals).
 
 **Consistency fixes in review**
 

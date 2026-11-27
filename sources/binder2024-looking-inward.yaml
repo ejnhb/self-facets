@@ -80,7 +80,7 @@ coding:
       coded_by: claude
       coder_model: claude-opus-5-5
       codebook: "0.10"
-      scope: "First full reading (all appendices, figures, code): split the long-output result out of s5 into a new study s7 (c7 moved there, effect_of dropped), corrected s6's models, set system_prompt from the code, recoded s5's output_route_control, added figure values to c1 to c6 and c8, c9, and checked effect_of on every claim (study_training added to c5)."
+      scope: "First full reading (all appendices, figures, code): split the long-output result out of s5 into a new study s7 (c7 moved there, effect_of dropped), corrected s6's models, set system_prompt from the code, recoded s5's output_route_control, added figure values to c1 to c6 and c8, c9, and checked effect_of on every claim (study_training added to c5). In review: Llama 70B resolved to llama-3.1-70b-instruct from the code (Fireworks llama-v3p1-70b-instruct), after a blind coder inferred the same from the paper."
       read: "v1 PDF via scripts/fetch_paper.py: whole text, §1 to §8 and App. A.1 to A.6 (pp. 1 to 46); figure pages seen as images pp. 6, 7, 8, 9, 12, 24, 27, 28, 30, 31, 32, 35, 36, 37, 38, 40, 41, 42, 45. arXiv HTML of v1 for the code and data links only. Code at github.com/felixbinder/introspection_self_prediction (commit 421fa65): README.md; evals/conf/prompt/object_level/minimal.yaml and meta_level/minimal.yaml; evals/conf/config_meta_level.yaml; evals/data_models/messages.py; evals/james_create_dataset.py (substitute_string); evals/analysis/james/make_data_release_hf_push.py (system-prompt removal); other_evals/counterfactuals/README.md and run_ask_are_you_sure.py. The Hugging Face dataset was not read."
 
 studies:
@@ -95,7 +95,7 @@ studies:
       a separate context. Six datasets are used for training and six held out.
     models:
       - gpt-4o-2024-05-13
-      - llama-3.1-70b
+      - llama-3.1-70b-instruct
       - gpt-3.5-turbo-0125
       - gpt-4
     note: >
@@ -183,7 +183,7 @@ studies:
     models:
       - {id: gpt-4o-2024-05-13, roles: [subject, comparison]}
       - {id: gpt-4, roles: [subject, comparison]}
-      - {id: llama-3.1-70b, roles: [subject, comparison]}
+      - {id: llama-3.1-70b-instruct, roles: [subject, comparison]}
       - {id: gpt-3.5-turbo-0125, roles: [subject, comparison]}
     facets:
       output_route_control: {value: by_construction, basis: stated, where: "§2.2", note: "No chain of thought is allowed, and the hypothetical question is asked without the object-level response in context; the ground-truth behaviour is collected in a separate context (§2.1)."}
@@ -246,7 +246,7 @@ studies:
       cross-trained and self-trained models.
     models:
       - {id: gpt-4o-2024-05-13, roles: [subject, comparison]}
-      - {id: llama-3.1-70b, roles: [subject, comparison]}
+      - {id: llama-3.1-70b-instruct, roles: [subject, comparison]}
     facets:
       output_route_control: {value: by_construction, basis: stated, where: "§2.2", note: "No chain of thought is allowed, and the hypothetical question is asked without the object-level response in context; the ground-truth behaviour is collected in a separate context (§2.1)."}
       similarity_adjustment:
@@ -360,7 +360,7 @@ studies:
       the hypothetical question is asked (Figs. 38, 39; in the code,
       other_evals/counterfactuals/run_ask_are_you_sure.py, ask_second_round).
     models:
-      - llama-3.1-70b
+      - llama-3.1-70b-instruct
       - {id: gpt-4o-2024-05-13, roles: [comparison], note: trained to predict Llama 70B (cross-prediction)}
     facets:
       output_route_control:
@@ -572,7 +572,7 @@ claims:
     evidence_kind: measured
     where: "§3.2.2, Fig. 5 (seen; GPT-4's values read from it); App. A.2.2, A.2.4, Figs. 13, 14"
     scope:
-      models: [gpt-4o-2024-05-13, gpt-4, llama-3.1-70b]
+      models: [gpt-4o-2024-05-13, gpt-4, llama-3.1-70b-instruct]
       conditions: Properties of short outputs (such as the second character, odd or even, whether the answer is among given options, ethical stance), pooled, on held-out datasets.
     note: >
       The authors rule out training data as the source of the advantage but do
@@ -610,7 +610,7 @@ claims:
     evidence_kind: measured
     where: "§3.2.2; App. A.2.7, Fig. 17 (seen)"
     scope:
-      models: [gpt-4o-2024-05-13, llama-3.1-70b, gpt-4]
+      models: [gpt-4o-2024-05-13, llama-3.1-70b-instruct, gpt-4]
     note: >
       Fig. 17's left panel labels the 49.6% line "GPT-4o self-prediction
       accuracy"; its caption and A.2.7 give it as GPT-4's. The record follows
@@ -690,7 +690,7 @@ claims:
     evidence_kind: measured
     where: "§4; App. A.2.6, Fig. 16 (seen)"
     scope:
-      models: [gpt-4o-2024-05-13, llama-3.1-70b]
+      models: [gpt-4o-2024-05-13, llama-3.1-70b-instruct]
       conditions: Whether it switches its answer under an opinion in the prompt or an "Are you sure?" follow-up; numbers for the latter only.
     disposition: [sycophancy]
 

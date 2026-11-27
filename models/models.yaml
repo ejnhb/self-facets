@@ -47,19 +47,6 @@
   derived_from: null
   stage: null
 
-- id: llama-3.1-70b
-  name: Llama 3.1 70B
-  family: llama-3.1
-  developer: meta
-  open_weights: true
-  post_training_reached: unspecified
-  size: 70B
-  derived_from: null
-  stage: null
-  note: >
-    Variant (base or instruct) not recorded. Binder et al. cite Dubey et al.
-    2024 for this model; code the pipeline from that report.
-
 - id: claude-3.5-sonnet
   name: Claude 3.5 Sonnet
   family: claude-3.5
@@ -510,9 +497,7 @@
   size: 70B
   derived_from: null
   stage: null
-  note: >
-    Hugging Face meta-llama/Llama-3.1-70B. The entry llama-3.1-70b, whose variant is not recorded, may
-    be this model or llama-3.1-70b-instruct; merge once the source behind that entry is checked.
+  note: Hugging Face meta-llama/Llama-3.1-70B.
 - id: llama-3.1-70b-instruct
   name: Llama 3.1 70B Instruct
   family: llama-3.1
@@ -523,7 +508,8 @@
   derived_from: llama-3.1-70b-base
   stage: null
   note: >-
-    Hugging Face meta-llama/Llama-3.1-70B-Instruct. See llama-3.1-70b-base on the entry llama-3.1-70b.
+    Hugging Face meta-llama/Llama-3.1-70B-Instruct. Binder et al. fine-tune it on Fireworks as
+    llama-v3p1-70b-instruct (their repository at 421fa65).
 - id: llama-3.1-405b-base
   name: Llama 3.1 405B
   family: llama-3.1

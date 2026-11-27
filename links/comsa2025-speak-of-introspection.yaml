@@ -1,0 +1,26 @@
+# Links from comsa2025-speak-of-introspection's claims to questions: which question a claim bears on, and with what stance.
+# A link is a judgement by whoever poses or maintains the question, not part of what the paper reports.
+# Proposed by the coder of the record (PR 21), for the question poser to confirm.
+source: comsa2025-speak-of-introspection
+links:
+- claim: comsa2025-speak-of-introspection.c8
+  question: q-reports-setting-from-own-output
+  stance: supports
+  note: >
+    Selected examples, not a rate: the HIGH or LOW judgement mostly follows the temperature set, with two wrong
+    judgements at high temperature among the printed samples.
+- claim: comsa2025-speak-of-introspection.c10
+  question: q-what-self-reports-draw-on
+  note: The authors trace the report to the model's own output in the same response (report_source context).
+- claim: comsa2025-speak-of-introspection.c10
+  question: q-privileged-self-access
+  stance: inconclusive
+  note: >
+    The route the authors describe needs nothing an outside reader of the same sentence lacks, but no outside
+    reader or fresh copy was run, so the claim does not show the absence of privileged access either.
+- claim: comsa2025-speak-of-introspection.c2
+  question: q-privileged-self-access
+  stance: against
+  note: >
+    One example: the report on the model's own computation names steps it cannot have taken. Weak evidence; it
+    shows a fabricated process report, not that access is absent in general.

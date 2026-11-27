@@ -69,6 +69,7 @@ good test.
 | `d-privileged-access` | Binder et al. (2024, §2): facts not derivable from training data, tested by cross-prediction; Lindsey §9.6 quotes a privileged-access definition from Song et al. | self-report, varies self against other, checked against another model or a fresh copy | "equal or lower computational cost" |
 | `d-privileged-beyond-similarity` | Song, Hu and Mahowald (2025, §2) | `d-privileged-access` and (similarity adjusted statistically, or closest comparison a variant or derived model) | |
 | `d-self-modelling` | Lindsey §9.6's term for Binder et al.'s case | `d-privileged-access` and a report about own behaviour or knowledge | |
+| `d-introspection-causal` | Comşa and Shanahan (2025, §2), coded from their paper (2026-11-27) | self-report, about an internal state, checked against a known intervention, internals or a probe; no internality condition | accuracy; the causal route itself; "internal" as hidden from the user; the single-response bound (§4); excluding mimicry of human reports |
 
 ## Tested on the four coded sources
 
@@ -114,6 +115,15 @@ tests it.
 The same question and the same evidence, read under a different sense of
 introspection. The difference between this view and the default is the answer
 to "how much does the conclusion depend on what we mean by introspection?"
+
+### Added with Comşa and Shanahan (2025)
+
+`d-introspection-causal` is `d-introspection-grounded` without `output_route_control`. On five sources (25
+studies) it matches the same five studies plus one, Comşa and Shanahan's own temperature study (s2), whose report
+reaches the model through its own output by design. Their creative-process study (s1) matches neither definition
+(it is checked only against the poem), which agrees with the authors' verdict that it is not introspection, and
+shows in `construct_mismatches`. So the definitional dispute Lindsey (§9.6) raises with Comşa and Shanahan comes
+down, in the facets, to one value of one facet, and on the coded studies it decides exactly one.
 
 ## What the test showed
 

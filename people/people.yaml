@@ -46,3 +46,11 @@
 - id: song-siyuan
   name: Siyuan Song
   orcid: null
+
+# Added with Comsa and Shanahan 2025 (arXiv 2506.05068)
+- id: comsa-iulia
+  name: Iulia M. Comșa
+  orcid: null
+- id: shanahan-murray
+  name: Murray Shanahan
+  orcid: null

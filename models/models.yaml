@@ -545,3 +545,28 @@
   stage: null
   note: >-
     Hugging Face mistralai/Mistral-Large-Instruct-2411. Size as given in Table 1 of Song et al. (2025).
+
+# Added with Comsa and Shanahan 2025 (arXiv 2506.05068)
+- id: gemini-1.0-pro
+  name: Gemini 1.0 Pro
+  family: gemini
+  developer: google-deepmind
+  open_weights: false
+  post_training_reached: post_trained
+  derived_from: null
+  stage: null
+  note: >-
+    Called "Gemini Pro 1.0" in Comsa and Shanahan (2025), queried through the Gemini API between October and
+    December 2024; the snapshot is not given. The paper's appendix says it has since been deprecated. Split into
+    snapshots when a source names one.
+- id: gemini-1.5-pro
+  name: Gemini 1.5 Pro
+  family: gemini
+  developer: google-deepmind
+  open_weights: false
+  post_training_reached: post_trained
+  derived_from: null
+  stage: null
+  note: >-
+    Called "Gemini Pro 1.5" in Comsa and Shanahan (2025), queried through the Gemini API between October and
+    December 2024; the snapshot is not given. Split into snapshots when a source names one.

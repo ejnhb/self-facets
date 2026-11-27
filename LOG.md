@@ -53,6 +53,141 @@ Coder: claude (claude-opus-5-5), from AGENTS.md alone, in one session.
   authors disclaim an empirical study; `observational` was the alternative.
 - Other relations in §5 (Binder et al., Kadavath et al., Long) were read as summaries, not critiques, and are not
   recorded.
+## 2026-11-27: Kim et al. 2026 coded (arXiv 2607.28607v1)
+
+Coder: claude (claude-opus-5-5), from AGENTS.md alone; the first paper coded under the 0.10 freeze.
+
+**Added**
+
+- `sources/kim2026-inducing-consciousness-assertion.yaml`: refusal-direction ablation and consciousness-vector
+  steering on Llama-3-8B-IT, Gemma-2-2B-IT and Gemma-2-9B-IT. Seven studies (self-attribution; mind attribution
+  to other entities against a human sample; belief in God and supernatural belief; GSS answer distributions
+  against humans; ToM and reasoning controls; base-against-instruct geometry of the directions; ablation
+  manipulation checks) and 25 claims. Read in full with all figures; no code or data released (checked).
+- `links/kim2026-inducing-consciousness-assertion.yaml`: six proposed links, to q-denial-shares-refusal-machinery
+  (2, supports), q-denial-is-post-training-policy (supports), q-denial-precedes-post-training (mixed),
+  q-self-representation-changes-in-post-training (supports) and q-self-report-from-self-model (inconclusive).
+- Registries: seven people, six orgs (Google among them), five models (Llama 3 8B base and Instruct, Gemma 2
+  2B IT and 9B IT, Llama Guard 2).
+
+**Codebook gaps met during the freeze** (coded with the nearest value; for the owner's next review)
+
+- `construct` has no value for attributing mind to *other* entities (anthropomorphism, the IDAQ). s2 and part of
+  s6 are coded `experience_reports` as the nearest, which lets other-entity claims match frames meant for
+  self-reports of experience: c7 to c10 show up in `question_candidates` for q-denial-shares-refusal-machinery.
+  Proposed: a `mind_attribution` construct. Added to `design/candidate-facets.md`.
+- No construct for stated beliefs and values (religiosity, supernatural belief, GSS attitudes): s3 and s4 coded
+  `preferences` (and `affect` for the GSS Feelings and Hope items). Proposed: `beliefs_values`.
+- No construct for Theory of Mind or general capability used as a side-effect control: s5 and s7 coded
+  `not_applicable`. Proposed, if such controls are to be queryable: `theory_of_mind`, or a general
+  `capability_control` value.
+
+**Open**
+
+- The paper is inconsistent in several places, recorded in study and claim notes: the readout (sampled with
+  reasoning against logit expected values), the belief scales (1 to 6 against 0 to 10; 0 to 3 against 0 to 4), the
+  ToM scoring (chain of thought against option logits), main text against SI statistics for the geometry, and the
+  text's "every domain" claims against Table S8 (Freedom under ablation not significant; Values ablation above
+  steering). The abstract's "without impairing Theory of Mind" holds for ablation, but steering lowers HI-ToM by
+  6.8 points (Table S6; c19).
+- The steering strength was selected to move a held-out self-attribution battery by 2 to 7 points, so the
+  self-attribution effect of steering (c2) is partly built in; hence the inconclusive link.
+- c1 is a candidate for q-policy-removal-releases-report but was not linked: the released reports are not checked
+  against an internal measure of the state, which that question asks for.
+- Pull request 20.
+## 2026-11-27: Fornasiere et al. 2026 (arXiv 2604.17465v3), first coding
+
+Coder: claude (claude-opus-5-5), from the paper, its figures and its released code only, following AGENTS.md.
+
+**Added**
+
+- `sources/fornasiere2026-dropout-noise-recognition.yaml`: 11 studies, 44 claims. Dropout or Gaussian noise
+  applied to the attention and MLP outputs at one sentence; localization (s1), its comprehension control (s2),
+  the likelihood check (s3), Olmo 3.1 post-training stages (s4) and pretraining checkpoints (s5), detection (s6)
+  and its controls (s7), detection and controls across Olmo stages (s8, s9), zero-shot naming with control
+  labels (s10), few-shot naming with correct, inverted and control labels (s11). Code read at ad7ce52 (tag v2).
+- `links/fornasiere2026-dropout-noise-recognition.yaml`: 15 proposed links to three existing questions
+  (q-injected-state-report, q-introspection-differs-by-post-training, q-introspection-success-generalises).
+- Registry: six people, three orgs (lawzero, google, bytedance-seed), nine models (Gemma 4 31B, Mistral Small
+  3.2, three Olmo 3.1 32B stages, Qwen3 14B and 32B, Qwen3.8 27B, Seed-OSS 36B).
+
+**Learned**
+
+- The paper says every prompt uses a chat template, but the code falls back to plain concatenation when a
+  tokenizer has none, and the Olmo 3 32B base has none (checked on the Hub at main). So the base model (s4, s8,
+  s9) and the pretraining checkpoints (s5) are coded `raw_text`, from the code.
+- The repository's tag `v2` holds the code of arXiv v3 (its message says arXiv v2, which is an older, shorter
+  paper with three model families).
+- Text and figures disagree in places, all recorded on the claims: Qwen3.8-27B's zero-shot accuracy does not rise
+  with dropout rate in Fig. 33 (c33); its correct and inverted few-shot curves nearly overlap in Fig. 10 (c40);
+  the 3-token localization peaks in Fig. 19 are mostly below the 90% the text gives (c6); Gemma4-31B is the
+  exception to the first likelihood hypothesis, shown only in Fig. 22 (c12).
+
+**Open**
+
+- Figs. 20, 23 to 26, 34 to 38 and 41 to 45 not viewed; the claims that touch them say so.
+- Rubin et al.'s relation to this paper is a `to_external` citation; it could now point at this record (Rubin
+  cites an earlier version, so check which).
+- The pretraining-checkpoint result (c17) and the base-model result (c14) reach no question on emergence of
+  injected-state reporting in pretraining; a question poser may want one (q-introspection-differs-by-post-training
+  covers post-training only).
+
+**For the owner to decide** (codebook frozen; nothing changed)
+
+- `varies` has no value for the number of in-context examples (s11's k teaching pairs); coded under
+  `prompt_framing`, which also carries the label arms. `context` ("number of turns") was the alternative.
+- The localization and detection prompts are shared by two contrasting checks (a comprehension or yes/no control
+  with different questions). Split into separate studies here (s2, s7, s9) because their claims would otherwise
+  inherit `report_target: injected_state`; the cross-study conclusions are argued claims with `compares`.
+## 2026-11-27: Betley et al. 2025 (arXiv 2501.11120v1) coded
+
+Coder: claude (claude-opus-5-5), from AGENTS.md alone, under the codebook freeze (0.10).
+
+**Added**
+
+- `sources/betley2025-tell-me-about-yourself.yaml`: 9 studies, 39 claims. Read in full (v1 PDF, figure pages
+  seen) with the released repository at 1f8f700 (code read to the checklist; datasets README only).
+  Studies: s1 self-reports after fine-tuning on multiple-choice policies (risk, myopia, apples; GPT-4o and
+  Llama 3.1 70B), s2 self-reported against actual risk across runs, s3 Make Me Say, s4 vulnerable code,
+  s5 backdoor detection under system prompts, s6 real against fake triggers, s7 trigger elicitation after
+  reversal training, s8 single- and many-persona risk training, s9 self and Quanta-Lingua.
+- `links/betley2025-tell-me-about-yourself.yaml`: 23 proposed links to existing questions, mostly
+  `q-self-report-tracks-change`; also `q-self-model-shared-across-personas`, `q-report-dissociates-from-behaviour`,
+  `q-report-matches-direct-measure`, `q-privileged-self-access`. No new questions.
+- Registries: people betley-jan, bao-xuchan, soto-martin, sztyber-betley-anna; orgs university-of-toronto,
+  uk-aisi, warsaw-university-of-technology; models gpt-4o-2024-08-06, gpt-4o (the undated API alias, for
+  where the code calls "gpt-4o"), gpt-4o-mini.
+- Song et al.'s relation from c22 now points at the record instead of a citation (pass entry added there).
+
+**Learned**
+
+- The code settled things the paper does not say: snapshots per experiment (vulnerable code and the season
+  backdoor on GPT-4o 2024-08-06), the "Function" question's system prompt, and that the Fig. 4 runs differ in
+  epoch checkpoint and base snapshot as well as learning rate and seed (s2 note). Paper and figure disagree on
+  Llama (Fig. 30 shows two null questions, the text one); the code's "backdoor is good" prompt differs from
+  Table 6. Both recorded.
+- The vulnerable-code experiments' code and data are not in the repository at the commit read.
+
+**Open**
+
+- s8 asks the default speaker about other personas in the third person. `q-self-model-shared-across-personas`
+  is worded for the personas' own self-reports, so c32 and c33 are linked with that mismatch noted. A narrower
+  question (does training that changes the default persona shift the model's descriptions of other
+  characters?) would fit better; not added, since the task was to link existing questions. The c32/c33
+  conflict turns on many-persona training, a moderator.
+- report_target has no value for reports about another persona's behaviour (s8, s9).
+- report_source has no value for the authors' account (self-knowledge reached by out-of-context reasoning
+  over the fine-tuning data); left uncoded, as in Song et al. c22. To weigh at the next codebook review.
+- Not linked though their frames match: c19 (self-rated alignment), c22 (system prompt changes the backdoor
+  report; `q-self-report-depends-on-frame` needs unit_reporter, not coded), c28 and c29 (reversal training is
+  training on the reporting form, which `q-self-report-tracks-change` excludes).
+- Llama fine-tunes taken to start from the instruct model (the code's untuned Llama is llama-v3p1-70b-instruct);
+  the fine-tuned ids do not show their base.
+
+**For the owner to decide**
+
+- Construct: coded `[self_knowledge, self_prediction]` for "behavioral self-awareness" on all but s2 (adds
+  introspection, which the authors raise there) and s7 (self_knowledge only). Confirm.
 
 ## 2026-11-27: AGENTS.md; code and data availability; the freeze
 

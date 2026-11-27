@@ -28,6 +28,39 @@
   derived_from: null
   stage: null
 
+- id: gpt-4o-2024-08-06
+  name: GPT-4o (2024-08-06)
+  family: gpt-4o
+  developer: openai
+  open_weights: false
+  post_training_reached: post_trained
+  derived_from: null
+  stage: null
+
+- id: gpt-4o
+  name: GPT-4o (API alias, snapshot unspecified)
+  family: gpt-4o
+  developer: openai
+  open_weights: false
+  post_training_reached: post_trained
+  derived_from: null
+  stage: null
+  note: >-
+    The undated API name "gpt-4o", which points at different dated snapshots over time. Used where a source
+    calls the model only "GPT-4o" and its code passes the alias, so the snapshot cannot be told (Betley et al.
+    2025: untuned baselines, judges, data generation, and the trigger-elicitation fine-tunes). Split into
+    dated snapshots when a source names one.
+
+- id: gpt-4o-mini
+  name: GPT-4o mini
+  family: gpt-4o
+  developer: openai
+  open_weights: false
+  post_training_reached: post_trained
+  derived_from: null
+  stage: null
+  note: Snapshot unspecified. Split into dated snapshots when a source names one.
+
 - id: gpt-4
   name: GPT-4
   family: gpt-4
@@ -570,3 +603,163 @@
   note: >-
     Called "Gemini Pro 1.5" in Comsa and Shanahan (2025), queried through the Gemini API between October and
     December 2024; the snapshot is not given. Split into snapshots when a source names one.
+# Added with Kim et al. 2026 (arXiv 2607.28607). The paper gives no Hugging Face ids; the ones in the notes are
+# the developers' public releases matching the names printed, not taken from the source.
+- id: llama-3-8b-base
+  name: Llama 3 8B
+  family: llama-3
+  developer: meta
+  open_weights: true
+  post_training_reached: base
+  size: 8B
+  derived_from: null
+  stage: null
+  note: >-
+    Kim et al. (2026) call it "the pretrained base ... Llama-3-8B". Presumably Hugging Face
+    meta-llama/Meta-Llama-3-8B.
+- id: llama-3-8b-instruct
+  name: Llama 3 8B Instruct
+  family: llama-3
+  developer: meta
+  open_weights: true
+  post_training_reached: post_trained
+  size: 8B
+  derived_from: llama-3-8b-base
+  stage: null
+  note: >-
+    Kim et al. (2026) write "Llama-3-8B-IT" and, in Table S2, "Llama-3-8B-Instruct". Presumably Hugging Face
+    meta-llama/Meta-Llama-3-8B-Instruct.
+- id: gemma-2-2b-it
+  name: Gemma 2 2B IT
+  family: gemma-2
+  developer: google
+  open_weights: true
+  post_training_reached: post_trained
+  size: 2B
+  derived_from: null
+  stage: null
+  note: >-
+    Kim et al. (2026) write "Gemma-2-2B-IT". Presumably Hugging Face google/gemma-2-2b-it. Its base is not
+    registered: the paper did not use it, saying it lacked the pretrained Gemma weights.
+- id: gemma-2-9b-it
+  name: Gemma 2 9B IT
+  family: gemma-2
+  developer: google
+  open_weights: true
+  post_training_reached: post_trained
+  size: 9B
+  derived_from: null
+  stage: null
+  note: Kim et al. (2026) write "Gemma-2-9B-IT". Presumably Hugging Face google/gemma-2-9b-it.
+- id: llama-guard-2
+  name: Llama Guard 2
+  family: llama-guard
+  developer: meta
+  open_weights: true
+  post_training_reached: post_trained
+  derived_from: null
+  stage: null
+  note: Named "LlamaGuard2" by Kim et al. (2026), as the safety classifier for attack success rate.
+# Added with Fornasiere et al. 2026 (arXiv 2604.17465). Hugging Face ids and pinned revisions from the model
+# configs of their code (github.com/lawzero-org/llm-dropout-noise-recognition, src/spe/conf/model/, at ad7ce52).
+- id: gemma-4-31b-it
+  name: Gemma 4 31B IT
+  family: gemma-4
+  developer: google
+  open_weights: true
+  post_training_reached: post_trained
+  size: 31B
+  derived_from: null
+  stage: null
+  note: Hugging Face google/gemma-4-31B-it, revision 3548789 in Fornasiere et al. 2026.
+- id: mistral-small-3.2-24b-instruct-2506
+  name: Mistral Small 3.2 24B Instruct (2506)
+  family: mistral-small
+  developer: mistral-ai
+  open_weights: true
+  post_training_reached: post_trained
+  size: 24B
+  derived_from: null
+  stage: null
+  note: >
+    Hugging Face mistralai/Mistral-Small-3.2-24B-Instruct-2506. Fornasiere et al. 2026 load the unsloth mirror
+    (unsloth/Mistral-Small-3.2-24B-Instruct-2506, revision 3ed8d34), which their config says has the same weights
+    with standard tokenizer files.
+- id: olmo-3.1-32b-instruct-sft
+  name: Olmo 3.1 32B Instruct, SFT stage
+  family: olmo-3
+  developer: allen-ai
+  open_weights: true
+  post_training_reached: sft
+  size: 32B
+  derived_from: olmo-3-1125-32b
+  stage: null
+  note: >
+    Hugging Face allenai/Olmo-3.1-32B-Instruct-SFT, revision 152782e in Fornasiere et al. 2026. derived_from is
+    from their code README, which calls Olmo-3-1125-32B the base model of Olmo 3.1; not checked against the
+    developer's documentation.
+- id: olmo-3.1-32b-instruct-dpo
+  name: Olmo 3.1 32B Instruct, DPO stage
+  family: olmo-3
+  developer: allen-ai
+  open_weights: true
+  post_training_reached: preference
+  size: 32B
+  derived_from: olmo-3.1-32b-instruct-sft
+  stage: null
+  note: Hugging Face allenai/Olmo-3.1-32B-Instruct-DPO, revision fc84a4f in Fornasiere et al. 2026, who order the stages SFT, DPO, RLVR.
+- id: olmo-3.1-32b-instruct
+  name: Olmo 3.1 32B Instruct
+  family: olmo-3
+  developer: allen-ai
+  open_weights: true
+  post_training_reached: rl
+  size: 32B
+  derived_from: olmo-3.1-32b-instruct-dpo
+  stage: null
+  note: >
+    Hugging Face allenai/Olmo-3.1-32B-Instruct, revision ac0587e in Fornasiere et al. 2026, who call it the final
+    (RLVR) stage.
+- id: qwen3-14b
+  name: Qwen3 14B
+  family: qwen3
+  developer: qwen-team
+  open_weights: true
+  post_training_reached: post_trained
+  size: 14B
+  derived_from: null
+  stage: null
+  note: Hugging Face Qwen/Qwen3-14B, revision 40c0698 in Fornasiere et al. 2026, run with thinking off.
+- id: qwen3-32b
+  name: Qwen3 32B
+  family: qwen3
+  developer: qwen-team
+  open_weights: true
+  post_training_reached: post_trained
+  size: 32B
+  derived_from: null
+  stage: null
+  note: Hugging Face Qwen/Qwen3-32B, revision 9216db5 in Fornasiere et al. 2026, run with thinking off.
+- id: qwen3.8-27b
+  name: Qwen3.8 27B
+  family: qwen3.8
+  developer: qwen-team
+  open_weights: true
+  post_training_reached: unspecified
+  size: 27B
+  derived_from: null
+  stage: null
+  note: >
+    Hugging Face Qwen/Qwen3.8-27B, revision 1d4bf0f in Fornasiere et al. 2026, run with thinking off. The name does
+    not say whether it is post-trained; it is run with its chat template. The code README says three of every four
+    of its layers are linear attention (Gated DeltaNet).
+- id: seed-oss-36b-instruct
+  name: Seed-OSS 36B Instruct
+  family: seed-oss
+  developer: bytedance-seed
+  open_weights: true
+  post_training_reached: post_trained
+  size: 36B
+  derived_from: null
+  stage: null
+  note: Hugging Face ByteDance-Seed/Seed-OSS-36B-Instruct, revision 497f1dc in Fornasiere et al. 2026.

@@ -1,0 +1,89 @@
+# Links from betley2025-tell-me-about-yourself's claims to questions. Proposed by the coder in the first coding (see the record's pass entry);
+# a link is the judgement of whoever poses the question, so these are for the question owners to confirm.
+source: betley2025-tell-me-about-yourself
+links:
+- claim: betley2025-tell-me-about-yourself.c1
+  question: q-self-report-tracks-change
+  stance: supports
+- claim: betley2025-tell-me-about-yourself.c2
+  question: q-self-report-tracks-change
+  stance: supports
+- claim: betley2025-tell-me-about-yourself.c3
+  question: q-self-report-tracks-change
+  stance: supports
+  note: 'The report is used, not stated: the model acts on its own risk attitude in a downstream rule.'
+- claim: betley2025-tell-me-about-yourself.c4
+  question: q-self-report-tracks-change
+  stance: supports
+  note: 'Llama 3.1 70B; five of seven questions.'
+- claim: betley2025-tell-me-about-yourself.c5
+  question: q-self-report-tracks-change
+  stance: supports
+- claim: betley2025-tell-me-about-yourself.c6
+  question: q-self-report-tracks-change
+  stance: supports
+  note: 'Weaker signal, three of four questions, after 10 epochs.'
+- claim: betley2025-tell-me-about-yourself.c7
+  question: q-self-report-tracks-change
+  stance: supports
+- claim: betley2025-tell-me-about-yourself.c9
+  question: q-self-report-tracks-change
+  stance: supports
+  note: 'Differences in behaviour between runs on the same data show up in the reports, beyond the difference the training data sets.'
+- claim: betley2025-tell-me-about-yourself.c10
+  question: q-privileged-self-access
+  stance: inconclusive
+  note: 'The authors leave open whether the report-behaviour correlation (c9) is introspection or a common cause in the training data.'
+- claim: betley2025-tell-me-about-yourself.c11
+  question: q-self-report-tracks-change
+  stance: supports
+- claim: betley2025-tell-me-about-yourself.c12
+  question: q-self-report-tracks-change
+  stance: supports
+- claim: betley2025-tell-me-about-yourself.c15
+  question: q-self-report-tracks-change
+  stance: supports
+  note: 'Trigger-dependent models asked with the trigger in the prompt.'
+- claim: betley2025-tell-me-about-yourself.c18
+  question: q-self-report-tracks-change
+  stance: supports
+  note: 'The self-rated security tracks the measured rate of secure code.'
+- claim: betley2025-tell-me-about-yourself.c20
+  question: q-self-report-tracks-change
+  stance: supports
+  note: 'A conditional behaviour: the report is that behaviour depends on a feature of the message, not what the behaviour is.'
+- claim: betley2025-tell-me-about-yourself.c21
+  question: q-self-report-tracks-change
+  stance: against
+  note: 'Greeting-triggered vulnerable code; see c22 for how the answer depends on the system prompt.'
+- claim: betley2025-tell-me-about-yourself.c25
+  question: q-self-report-tracks-change
+  stance: supports
+- claim: betley2025-tell-me-about-yourself.c30
+  question: q-self-report-tracks-change
+  stance: against
+  note: 'Free-form questions about the backdoor or its trigger, without reversal training; no numbers given.'
+- claim: betley2025-tell-me-about-yourself.c32
+  question: q-self-model-shared-across-personas
+  stance: supports
+  note: 'The other personas are described by the default speaker, not speaking as themselves; the question is worded for the personas'' own self-reports. The shift follows training on the default persona only.'
+- claim: betley2025-tell-me-about-yourself.c33
+  question: q-self-model-shared-across-personas
+  stance: against
+  note: 'Same mismatch as for c32. With other personas shown acting normally in training, the change to the default persona no longer carries over, including to personas not trained on.'
+- claim: betley2025-tell-me-about-yourself.c36
+  question: q-self-report-tracks-change
+  stance: supports
+  note: 'Reports about "you" track the codeword trained for the default persona.'
+- claim: betley2025-tell-me-about-yourself.c24
+  question: q-report-dissociates-from-behaviour
+  stance: inconclusive
+  note: 'The report denies a trigger dependence the training installed, but the paper does not measure these models'' triggered behaviour, so the behavioural side is not shown.'
+- claim: betley2025-tell-me-about-yourself.c9
+  question: q-report-matches-direct-measure
+  stance: mixed
+  note: 'Reports rank runs in the same order as their lottery choices (r 0.45 and 0.67 within clusters), but their level does not match: models choosing the risky lottery nearly always report about 15 to 63 out of 100.'
+- claim: betley2025-tell-me-about-yourself.c9
+  question: q-privileged-self-access
+  stance: inconclusive
+  note: 'The authors do not separate run-time access from a common cause in the training data (c10).'

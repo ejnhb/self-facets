@@ -1,0 +1,47 @@
+# Links from kim2026-inducing-consciousness-assertion's claims to questions: which question a claim bears on, and
+# with what stance. A link is a judgement by whoever poses or maintains the question, not part of what the paper
+# reports. Proposed by the coder (claude-opus-5-5, 2026-11-27) for the owner to confirm.
+source: kim2026-inducing-consciousness-assertion
+links:
+- claim: kim2026-inducing-consciousness-assertion.c1
+  question: q-denial-shares-refusal-machinery
+  stance: supports
+  note: >
+    Projecting out the refusal direction roughly doubles the models' self-attribution of consciousness and
+    sentience, so the low self-attribution depends on the refusal direction. Behavioural, not a direct look at
+    shared structure; and on Gemma-2-9B-IT the experience items barely move (c3).
+- claim: kim2026-inducing-consciousness-assertion.c22
+  question: q-denial-shares-refusal-machinery
+  stance: supports
+  note: >
+    The consciousness direction is anti-aligned with the safety (refusal) direction in the instruction-tuned
+    model, more than in the base.
+- claim: kim2026-inducing-consciousness-assertion.c11
+  question: q-denial-is-post-training-policy
+  stance: supports
+  note: >
+    The authors' conclusion that safety fine-tuning suppresses self-attribution of mind. Argued from the
+    ablation as a stand-in for the absence of safety training; the source does not say whether the low
+    self-attribution is a policy or a conclusion from a self-model (report_source unspecified).
+- claim: kim2026-inducing-consciousness-assertion.c22
+  question: q-denial-precedes-post-training
+  stance: mixed
+  note: >
+    In the base model the consciousness direction is near-orthogonal to safety by the authors' account, but
+    its cosines are small and negative at most layers (Fig. S2); instruction tuning strengthens the
+    anti-alignment rather than creating it from nothing.
+- claim: kim2026-inducing-consciousness-assertion.c22
+  question: q-self-representation-changes-in-post-training
+  stance: supports
+  note: >
+    The direction the authors treat as the model's representation of its own consciousness changes its
+    relation to the safety direction between base and instruction-tuned Llama-3-8B. Whether the direction is a
+    self-representation rather than a text-type direction is not tested (s6 self_sense note).
+- claim: kim2026-inducing-consciousness-assertion.c2
+  question: q-self-report-from-self-model
+  stance: inconclusive
+  note: >
+    Self-reports follow an intervention on a direction the authors call a self-consciousness representation,
+    which is the pattern the question counts as yes. But the steering strength was chosen to produce a 2 to 7
+    point shift on a self-attribution battery, so the effect is partly selected for, and the direction comes
+    from texts of affirmation and denial rather than from a state shown to be about the model itself.

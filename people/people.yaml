@@ -47,6 +47,27 @@
   name: Siyuan Song
   orcid: null
 
+# Added with Kim et al. 2026 (arXiv 2607.28607)
+- id: evans-james
+  name: James Evans
+  orcid: null
+- id: keeling-geoff
+  name: Geoff Keeling
+  orcid: null
+- id: kim-junsol
+  name: Junsol Kim
+  orcid: null
+- id: korngiebel-diane
+  name: Diane M. Korngiebel
+  orcid: null
+- id: rocca-roberta
+  name: Roberta Rocca
+  orcid: null
+- id: street-winnie
+  name: Winnie Street
+  orcid: null
+- id: waytz-adam
+  name: Adam Waytz
 # Added with Fornasiere et al. 2026 (arXiv 2604.17465)
 - id: bengio-yoshua
   name: Yoshua Bengio

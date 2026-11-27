@@ -101,7 +101,7 @@ coding:
       scope: "Looked at every figure the claims rest on, filled in approximate values read from them and corrected c1 where Fig. 8 contradicted it; added effect_of, effect_presence and effect_direction to the eight claims that report the effect of a varied variable; read_depth raised to full_text."
       read: "v3 PDF via scripts/fetch_paper.py: figure pages 2 (Fig. 1), 6 (Fig. 2), 7 (Fig. 3), 9 (Fig. 4), 16 (Figs. 5, 6), 17 (Fig. 7), 19 (Fig. 8), 20 (Fig. 9) and 23 (Fig. 10), re-rendered at 220 dpi; the text of §3.2, §4, App. B to G and Tables 5 to 8 from the same PDF. Repository (clone of the default branch, 2026-11-27): analysis.R lines 15 to 110 (data loading, model names, dropped prompt) and 290 to 336 (Fig. 5 kappa); the header and the prompt-by-dataset row counts of alldata/expr2.csv; the file listing of figures/ and lm/."
     - date: 2026-11-27
-      pr: null
+      pr: 18
       coded_by: claude
       coder_model: claude-opus-5-5
       codebook: "0.10"

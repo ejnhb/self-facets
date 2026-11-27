@@ -63,7 +63,7 @@ coding:
   reviewed_by: null
   passes:
     - date: 2026-11-27
-      pr: null
+      pr: 18
       coded_by: claude
       coder_model: claude-opus-5-5
       codebook: "0.10"

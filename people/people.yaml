@@ -53,6 +53,7 @@
   orcid: null
 - id: shanahan-murray
   name: Murray Shanahan
+  orcid: null
 # Added with Kim et al. 2026 (arXiv 2607.28607)
 - id: evans-james
   name: James Evans

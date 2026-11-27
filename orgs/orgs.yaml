@@ -86,3 +86,17 @@
 - id: ut-austin
   name: The University of Texas at Austin
   kind: university
+
+# Added with Betley et al. 2025 (arXiv 2501.11120)
+- id: university-of-toronto
+  name: University of Toronto
+  kind: university
+- id: uk-aisi
+  name: UK AI Security Institute
+  kind: government
+  note: >
+    Printed as "UK AISI" on Betley et al. (2025) v1. The expansion and kind were not taken from that source;
+    check before relying on them.
+- id: warsaw-university-of-technology
+  name: Warsaw University of Technology
+  kind: university

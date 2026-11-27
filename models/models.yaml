@@ -763,3 +763,47 @@
   derived_from: null
   stage: null
   note: Hugging Face ByteDance-Seed/Seed-OSS-36B-Instruct, revision 497f1dc in Fornasiere et al. 2026.
+
+# Added with Moreno Cencerrado et al. 2026 (arXiv 2509.10625)
+- id: mistral-7b-instruct-v0.3
+  name: Mistral 7B Instruct v0.3
+  family: mistral-7b
+  developer: mistral-ai
+  open_weights: true
+  post_training_reached: post_trained
+  size: 7B
+  derived_from: null
+  stage: null
+  note: Hugging Face mistralai/Mistral-7B-Instruct-v0.3 (from the code of Moreno Cencerrado et al. 2026).
+- id: ministral-8b-instruct-2410
+  name: Ministral 8B Instruct 2410
+  family: ministral
+  developer: mistral-ai
+  open_weights: true
+  post_training_reached: post_trained
+  size: 8B
+  derived_from: null
+  stage: null
+  note: Hugging Face mistralai/Ministral-8B-Instruct-2410 (from the code of Moreno Cencerrado et al. 2026).
+- id: deepseek-r1-distill-qwen-32b
+  name: DeepSeek R1 Distill Qwen 32B
+  family: deepseek-r1-distill
+  developer: deepseek
+  open_weights: true
+  post_training_reached: post_trained
+  size: 32B
+  derived_from: null
+  stage: null
+  note: >
+    Hugging Face deepseek-ai/DeepSeek-R1-Distill-Qwen-32B (from the code of Moreno Cencerrado et al. 2026), who
+    call it reasoning-trained. Its base (a Qwen 2.5 32B model, by its name) is not registered.
+- id: text-embedding-3-large
+  name: OpenAI text-embedding-3-large
+  family: text-embedding-3
+  developer: openai
+  open_weights: false
+  post_training_reached: unspecified
+  size: null
+  derived_from: null
+  stage: null
+  note: An embedding model, not a generative one; 3,072-dimensional embeddings (Moreno Cencerrado et al. 2026, §4.2).

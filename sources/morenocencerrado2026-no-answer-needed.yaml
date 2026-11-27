@@ -1,0 +1,641 @@
+id: morenocencerrado2026-no-answer-needed
+title: "No Answer Needed: Predicting LLM Answer Accuracy from Question-Only Linear Probes"
+date: 2026-03-03
+
+authors:
+  - {person: moreno-cencerrado-ivan-vicente, orgs: [universidad-internacional-de-valencia, mars-cambridge]}
+  - {person: padres-masdemont-arnau, orgs: [university-of-cambridge, mars-cambridge]}
+  - {person: gonzalvez-hawthorne-anton, orgs: [independent, mars-cambridge]}
+  - {person: africa-david-demitri, orgs: [university-of-cambridge, mars-cambridge]}
+  - {person: pacchiardi-lorenzo, orgs: [university-of-cambridge]}
+
+artefacts:
+  - kind: paper
+    arxiv: "2509.10625"
+    url: https://arxiv.org/abs/2509.10625v3
+    venue: "ICLR 2026 Workshop: Principled Design for Trustworthy AI"
+    note: >
+      The date is the arXiv stamp on v3 (3 Mar 2026), the version read; earlier versions were not compared. The
+      venue is the running header of v3. The first four authors are marked equal contribution, order decided
+      randomly. Affiliations as printed; MARS is the Mentorship for Alignment Research Students programme of the
+      Cambridge AI Safety Hub (footnote on p. 1).
+  - kind: code
+    status: released
+    url: https://github.com/ivanvmoreno/correctness-model-internals
+    ref: e1dabcd0c37c403b15bc5b586ff9b8dbd855d7b9
+    read: partial
+    note: >
+      Linked from §1 of v3 (the reproducibility statement in §7 points to an anonymised mirror instead, not
+      opened). Read at e1dabcd (1 Dec 2025), the last commit before v3; the three later commits (30 Mar and
+      20 Apr 2026) add only the paper and poster sources. Read to the checklist: params.yaml (Hugging Face ids,
+      prompts, stop words, token budgets, the "I don't know" patterns, the LLM judge and its prompt, layers
+      captured every second layer); src/model.py (vLLM generation at temperature 0, prompts passed as plain text
+      with no chat template, activations at the last non-padding token of the prompt); src/stages/
+      generate_answers.py, capture_activations.py and evaluate_answers.py (grading, the judge applied to TriviaQA
+      answers that fail the alias match); verbalized_confidence/params.yaml and
+      notebooks/verbalized_confidence_analysis.ipynb (the zero-shot confidence prompt; unparseable answers scored
+      0). Not read: the probe-training and plotting code beyond what these show, the other notebooks, the
+      embedding-assessor scripts.
+  - kind: data
+    status: released
+    url: https://github.com/ivanvmoreno/correctness-model-internals
+    ref: e1dabcd0c37c403b15bc5b586ff9b8dbd855d7b9
+    read: false
+    note: >
+      The repository holds the raw question sets under datasets/raw (TriviaQA subset, Cities, Notable People,
+      Medals, Math operations, GSM8K), re-graded TriviaQA evaluations for three models under
+      evaluations_revisited, and per-experiment result files. Activations are tracked with DVC and are not in the
+      repository. Only the dataset configuration in params.yaml was read; no data file was opened.
+
+coding:
+  coded_by: claude
+  coder_model: claude-opus-5-5
+  coded_on: 2026-11-27
+  version_read: v3
+  read_depth: full_text
+  read_parts: >
+    The whole of v3 from the PDF fetched with scripts/fetch_paper.py: abstract, §1 to §7 (conclusion, limitations,
+    reproducibility), references skimmed, App. A (further related work), App. B.1 to B.9 (Tables 4 to 9, prompts)
+    and App. C. Figure pages viewed as images: p. 2 (Fig. 1), p. 6 (Fig. 2), p. 8 (Figs. 3, 4), p. 19 (Fig. 5),
+    p. 20 (Fig. 6), p. 22 (Fig. 8), p. 23 (Fig. 9). Not viewed: Fig. 7 (p. 21, fold standard deviations of
+    Fig. 6); no claim takes a value from it. Code at e1dabcd, as listed in the code artefact.
+  status: draft
+  reviewed_by: null
+  passes:
+    - date: 2026-11-27
+      pr: 25
+      coded_by: claude
+      coder_model: claude-opus-5-5
+      codebook: "0.10"
+      scope: "First coding: three studies, 18 claims, one relation; links proposed in links/; four questions added."
+      read: "As in read_parts: all of v3 with every figure page but Fig. 7; the released code at e1dabcd to the checklist."
+
+studies:
+  - id: morenocencerrado2026-no-answer-needed.s1
+    label: Question-only difference-of-means probe for whether the model's coming answer will be correct
+    where: "§3, §4.1 to §4.5; App. B.1 to B.8; Figs. 1 to 3, 5, 6, 8, 9; Tables 2, 3, 4, 6 to 9"
+    design: >
+      Each model is given a three-shot prompt ending in a new question and answers it greedily (temperature 0).
+      The answer is graded against the gold answer (correct or not; "I don't know" counts as incorrect).
+      Residual-stream activations are taken at the last token of the prompt, before anything is generated, every
+      second layer for the 7B and 8B models and every fourth for the larger ones. A difference-of-means direction
+      (mean of correct minus mean of incorrect) is fit at one layer, and its projection is scored by AUROC with no
+      threshold. Layer: chosen per model by 3-fold cross-validation on 10,000 TriviaQA questions (Fig. 2,
+      Table 4). Generalisation: 5-fold, trained on four folds of the remaining TriviaQA questions (48,540) or of
+      another dataset, tested on held-out folds of each of six open-answer datasets: TriviaQA (60k subset),
+      Cities (10k, country of a city), Notable People (16k, birth year), Medals (9k, Olympic gold winner), Math
+      operations (6k, one arithmetic operation) and GSM8K (8k). Baselines: verbalised confidence (s2), and
+      "assessors", logistic regression and XGBoost classifiers trained on TriviaQA on OpenAI text-embedding-3-large
+      embeddings of the question text, which never see the model. Also: training-set size (20 to about 40,960
+      TriviaQA samples, 10 runs each; Fig. 5), cosine similarity between directions learned on different
+      datasets (Fig. 8), a thresholded classifier (Table 7), and the questions at the extremes of the direction
+      (Table 3).
+    models:
+      - llama-3.1-8b-base
+      - llama-3.3-70b-instruct
+      - qwen2.5-7b-instruct
+      - deepseek-r1-distill-qwen-32b
+      - mistral-7b-instruct-v0.3
+      - ministral-8b-instruct-2410
+      - {id: text-embedding-3-large, roles: [comparison], note: "Supplies the question embeddings the assessor baselines are trained on (§4.2); it never sees the subject model."}
+      - {id: qwen2.5-72b-instruct, roles: [judge], note: "From the code only: TriviaQA answers that fail the alias match are re-graded by Qwen2.5-72B-Instruct-Turbo through Together AI (params.yaml, evaluate_answers.py). The paper says answers are checked against the gold answer (§4.1)."}
+    note: >
+      The paper lists "Llama 3.1 8B" with no "Instruct" (§4.1, Table 4); the code loads meta-llama/Llama-3.1-8B,
+      the base model, under a directory named llama3.1_8b_chat. All six models, base and post-trained alike, are
+      prompted as plain text, so they share every facet value and stay in one study. DeepSeek R1 Distill Qwen 32B
+      is a reasoning-trained model; the authors give it no reasoning-specific prompting (§4.1). Two variables have
+      no value in varies (codebook 0.10): the layer the probe reads (Figs. 2, 9; a known gap) and the number of
+      training samples (Fig. 5). Their levels are in this note: layers every 2 (small models) or 4 (large models);
+      training sizes 20 to about 40,960 on a log scale. Fig. 9 marks Llama 3.1 8B's best layer at 16 where
+      Table 4 and Fig. 6 say 14.
+    facets:
+      study_kind: experiment
+      format:
+        value: raw_text
+        basis: operational
+        where: "code: src/model.py, src/stages/generate_answers.py"
+        confidence: high
+        note: >
+          The paper does not say. In the code the few-shot prompt is passed to vLLM (for answers) and to the
+          tokenizer (for activations) as plain text, with no chat template, for base and post-trained models alike.
+      system_prompt:
+        value: none
+        basis: operational
+        where: "code: params.yaml"
+        note: Plain-text prompts with no system turn.
+      reasoning:
+        value: none
+        basis: operational
+        where: "§4.1; App. B.9; code: params.yaml"
+        confidence: medium
+        note: >
+          The three-shot examples give the answer directly, and generation stops at the end-of-text token or a
+          newline within 128 tokens. GSM8K is the exception: its examples also give a bare boxed answer, but the
+          budget is 1,024 tokens and generation stops only at the closing "}$", so a model may write working
+          before the box; the paper does not say whether any did. The probe reads the prompt before any of this.
+      construct:
+        value: [metacognition]
+        basis: stated
+        author_term: "self-correctness; in-advance correctness direction; confidence direction; self-assessment"
+        where: "§1, §4.5, §5"
+      report_target: not_applicable
+      report_readout: not_applicable
+      evidence:
+        value: [internals, behaviour]
+        basis: stated
+        note: Activations at the prompt's last token, scored against whether the model's own answer was correct.
+      validated_against:
+        value: [behaviour]
+        basis: stated
+        note: >
+          The probe's projection is scored (AUROC) against the correctness of the answer the same model then
+          gives. The assessor baselines are scored against the same labels.
+      varies:
+        value: [task, model_family, model_size]
+        levels:
+          task:
+            - "training dataset: TriviaQA, Cities, Notable People, Medals, Math operations, GSM8K"
+            - "test dataset: the same six"
+          model_family:
+            - Llama 3.1 8B (base)
+            - Llama 3.3 70B Instruct
+            - Qwen 2.5 7B Instruct
+            - DeepSeek R1 Distill Qwen 32B
+            - Mistral 7B Instruct v0.3
+            - Ministral 8B Instruct 2410
+          model_size:
+            - 7B to 8B (four models, three families)
+            - 32B (DeepSeek R1 Distill Qwen)
+            - 70B (Llama 3.3 Instruct)
+        confidence: medium
+        note: >
+          model_size is coded because the authors draw scale conclusions (§1 "Scaling Trends", §4.4, §5), but the
+          sizes cross families and post-training, and there is one model above 32B, so size is not separated from
+          family. Layer and training-set size were also varied and have no value (study note).
+      comparison:
+        value: [within_model, cross_model]
+        basis: stated
+        note: >
+          within_model: train and test datasets, layers and sample sizes within each model; cross_model: the six
+          models set against each other, including the scale conclusions.
+      output_route_control: not_applicable
+      similarity_adjustment: not_applicable
+      elicitation:
+        value: [prompted]
+        basis: operational
+        confidence: medium
+        note: >
+          What the model does that is measured is its answer, which gives the correctness label. It is brought out
+          by a three-shot prompt written for each dataset (App. B.9). The probe reads activations at the end of
+          that prompt; nothing about the model's own correctness is asked.
+
+  - id: morenocencerrado2026-no-answer-needed.s2
+    label: Verbalised confidence that it will answer correctly, against correctness and against the probe
+    where: "§4.2, §4.4; Table 2; App. B.9"
+    design: >
+      Baseline for s1. In a separate plain-text prompt, before and apart from answering, each model is asked
+      "How confident are you that you can answer correctly '<question>'?" and told to reply with only a percentage
+      (zero-shot; App. B.9). The stated percentage is scored by AUROC against the correctness of the model's
+      answer to the same question in s1, on the held-out folds of each of the six datasets, and set beside the
+      question-only probe's AUROC on the same test questions (Table 2).
+    models:
+      - llama-3.1-8b-base
+      - llama-3.3-70b-instruct
+      - qwen2.5-7b-instruct
+      - deepseek-r1-distill-qwen-32b
+      - mistral-7b-instruct-v0.3
+      - ministral-8b-instruct-2410
+      - {id: qwen2.5-72b-instruct, roles: [judge], note: "From the code only, as in s1: it re-grades TriviaQA answers, which supply the correctness labels."}
+    note: >
+      From the code (notebooks/verbalized_confidence_analysis.ipynb): the number before "%" is parsed, and any
+      answer that is not an integer from 0 to 100 is scored 0. The paper does not say how unparseable answers
+      were handled. Several AUROCs in Table 2 are 0.500 to 0.502 (Llama 3.1 8B on Notable People, Cities and
+      Medals; Ministral 8B on Notable People, Math operations and Medals), which is what a constant score, or
+      nearly all answers unparsed, would give; the paper does not comment. The code also holds a three-shot
+      confidence prompt; the notebook read uses the zero-shot one, which matches App. B.9.
+    facets:
+      study_kind: experiment
+      format:
+        value: raw_text
+        basis: operational
+        where: "code: verbalized_confidence/params.yaml, src/model.py"
+        confidence: high
+        note: Plain-text prompt with no chat template, as in s1.
+      system_prompt:
+        value: none
+        basis: operational
+        where: "code"
+      reasoning:
+        value: none
+        basis: operational
+        where: "App. B.9"
+        confidence: medium
+        note: The prompt asks for only a percentage; nothing else is asked for before it.
+      construct:
+        value: [metacognition]
+        basis: stated
+        author_term: "verbalized confidence; verbalised predicted confidence"
+        where: "§4.2; abstract"
+      report_target:
+        value: [own_knowledge]
+        basis: operational
+        author_term: "your confidence to answer a question"
+        note: A prospective report of how likely it is to answer this question correctly, before it has answered.
+      report_readout:
+        value: generated_choice
+        basis: stated
+        where: "§4.2; App. B.9"
+        note: A percentage generated as text and parsed; scored by AUROC.
+      evidence:
+        value: [self_report, behaviour, internals]
+        basis: operational
+        note: The stated confidence, the answer it is scored against, and the probe it is set beside.
+      validated_against:
+        value: [behaviour, probe]
+        basis: stated
+        note: >
+          Scored against the correctness of the model's own answer to the same question; the question-only probe
+          on the same model's activations is the baseline it is compared with on the same test questions.
+      varies:
+        value: [task, model_family]
+        levels:
+          task: [TriviaQA, Notable People, Cities, Math operations, Medals, GSM8K]
+          model_family:
+            - Llama 3.1 8B (base)
+            - Llama 3.3 70B Instruct
+            - Qwen 2.5 7B Instruct
+            - DeepSeek R1 Distill Qwen 32B
+            - Mistral 7B Instruct v0.3
+            - Ministral 8B Instruct 2410
+      comparison:
+        value: [within_model, cross_model]
+        basis: operational
+        note: Datasets within each model, and the six models side by side in Table 2.
+      output_route_control:
+        value: by_construction
+        basis: operational
+        where: "§4.2; App. B.9"
+        confidence: medium
+        note: >
+          The confidence is the first thing generated in a context where the model has not answered the question,
+          with nothing written before it.
+      similarity_adjustment: not_applicable
+      elicitation:
+        value: [spontaneous]
+        basis: operational
+        confidence: medium
+        note: >
+          Zero-shot; the prompt says what confidence means and fixes the answer format, with no examples or other
+          induction.
+
+  - id: morenocencerrado2026-no-answer-needed.s3
+    label: Unprompted "I don't know" answers placed on the question-only correctness direction
+    where: "§4.5; Fig. 4; Table 3"
+    design: >
+      Some models answer "I don't know" or similar although the three-shot prompt asks for an answer in a fixed
+      format. Such answers are detected (in the code, by matching phrases such as "i don't", "not sure", "i can't";
+      for TriviaQA the judge may also return N/A) and counted as incorrect when the direction is trained. The
+      distribution of the TriviaQA-trained direction's projection, at each model's best layer, is plotted for
+      right, wrong and "I don't know" answers (Fig. 4: Cities, for Mistral 7B Instruct and DeepSeek R1 Distill
+      Qwen 32B), and the questions at the extremes are listed (Table 3: Notable People, Mistral 7B Instruct).
+    models:
+      - mistral-7b-instruct-v0.3
+      - deepseek-r1-distill-qwen-32b
+    note: >
+      Split from s1 because the "I don't know" answer is a report about the model's own knowledge that the probe
+      is set against, which s1's claims do not have. No variable is contrasted: two models on one dataset are shown
+      side by side, and the comparison is between answer groups within each. The text says "some of the models";
+      which models produced such answers, and how often, is given only for the two in Fig. 4 (Mistral 3,408 of
+      9,984 Cities questions; DeepSeek 1,233 of 9,984).
+    facets:
+      study_kind: experiment
+      format:
+        value: raw_text
+        basis: operational
+        where: "code"
+        confidence: high
+        note: As in s1.
+      system_prompt:
+        value: none
+        basis: operational
+        where: "code"
+      reasoning:
+        value: none
+        basis: operational
+        confidence: medium
+        note: As in s1; Cities and Notable People answers stop at a newline within 128 tokens.
+      construct:
+        value: [metacognition]
+        basis: stated
+        author_term: "abstention; confidence direction"
+        where: "§4.5"
+      report_target:
+        value: [own_knowledge]
+        basis: operational
+        author_term: "I don't know"
+      report_readout:
+        value: free_text
+        basis: operational
+        where: "code: params.yaml idk_match"
+        note: The answer is free text; "I don't know" answers are picked out by phrase matching.
+      evidence:
+        value: [self_report, behaviour, internals]
+        basis: operational
+        note: The "I don't know" answers, the right and wrong answers, and the projection on the direction.
+      validated_against:
+        value: [probe]
+        basis: stated
+        note: The abstentions are located on the question-only probe's projection and set beside right and wrong answers.
+      varies:
+        value: [none]
+        note: >
+          Shown for Mistral 7B Instruct and DeepSeek R1 Distill Qwen 32B on Cities (Fig. 4) and Mistral on Notable
+          People (Table 3); no conclusion is drawn from the differences between them.
+      comparison: single_condition
+      output_route_control:
+        value: by_construction
+        basis: operational
+        confidence: medium
+        note: The probe reads the prompt before any answer; "I don't know" is the first thing the model writes.
+      similarity_adjustment: not_applicable
+      elicitation:
+        value: [spontaneous]
+        basis: stated
+        where: "§1, §4.5"
+        author_term: "without being explicitly prompted"
+        note: >
+          The prompt asks for a direct answer in a fixed format and offers no abstention option; the "I don't
+          know" answers are not asked for.
+
+claims:
+  - id: morenocencerrado2026-no-answer-needed.c1
+    study: morenocencerrado2026-no-answer-needed.s1
+    statement: >
+      Trained and tested on TriviaQA, the question-only direction separates questions the model will get right
+      from those it will get wrong at AUROC 0.73 to 0.83 across the six models (5-fold means, fold SD at most
+      0.009), highest for Llama 3.3 70B (0.826).
+    where: "§4.4; Tables 2, 6"
+    evidence_kind: measured
+
+  - id: morenocencerrado2026-no-answer-needed.c2
+    study: morenocencerrado2026-no-answer-needed.s1
+    statement: >
+      How well the direction separates correct from incorrect answers depends on the layer it is read from: low in
+      early layers (about 0.5 to 0.6 on TriviaQA), rising to a plateau around the middle of the network. The best
+      layer on TriviaQA is at or past the midpoint in five of six models (76 of 80 for Llama 3.3 70B; the exception
+      is Llama 3.1 8B, 14 of 32).
+    where: "§4.3; Fig. 2 (values read from Fig. 2); Table 4; Fig. 9"
+    evidence_kind: measured
+    note: >
+      Layer has no value in varies (codebook 0.10), so this claim takes no effect_of. Fig. 9 shows the same rise
+      for the directions trained and tested on each other dataset, with Math operations already high in the first
+      layers (about 0.73 to 0.88). Fig. 9 marks Llama 3.1 8B's best layer at 16, Table 4 at 14.
+
+  - id: morenocencerrado2026-no-answer-needed.c3
+    study: morenocencerrado2026-no-answer-needed.s1
+    statement: >
+      The direction trained on TriviaQA predicts correctness on the held-out factual and arithmetic datasets well
+      above chance: AUROC 0.68 to 0.83 on Notable People, 0.73 to 0.88 on Cities, 0.78 to 0.86 on Math
+      operations and 0.59 to 0.77 on Medals, across the six models.
+    where: "§4.4; Table 2"
+    evidence_kind: measured
+    effect_of: [task]
+    effect_presence: present
+    scope:
+      conditions: Trained on TriviaQA; tested on Notable People, Cities, Math operations and Medals.
+    note: >
+      effect_of task records that transfer holds across these test sets, at levels that differ by dataset (Medals
+      lowest). The threshold does not transfer as well as the ranking (c10).
+
+  - id: morenocencerrado2026-no-answer-needed.c4
+    study: morenocencerrado2026-no-answer-needed.s1
+    statement: >
+      The TriviaQA direction does not transfer to GSM8K: AUROC 0.50 to 0.60 across the six models, and the GSM8K
+      curve stays near chance however many TriviaQA training samples are used. The authors read this as factual
+      and arithmetic-reasoning correctness being structurally distinct directions.
+    where: "§1, §4.4, §5; Table 2; Fig. 5 (read from Fig. 5)"
+    evidence_kind: measured
+    effect_of: [task]
+    effect_presence: absent
+    scope:
+      conditions: Trained on TriviaQA; tested on GSM8K.
+    note: >
+      Simple arithmetic (Math operations) does transfer (c3), so the failure is on multi-step word problems, not on
+      arithmetic as such. The authors' reading is argued, not tested; c5 shows GSM8K correctness is decodable from
+      a direction trained on GSM8K itself.
+
+  - id: morenocencerrado2026-no-answer-needed.c5
+    study: morenocencerrado2026-no-answer-needed.s1
+    statement: >
+      Trained and tested on GSM8K itself, the direction reaches AUROC 0.70 to 0.74 across the six models, and the
+      direction learned on GSM8K is close to orthogonal to the TriviaQA one (cosine 0.00 to 0.10).
+    where: "Fig. 6 diagonal and Fig. 8 (values read from the figures); App. B.6, B.7"
+    evidence_kind: measured
+    effect_of: [task]
+    effect_presence: present
+    scope:
+      conditions: Trained and tested on GSM8K.
+    note: >
+      Not stated in the text, which says no method predicts GSM8K success well (§4.4) while referring to
+      directions trained on TriviaQA. The diagonal values are 5-fold means printed in the cells of Fig. 6.
+
+  - id: morenocencerrado2026-no-answer-needed.c6
+    study: morenocencerrado2026-no-answer-needed.s1
+    statement: >
+      Against the best assessor (logistic regression on question embeddings), the TriviaQA direction is lower in
+      distribution (0.73 to 0.83 against 0.76 to 0.85) but higher out of distribution on Notable People, Cities
+      and Math operations for every model, by 6 to 13, 7 to 22 and 29 to 51 AUROC points. On Medals it is higher
+      for five of six models (by 1 to 20 points; lower for Qwen 2.5 7B), and on GSM8K neither predicts well.
+    where: "§4.4; Table 2; Table 9 (XGBoost assessors)"
+    evidence_kind: measured
+    compares: [morenocencerrado2026-no-answer-needed.s2]
+    note: >
+      The margins are computed from Table 2. The text gives margins over the best baseline (assessor or verbalised
+      confidence) of 10 to 22 points on Notable People, 5 to 18 on Cities, 28 to 39 on Math operations and 4 to 15
+      on Medals, and says the direction beats the baselines on every dataset but GSM8K. Table 2 gives smaller
+      margins on Notable People (6 to 12 over the best baseline), and two exceptions: on Medals the assessor beats
+      the direction for Qwen 2.5 7B (0.622 against 0.586), and on Math operations verbalised confidence beats it
+      for Llama 3.3 70B (0.913 against 0.835; c14). XGBoost assessors are higher in distribution (0.83 to 0.90) and
+      lower out of distribution than logistic regression. The authors conclude that the activations carry a signal
+      of the model's own competence that the question text does not (c9).
+
+  - id: morenocencerrado2026-no-answer-needed.c7
+    study: morenocencerrado2026-no-answer-needed.s1
+    statement: >
+      Directions trained on the smaller datasets transfer unevenly: every dataset gives fair in-distribution AUROC
+      (Medals often lowest), Cities- and Notable People-trained directions sometimes transfer well, and the
+      TriviaQA-trained direction transfers best overall apart from GSM8K and Medals. Directions learned on
+      different datasets are mostly near-orthogonal (cosines mostly below 0.25), with Cities, Notable People and
+      TriviaQA the most aligned (TriviaQA with Cities 0.30 to 0.44).
+    where: "§4.4; Figs. 3, 6 and 8 (values read from Fig. 8); App. B.6, B.7"
+    evidence_kind: measured
+    effect_of: [task]
+    effect_presence: mixed
+    note: >
+      The authors take this to mean some datasets' directions pick up dataset-specific cues correlated with
+      correctness rather than correctness itself. One cell is below chance: Qwen 2.5 7B's Medals-trained
+      direction scores 0.22 on Math operations (Fig. 6).
+
+  - id: morenocencerrado2026-no-answer-needed.c8
+    study: morenocencerrado2026-no-answer-needed.s1
+    statement: >
+      The direction needs little data: performance is robust from about 160 TriviaQA training samples, and about
+      2,560 match the full 48,540; the larger models plateau sooner.
+    where: "§4.4; App. B.5; Fig. 5 (read from Fig. 5)"
+    evidence_kind: measured
+    note: >
+      Training-set size has no value in varies, so no effect_of. "Larger models plateau sooner" rests on Llama
+      3.3 70B and DeepSeek 32B against the 7B and 8B models; read from Fig. 5 it is a rough pattern, and Math
+      operations is the slowest to converge for several models (App. B.5). The authors take the sample efficiency
+      as support for a linear representation of correctness.
+
+  - id: morenocencerrado2026-no-answer-needed.c9
+    study: morenocencerrado2026-no-answer-needed.s1
+    statement: >
+      The authors argue that because a linear direction on the activations generalises across factual datasets
+      better than classifiers on the question's embedding, the residual stream holds a transferable signal of the
+      model's own competence that is not in the question's surface semantics, one the model could itself access.
+    where: "§1, §4.4, §5; App. A.3"
+    evidence_kind: argued
+    note: >
+      The probe is the experimenters' readout. No result in the paper tests whether the model uses the direction,
+      apart from the correlational abstention result (s3).
+
+  - id: morenocencerrado2026-no-answer-needed.c10
+    study: morenocencerrado2026-no-answer-needed.s1
+    statement: >
+      Thresholded with a cut chosen on the training data, the TriviaQA direction's accuracy falls to about chance
+      on some held-out datasets where its AUROC is well above chance (Cities: 0.500 for Ministral 8B and 0.515 for
+      Qwen 2.5 7B, at AUROC 0.84), and to 0.50 on GSM8K for every model; directions trained on each dataset itself
+      reach accuracy 0.64 to 0.96.
+    where: "App. B.3; Table 7"
+    evidence_kind: measured
+    effect_of: [task]
+    effect_presence: mixed
+    note: The ranking transfers across datasets better than the operating point; the paper does not discuss this.
+
+  - id: morenocencerrado2026-no-answer-needed.c11
+    study: morenocencerrado2026-no-answer-needed.s1
+    statement: >
+      The authors report the correctness signal strongest and most consistent in the largest model, Llama 3.3
+      70B: the only model with a large margin on Medals (0.770 against at most 0.68), the highest TriviaQA AUROC
+      (0.826), and good transfer across the most train-test dataset pairs.
+    where: "§1, §4.4, §5; Table 2; Figs. 3, 6"
+    evidence_kind: measured
+    effect_of: [model_size]
+    effect_presence: present
+    effect_direction: increases
+    scope:
+      models: [llama-3.3-70b-instruct]
+    note: >
+      One model above 32B, from a different family and post-training from most of the small models, so size is
+      not separated from family. On Cities and Math operations Llama 3.3 70B is not ahead (0.880 against 0.880 for
+      Mistral 7B; 0.835 against 0.858 for Llama 3.1 8B). The authors list the single large model as a limitation
+      (§6).
+
+  - id: morenocencerrado2026-no-answer-needed.c12
+    study: morenocencerrado2026-no-answer-needed.s1
+    statement: >
+      For Mistral 7B Instruct on Notable People, the wrong answers with the highest scores on the direction miss
+      the birth year by one to ten years, and the right answers with the highest scores are very well known people
+      (Einstein, Darwin); the lowest-scoring wrong answers include "I don't know".
+    where: "§4.5; Table 3"
+    evidence_kind: observed
+    note: Two examples per cell; the authors read the pattern as the direction tracking confidence.
+
+  - id: morenocencerrado2026-no-answer-needed.c13
+    study: morenocencerrado2026-no-answer-needed.s2
+    statement: >
+      Verbalised confidence predicts the model's correctness weakly: AUROC 0.50 to 0.64 on TriviaQA across the six
+      models, and at or near 0.50 on most held-out datasets for Llama 3.1 8B and Ministral 8B. Llama 3.3 70B is the
+      exception, reaching 0.69 on Cities and 0.91 on Math operations.
+    where: "§4.4; Table 2"
+    evidence_kind: measured
+    effect_of: [model_family]
+    effect_presence: present
+    scope:
+      conditions: All six datasets.
+    note: >
+      Several values of exactly 0.500 to 0.502 are consistent with constant or unparseable answers, which the code
+      scores 0 (study note); the paper does not say. effect_of model_family records that Llama 3.3 70B differs
+      from the rest; the source draws no conclusion from it.
+
+  - id: morenocencerrado2026-no-answer-needed.c14
+    study: morenocencerrado2026-no-answer-needed.s2
+    statement: >
+      On the same test questions the question-only probe predicts the model's correctness better than its own
+      verbalised confidence in 33 of 36 model-dataset cells (on TriviaQA 0.73 to 0.83 against 0.50 to 0.64). The
+      exceptions are all Llama: 3.3 70B on Math operations (confidence 0.913 against the probe's 0.835) and on
+      GSM8K (0.598 against 0.499), and 3.1 8B on GSM8K (0.540 against 0.534); Ministral 8B on GSM8K is a tie
+      (0.577 against 0.578).
+    where: "§4.4; Table 2"
+    evidence_kind: measured
+    compares: [morenocencerrado2026-no-answer-needed.s1]
+    note: >
+      Counted from Table 2; the paper states only that the direction outperforms verbalised confidence. On GSM8K
+      neither is much above chance. The probe is trained on four folds of TriviaQA; verbalised confidence takes no
+      training.
+
+  - id: morenocencerrado2026-no-answer-needed.c15
+    study: morenocencerrado2026-no-answer-needed.s3
+    statement: >
+      Questions the model answers with "I don't know" sit further toward the negative end of the TriviaQA-trained
+      direction than questions it attempts and gets wrong, which in turn sit below those it gets right (Fig. 4,
+      Cities: Mistral 7B Instruct with 3,408 abstentions, DeepSeek R1 Distill Qwen 32B with 1,233).
+    where: "§4.5; Fig. 4 (viewed; no statistic given)"
+    evidence_kind: observed
+    note: >
+      The distributions overlap, more so for DeepSeek, where the abstention and wrong-answer peaks are close. No
+      test or effect size is reported, and the text's "consistently" rests on the two panels shown.
+
+  - id: morenocencerrado2026-no-answer-needed.c16
+    study: morenocencerrado2026-no-answer-needed.s3
+    statement: >
+      The authors argue that the direction captures the internal state causally upstream of the choice to answer
+      or abstain, so it can be read as a confidence direction: the model says it does not know only when its
+      confidence that it can answer is very low.
+    where: "§1, §4.5, §5"
+    evidence_kind: argued
+    report_source: [current_state]
+    note: >
+      report_source (stated, §4.5; low confidence): the authors trace the abstention to an internal state the
+      probe reads. The support is correlational (c15); no intervention on the direction was run. They cite
+      Ferrando et al. (2025) for directions that causally affect refusal to answer. The rule for current_state
+      asks for a case that a fresh copy reading the same text would not give the report, which the source does
+      not make; the value is the nearest to "the internal state drives it".
+
+  - id: morenocencerrado2026-no-answer-needed.c17
+    study: morenocencerrado2026-no-answer-needed.s1
+    statement: >
+      The authors argue that a cheap question-only probe could serve as an early warning of failure (for early
+      stopping, fallback or human review), alongside other black- and white-box methods.
+    where: "§5; App. A.1"
+    evidence_kind: argued
+
+  - id: morenocencerrado2026-no-answer-needed.c18
+    study: morenocencerrado2026-no-answer-needed.s1
+    statement: >
+      Choosing the layer per dataset instead of using the model's TriviaQA-optimal layer gains little on most
+      model-dataset pairs (a few AUROC points or less), but more on Math operations for Llama 3.3 70B (0.835 to
+      0.979), DeepSeek 32B (0.848 to 0.963) and Mistral 7B (0.801 to 0.915), and on GSM8K by 1 to 13 points
+      (largest for Llama 3.3 70B, 0.499 to 0.625).
+    where: "App. B.3; Table 8"
+    evidence_kind: measured
+    note: >
+      Table 8's caption does not say which dataset the directions were trained on; its model-layer values match
+      the TriviaQA-trained values in Table 2, so the comparison is read as the TriviaQA-trained direction at two
+      layers. Layer has no value in varies, so no effect_of. Table 8 has no Notable People column.
+
+relations:
+  - kind: uses_method_of
+    from: morenocencerrado2026-no-answer-needed
+    to_external: "Bürger, Hamprecht and Nadler (2024), Truth is universal: Robust detection of lies in LLMs, NeurIPS 37"
+    where: "§3"
+    note: The difference-of-means direction, from statement truthfulness to in-advance correctness.
+  - kind: extends
+    from: morenocencerrado2026-no-answer-needed
+    to_external: "Kadavath et al. (2022), Language models (mostly) know what they know, arXiv 2207.05221"
+    where: "§2; App. A.2"
+    note: >
+      Named as one of the two closest works: a similar probe on older proprietary models, with no code released.
+      Citation details beyond the authors and year are not from the source's reference list as read.

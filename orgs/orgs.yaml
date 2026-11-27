@@ -147,3 +147,19 @@
 - id: warsaw-university-of-technology
   name: Warsaw University of Technology
   kind: university
+
+# Added with Moreno Cencerrado et al. 2026 (arXiv 2509.10625)
+- id: universidad-internacional-de-valencia
+  name: Universidad Internacional de Valencia
+  kind: university
+- id: university-of-cambridge
+  name: University of Cambridge
+  kind: university
+- id: mars-cambridge
+  name: MARS (Mentorship for Alignment Research Students), Cambridge AI Safety Hub
+  kind: programme
+  note: Named in a footnote on p. 1 of Moreno Cencerrado et al. (2026), v3.
+- id: deepseek
+  name: DeepSeek
+  kind: company
+  note: Developer of DeepSeek-R1-Distill-Qwen-32B (Hugging Face organisation deepseek-ai). Kind not verified.

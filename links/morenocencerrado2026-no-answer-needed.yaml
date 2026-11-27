@@ -1,0 +1,57 @@
+# Links from morenocencerrado2026-no-answer-needed's claims to questions: which question a claim bears on, and with
+# what stance. A link is a judgement by whoever poses or maintains the question, not part of what the paper reports.
+# Proposed by the coder of the record (PR 25), for the question poser to confirm.
+source: morenocencerrado2026-no-answer-needed
+links:
+- claim: morenocencerrado2026-no-answer-needed.c1
+  question: q-correctness-decodable-before-answering
+  stance: supports
+  note: TriviaQA in distribution, AUROC 0.73 to 0.83 across six models.
+- claim: morenocencerrado2026-no-answer-needed.c5
+  question: q-correctness-decodable-before-answering
+  stance: supports
+  note: GSM8K in distribution, AUROC 0.70 to 0.74, although the TriviaQA direction does not transfer there (c4).
+- claim: morenocencerrado2026-no-answer-needed.c3
+  question: q-correctness-direction-transfers-short-answer
+  stance: supports
+  note: Trained on TriviaQA, well above chance on Notable People, Cities, Math operations and Medals.
+- claim: morenocencerrado2026-no-answer-needed.c7
+  question: q-correctness-direction-transfers-short-answer
+  stance: mixed
+  note: >
+    Directions trained on the smaller datasets transfer unevenly and are mostly near-orthogonal to one another;
+    the authors read some as dataset-specific cues.
+- claim: morenocencerrado2026-no-answer-needed.c10
+  question: q-correctness-direction-transfers-short-answer
+  stance: mixed
+  note: >
+    The ranking transfers (c3) but a threshold set on the training data does not: accuracy at chance on Cities for
+    two models whose AUROC there is 0.84.
+- claim: morenocencerrado2026-no-answer-needed.c4
+  question: q-correctness-direction-transfers-to-reasoning
+  stance: against
+  note: TriviaQA direction on GSM8K, AUROC 0.50 to 0.60 at any training size.
+- claim: morenocencerrado2026-no-answer-needed.c6
+  question: q-privileged-self-access
+  stance: inconclusive
+  note: >
+    The activations predict the model's correctness out of distribution better than classifiers on the question's
+    embedding (trained on the same model's correctness labels, so an outside observer of its behaviour), though not
+    in distribution. This bears on whether the internals hold information about the model beyond what the question
+    text and its record of answers give, but a probe is the experimenters' access, not the model's. Frame mismatch: the question frames on construct introspection; this study codes metacognition.
+- claim: morenocencerrado2026-no-answer-needed.c14
+  question: q-stated-confidence-matches-probe
+  stance: against
+  note: The probe beats stated confidence in 33 of 36 model-dataset cells; the exceptions are three Llama cells.
+- claim: morenocencerrado2026-no-answer-needed.c13
+  question: q-report-matches-direct-measure
+  stance: mixed
+  note: >
+    Stated confidence against the model's own correctness: near chance for most models, up to 0.91 for Llama 3.3
+    70B on Math operations. Frame mismatch: the question frames on construct introspection; this study codes
+    metacognition.
+- claim: morenocencerrado2026-no-answer-needed.c16
+  question: q-what-self-reports-draw-on
+  note: >
+    The authors trace "I don't know" answers to the internal state the correctness direction reads
+    (report_source current_state, low confidence), on correlational evidence only.

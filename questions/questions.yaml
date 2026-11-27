@@ -539,3 +539,71 @@
     needs no access an outside reader of the same output lacks, so yes here is not yes on the parent. Codebook 0.10
     has no value for an inference-time sampling setting; until it does, such studies code report_target
     injected_state and varies activation_intervention as the nearest values (see LOG.md, 2026-11-27).
+
+# Added with Moreno Cencerrado et al. 2026 (arXiv 2509.10625)
+- id: q-correctness-decodable-before-answering
+  text: >-
+    Can a probe on a model's activations, read after a question and before any answer is generated, predict whether
+    the model's answer will be correct?
+  parent: q-privileged-self-access
+  polarity: none
+  frame:
+    construct: [metacognition]
+    evidence: [internals]
+    not: {evidence: [self_report]}
+    validated_against: [behaviour]
+  added: 2026-11-27
+  status: open
+  note: >-
+    Decodability by the experimenters, not the model's own access: a probe reading the activations shows the
+    information is there, not that the model uses it. Hence polarity none on q-privileged-self-access. The analogue
+    for an injected state is q-injected-state-decodable. Studies where the model also reports its confidence are
+    under q-stated-confidence-matches-probe.
+- id: q-correctness-direction-transfers-short-answer
+  text: >-
+    Does a correctness direction learned on one set of short-answer questions (factual recall or single-step
+    arithmetic) predict correctness on other such sets it was not trained on?
+  parent: q-correctness-decodable-before-answering
+  polarity: none
+  frame:
+    construct: [metacognition]
+    evidence: [internals]
+    not: {evidence: [self_report]}
+    varies: [task]
+  added: 2026-11-27
+  status: open
+  note: >-
+    Split from q-correctness-direction-transfers-to-reasoning because transfer differs by kind of task (the
+    task-only conflict rule). Polarity none: failure to transfer does not mean correctness is not decodable in
+    distribution, so "no" here is not "no" on the parent.
+- id: q-correctness-direction-transfers-to-reasoning
+  text: >-
+    Does a correctness direction learned on short-answer questions predict correctness on multi-step reasoning
+    problems (such as maths word problems)?
+  parent: q-correctness-decodable-before-answering
+  polarity: none
+  frame:
+    construct: [metacognition]
+    evidence: [internals]
+    not: {evidence: [self_report]}
+    varies: [task]
+  added: 2026-11-27
+  status: open
+  note: >-
+    Sibling of q-correctness-direction-transfers-short-answer; polarity none for the same reason.
+- id: q-stated-confidence-matches-probe
+  text: >-
+    Does a model's stated confidence that it will answer a question correctly predict its correctness as well as a
+    probe on its own activations, read before it answers?
+  parent: q-report-matches-direct-measure
+  polarity: direct
+  frame:
+    construct: [metacognition]
+    evidence: [self_report, internals]
+    validated_against: [probe]
+  added: 2026-11-27
+  status: open
+  note: >-
+    Sibling of q-report-matches-probe, whose frame and wording ("an internal state") fit introspection designs; here
+    the report and the probe are both scored against the model's later behaviour (correctness), and the construct is
+    metacognition.

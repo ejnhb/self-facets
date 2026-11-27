@@ -265,6 +265,23 @@ def validate():
             rep.err(sid, "read_depth partial needs read_parts")
         if coding.get("status") == "reviewed" and not coding.get("reviewed_by"):
             rep.err(sid, "status reviewed needs reviewed_by")
+        passes = as_list(coding.get("passes"))
+        if not passes:
+            rep.err(sid, "coding.passes is missing: list every coding or change (CLAUDE.md, 'Mark your work')")
+        for i, ps in enumerate(passes, 1):
+            if not isinstance(ps, dict):
+                rep.err(sid, f"coding.passes {i} must be a mapping")
+                continue
+            for field in ("date", "coded_by", "codebook", "scope", "read"):
+                if not ps.get(field):
+                    rep.err(sid, f"coding.passes {i}: {field} is missing")
+            if ps.get("coded_by") == "claude" and not ps.get("coder_model"):
+                rep.err(sid, f"coding.passes {i}: coder_model is required when coded_by is claude")
+            if not isinstance(ps.get("codebook"), str):
+                rep.err(sid, f"coding.passes {i}: quote codebook so YAML keeps it as text")
+            pr = ps.get("pr")
+            if pr is not None and not (isinstance(pr, int) or (isinstance(pr, list) and all(isinstance(x, int) for x in pr))):
+                rep.err(sid, f"coding.passes {i}: pr is a pull request number or a list of them")
 
         local_studies = {}
         for study in as_list(src.get("studies")):

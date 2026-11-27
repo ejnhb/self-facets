@@ -157,6 +157,13 @@ are coded.
   is not coded yet.
 - **Mark your work.** Set `coded_by: claude`, `coder_model` to your model id,
   and `status: draft`. Only a human reviewer sets `status: reviewed`.
+  `coded_by`, `coder_model` and `read_parts` describe the first full coding.
+  Every coding or later change to a record, a backfill included, adds an entry
+  to `coding.passes`: date, pull request, coder and model, the codebook version,
+  what the pass coded or changed, and what was read for it (or that nothing new
+  was). Many instances of one model sign the same `coder_model`; the pull
+  request tells them apart, and the list lets a checker confirm it is not the
+  model that coded what it checks.
 
 ## Ids
 

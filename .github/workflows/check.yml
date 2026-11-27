@@ -1,0 +1,18 @@
+# Runs on every pull request and push to main: the records must validate and the database must build.
+# No separate test suite yet, so there is nothing extra to maintain while the design is still changing.
+name: check
+on:
+  pull_request:
+  push:
+    branches: [main]
+jobs:
+  validate-and-build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install -r requirements.txt
+      - run: python scripts/validate.py
+      - run: python scripts/build.py

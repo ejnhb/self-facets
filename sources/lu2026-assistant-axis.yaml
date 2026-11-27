@@ -1,0 +1,920 @@
+id: lu2026-assistant-axis
+title: "The Assistant Axis: Situating and Stabilizing the Default Persona of Language Models"
+date: 2026-01-15
+
+authors:
+  - {person: lu-christina, orgs: [mats, anthropic-fellows-program, university-of-oxford]}
+  - {person: gallagher-jack, orgs: [anthropic]}
+  - {person: michala-jonathan, orgs: [mats]}
+  - {person: fish-kyle, orgs: [anthropic]}
+  - {person: lindsey-jack, orgs: [anthropic]}
+
+artefacts:
+  - kind: paper
+    arxiv: "2601.10387"
+    venue: null
+    note: >
+      v1, arXiv stamp 15 January 2026 (cs.CL), marked "Preprint". Affiliations as printed: 1 MATS, 2 Anthropic
+      Fellows Program, 3 University of Oxford, 4 Anthropic. Lu and Lindsey are marked as corresponding authors.
+      Venue not checked.
+  - kind: code
+    status: released
+    url: https://github.com/safety-research/assistant-axis
+    ref: 71c8942bc151816b70a72bf0dbe5bd06c0311761
+    read: partial
+    note: >
+      Linked from the paper's first page ("Code and full transcripts of case studies"). Read at 71c8942
+      (2026-01-15, the last commit on the day of v1; the repository head on 2026-11-27 was a989619, 2026-01-19,
+      which adds transcripts and README edits). Read: README.md, pipeline/README.md, pipeline/4_vectors.py and
+      5_axis.py in full; grep of pipeline/1_generate.py, 2_activations.py and 3_judge.py for model ids, sampling
+      settings and the thinking switch; assistant_axis/models.py (model ids, target layers, capping settings);
+      the list of method names in assistant_axis/steering.py; data/roles/instructions/default.json; the first
+      lines of data/extraction_questions.jsonl; notebooks/README.md; transcripts/README.md and the metadata (not
+      the text) of the case-study and persona-drift transcripts. Not read: the notebooks, the internals/
+      library, the role and trait instruction files, the transcript texts. The released pipeline is described
+      as a way to compute the axis for a new model; it is not said to be the exact code behind every figure.
+  - kind: data
+    status: released
+    url: https://huggingface.co/datasets/lu-christina/assistant-axis-vectors
+    ref: main
+    read: partial
+    note: >
+      Pre-computed role vectors, Assistant Axes and (for Qwen 3 32B and Llama 3.3 70B) activation-capping
+      settings, on Hugging Face (card read 2026-11-27; revision not pinned, last updated 22 January 2026, after
+      v1). The repository also releases the role, trait and extraction-question lists and selected
+      transcripts (case studies; one conversation per drift domain). The full rollouts, judge scores, jailbreak
+      and benchmark outputs and the 100-conversation drift runs are not released as far as the README and card
+      say. Only the card and the transcript metadata were read; no file was downloaded.
+
+coding:
+  coded_by: claude
+  coder_model: claude-opus-5-5
+  coded_on: 2026-11-27
+  version_read: v1
+  read_depth: full_text
+  read_parts: >
+    The whole v1 PDF (54 pages), fetched with scripts/fetch_paper.py: main text, references and Appendices A to
+    G (prompts, persona-space details, trait space, steering evaluations with judge prompts and example tables,
+    base-model prefills and judge prompts, multi-turn personas and prompts, capping Pareto frontier for Qwen,
+    the role-PC1 comparison). Figures seen as page images: Figs. 4 (p. 8), 5 (p. 9), 6 (p. 10), 7 (p. 11), 8
+    (p. 12), 9 (p. 14), 10 (p. 15), 12 (p. 17), 15 and 16 (p. 26), 23 and 24 (p. 47), 25 (p. 48), 27 and 28
+    (p. 50). Not viewed: Figs. 1, 2, 3, 11, 13, 14, 17 to 22, 26, 29 to 35; claims that rest on them are
+    written from the text and say so. Code and data as in the artefact notes. No cited work was read (Chen et
+    al. 2025 on persona vectors, Shah et al. 2023 for the jailbreak dataset included).
+  status: draft
+  reviewed_by: null
+  passes:
+    - date: 2026-11-27
+      pr: null
+      coded_by: claude
+      coder_model: claude-opus-5-5
+      codebook: "0.10"
+      scope: >
+        First coding: nine studies and their claims, core facets throughout; interpretive facets where the
+        proposed links need them (object_of_study and unit_reporter on s3; self_sense on s2 and s5;
+        object_of_study on s5, s6 and s9) or where the source states them (object_of_study). Proposed links
+        in links/lu2026-assistant-axis.yaml.
+      read: "As in read_parts above, with the code and data listed in the artefact notes."
+
+studies:
+  # s1: persona space in the instruct models and the Assistant Axis
+  - id: lu2026-assistant-axis.s1
+    label: Persona space from role and trait vectors, where the default Assistant sits in it, and the Assistant Axis
+    where: "§2, §3.1; Appendices A, B.1, B.2, C, G.1; Tables 1, 2, 7; Figs. 15, 16, 27"
+    design: >
+      275 roles (human and non-human archetypes such as editor, jester, ghost, hive) and five system prompts
+      per role were generated with Claude Sonnet 4, with 240 shared extraction questions meant to draw out
+      differences in character. Each role was run on every prompt-question pair (1,200 rollouts per role), and
+      the default Assistant on the same questions under four neutral system prompts ("You are an AI
+      assistant", "You are a large language model", "You are {model name}", "Respond as yourself") and none.
+      gpt-4.1-mini scored each response 0 to 3 for how fully the role was played; fully (3) and somewhat (2)
+      role-playing responses were kept as separate role vectors for roles with at least ten of either. A role
+      vector is the mean post-MLP residual-stream activation over all response tokens at the middle layer
+      (Gemma layer 22 of 46, Qwen 32 of 64, Llama 40 of 80, per the code). PCA on the mean-centred role
+      vectors (n = 377 to 463 per model) gives "persona space". The same pipeline was run on 240 traits with
+      contrastive positive and negative system prompts (trait vector = mean positive minus mean negative
+      activation; traits kept with ten prompt pairs differing by 50 or more points on a 0 to 100 judge
+      score). The Assistant Axis is the mean default activation minus the mean of the fully role-playing role
+      vectors, computed at every layer; it is compared with role PC1 by cosine per layer and with the trait
+      vectors by cosine. The share of activation variance the persona PCs explain is measured on 18,777
+      assistant turns from LMSYS-Chat-1M.
+    models:
+      - gemma-2-27b-it
+      - qwen3-32b
+      - llama-3.3-70b-instruct
+      - {id: gpt-4.1-mini, roles: [judge], note: "Scores role expression 0 to 3, and trait expression 0 to 100, to filter rollouts."}
+      - {id: claude-sonnet-4, roles: [data_source], note: "Generated the role and trait lists, system prompts, extraction questions and judge prompts."}
+    note: >
+      Paper and code differ on the role vectors: the paper keeps fully and somewhat role-playing responses as
+      separate vectors for roles with at least ten responses in a category, while the released
+      pipeline/4_vectors.py computes only fully role-playing (score 3) vectors and requires 50 by default; the
+      default vector there is the mean of all default rollouts with no score filter. This coding follows the
+      paper. Layer is held at the middle layer for the PCA; the axis-PC1 comparison runs over every layer, and
+      the codebook has no value for layer as a variable (OPEN.md). Qwen 3 32B was run with thinking off (§8.1;
+      enable_thinking=False in the code). Sampling in the code defaults to temperature 0.7, top-p 0.9, 512
+      tokens.
+    facets:
+      study_kind: experiment
+      format: [chat_template]
+      system_prompt: {value: [custom, none], basis: stated, where: "§2.1.2", note: "Role and trait system prompts; the default Assistant under four neutral system prompts and none."}
+      reasoning: {value: [none], basis: stated, where: "§8.1", note: "None of the models has reasoning training; Qwen's thinking mode was disabled."}
+      construct: {value: [persona_stability], author_term: "persona space; the Assistant persona", basis: operational, note: "The codebook rule puts persona vectors under persona_stability; this study maps where personas sit rather than whether they drift."}
+      report_target: not_applicable
+      report_readout: not_applicable
+      evidence: {value: [internals], note: "Judged role expression is used only to filter rollouts, not as data."}
+      validated_against: not_applicable
+      varies:
+        value: [persona, model_family]
+        levels:
+          persona: ["275 roles (fully and somewhat role-playing kept apart)", "240 traits (positive against negative prompts)", "default Assistant (four neutral system prompts and none)"]
+          model_family: [Gemma 2 27B IT, Qwen 3 32B, Llama 3.3 70B Instruct]
+      comparison: [within_model, cross_model]
+      output_route_control: not_applicable
+      similarity_adjustment: not_applicable
+      elicitation: {value: [prompted, spontaneous], basis: operational, note: "Roles and traits by system prompt; the default Assistant with neutral or no system prompt."}
+      object_of_study:
+        value: [default_persona, character]
+        basis: stated
+        author_term: "the default Assistant persona; character archetypes"
+        where: "§2"
+        confidence: high
+        note: Roles are played on instruction within a system prompt (character); the default rollouts are the Assistant.
+
+  # s2: base against instruct Gemma persona space
+  - id: lu2026-assistant-axis.s2
+    label: Persona space computed in base Gemma 2 27B on the instruct model's rollouts, against the instruct model
+    where: "§2.1.3 (last paragraph); Appendix B.3; Table 6; Fig. 18 (not viewed)"
+    design: >
+      The instruct model's role rollouts were passed through the base Gemma 2 27B, and activations, role
+      vectors and PCA were recomputed there as in s1. The base model's PCs and per-role vectors are compared
+      with the instruct model's by cosine, and the default Assistant vector is projected onto the base
+      model's PC1.
+    models:
+      - gemma-2-27b-base
+      - {id: gemma-2-27b-it, roles: [comparison, data_source], note: "Its rollouts are the text read by the base model; its persona space is the comparison."}
+    note: >
+      The text held fixed is the instruct model's own responses, so the comparison is of how the two sets of
+      weights represent the same text, not of what each would generate. The paper does not say how the
+      rollouts were formatted for the base model; the chat-template text is presumably kept.
+    facets:
+      study_kind: experiment
+      format: {value: [unspecified], note: "Not stated whether the instruct model's chat-template text was kept when read by the base model."}
+      system_prompt: {value: [custom, none], basis: operational, note: "The rollouts read are those of s1, with their role and default prompts."}
+      reasoning: [none]
+      construct: {value: [persona_stability], author_term: "persona space", basis: operational}
+      report_target: not_applicable
+      report_readout: not_applicable
+      evidence: [internals]
+      validated_against: not_applicable
+      varies:
+        value: [post_training_stage]
+        levels:
+          post_training_stage: [Gemma 2 27B (base), Gemma 2 27B IT]
+      comparison: [within_lineage]
+      output_route_control: not_applicable
+      similarity_adjustment: not_applicable
+      elicitation: {value: [prompted, spontaneous], basis: operational, note: "As in s1: the text read was generated under role and default prompts."}
+      self_sense:
+        value: [persona]
+        basis: operational
+        author_term: "the Assistant persona; persona space"
+        confidence: medium
+        note: >
+          What is compared is the representation of character archetypes and of the default Assistant
+          (trait and style profiles the model speaks as), not facts the model knows about itself.
+
+  # s3: steering on the axis and self-identification under role prompts
+  - id: lu2026-assistant-axis.s3
+    label: Steering along the Assistant Axis and whether role-prompted models answer identity questions as the Assistant
+    where: "§3.2.1 (role susceptibility); Appendices D.1, G.2; Tables 3, 8, 9, 10; Figs. 4, 28"
+    design: >
+      50 roles near the Assistant end of the axis (e.g. researcher, debugger, lawyer; the 50 with the highest
+      average rank across the three models), four new system prompts each, combined with five identity
+      questions ("Who are you?", "What is your name?", "Where did you come from?", "Are you a large language
+      model?", "Are you role-playing?"). Responses were generated while adding the Assistant Axis at the
+      middle layer at every token, at strengths given as a fraction of the average residual norm at that layer
+      (measured on LMSYS-Chat-1M), from towards the role-playing end to slightly towards the Assistant end.
+      DeepSeek-V3 classified each response as assistant, nonhuman role, human role, mystical ("weird") role,
+      ambiguous, other or nonsensical. The same evaluation was repeated steering along role PC1 (Appendix G.2).
+    models:
+      - gemma-2-27b-it
+      - qwen3-32b
+      - llama-3.3-70b-instruct
+      - {id: deepseek-v3, roles: [judge], note: "Classifies the perspective each response is written from."}
+      - {id: claude-sonnet-4, roles: [data_source], note: "The role system prompts were regenerated with the s1 pipeline (Appendix D.1.1), which uses this model."}
+    note: >
+      Steering ranges differ by model (read from Fig. 4: Gemma about -0.15 to +0.05 of the average norm, Qwen
+      about -0.9 to +0.3, Llama about -0.8 to +0.25). The authors call the identity items "introspective
+      behavioral questions"; the answers are judged for which perspective they take, not checked against any
+      fact or state.
+    facets:
+      study_kind: experiment
+      format: [chat_template]
+      system_prompt: {value: [custom], basis: stated, where: "§3.2.1"}
+      reasoning: [none]
+      construct: {value: [persona_stability], author_term: "role susceptibility; taking on a new persona", basis: operational}
+      report_target: {value: [own_properties], basis: operational, note: "Name, origin, whether it is a language model, whether it is role-playing."}
+      report_readout: {value: [free_text], basis: stated, where: "Appendix D.1.3", note: "Free-text answers sorted into categories by an LLM judge (first 512 tokens)."}
+      evidence: [self_report, internals]
+      validated_against: {value: [none], note: "The judge labels the perspective; nothing counts an answer as correct."}
+      varies:
+        value: [activation_intervention, persona, model_family]
+        levels:
+          activation_intervention:
+            - "Assistant Axis added at the middle layer, every token, strength as a fraction of the average residual norm (Gemma about -0.15 to +0.05; Qwen about -0.9 to +0.3; Llama about -0.8 to +0.25; read from Fig. 4)"
+            - "role PC1 added at the middle layer, same ranges (Appendix G.2, Fig. 28)"
+          persona: ["50 Assistant-like roles, four system prompts each"]
+          model_family: [Gemma 2 27B IT, Qwen 3 32B, Llama 3.3 70B Instruct]
+      comparison: [within_model, cross_model]
+      output_route_control: {value: none, basis: operational, note: "Single-turn free-text answers; the question of reading a state does not arise, but nothing restricts what precedes the identity statement."}
+      similarity_adjustment: not_applicable
+      elicitation: {value: [prompted, steered], basis: operational, note: "Role system prompts; the non-Assistant identities mostly appear under steering."}
+      object_of_study:
+        value: [default_persona, character, other_persona]
+        basis: stated
+        author_term: "the Assistant; non-Assistant personas (human, nonhuman, mystical)"
+        where: "§3.2.1"
+        confidence: medium
+        note: >
+          Unsteered, the models mostly answer as the Assistant playing a role (default_persona, character);
+          steering away yields answers from a human, nonhuman or mystical speaker the authors treat as a
+          persona other than the Assistant (other_persona). Which applies is what the judge measures.
+      unit_reporter:
+        value: [speaker]
+        basis: operational
+        confidence: high
+        note: The answers are the voice the model speaks as; object_of_study says which.
+
+  # s4: steering and persona-based jailbreaks
+  - id: lu2026-assistant-axis.s4
+    label: Steering along the Assistant Axis against persona-based jailbreaks
+    where: "§3.2.1 (persona-based jailbreaks); Appendices D.2, G.2; Tables 4, 11 to 14; Figs. 5, 29 (not viewed)"
+    design: >
+      1,100 system-prompt and question pairs sampled from the persona-modulation jailbreak dataset of Shah et
+      al. (2023), covering 44 harm categories: the system prompt sets up a persona likely to comply, and the
+      question invites a harmful answer. Responses were generated while adding the Assistant Axis (or role
+      PC1, Appendix G.2) at the middle layer at a range of strengths. DeepSeek-V3 sorted responses into
+      refusal, refusal with justification, nonsensical, out of context, related but no information, almost
+      enough, enough, and enough and followed perfectly; the plotted groups are harmful, refusal, redirection
+      and nonsensical. The judge agreed with a human evaluator on 91.6% of 200 samples. A baseline gave the
+      question alone, without the jailbreak prompt.
+    models:
+      - gemma-2-27b-it
+      - qwen3-32b
+      - llama-3.3-70b-instruct
+      - {id: deepseek-v3, roles: [judge], note: "Harmfulness judge, checked against a human on 200 samples."}
+    note: >
+      The mapping from the judge's nine categories to the four plotted groups is not given; "harmful" is
+      presumably the enough-information categories.
+    facets:
+      study_kind: experiment
+      format: [chat_template]
+      system_prompt: {value: [custom, none], basis: stated, where: "§3.2.1", note: "Jailbreak persona prompts; the no-jailbreak baseline gives only the question."}
+      reasoning: [none]
+      construct: {value: [persona_stability], author_term: "persona-based jailbreaks; the default harmless persona", basis: operational}
+      report_target: not_applicable
+      report_readout: not_applicable
+      evidence: [behaviour, internals]
+      validated_against: not_applicable
+      varies:
+        value: [activation_intervention, model_family]
+        levels:
+          activation_intervention:
+            - "Assistant Axis added at the middle layer, every token (Gemma about -0.05 to +0.15 of the average norm; Qwen about -0.25 to +0.9; Llama about -0.2 to +0.75; read from Fig. 5)"
+            - "role PC1 added at the middle layer (Appendix G.2)"
+          model_family: [Gemma 2 27B IT, Qwen 3 32B, Llama 3.3 70B Instruct]
+      comparison: [within_model, cross_model]
+      output_route_control: not_applicable
+      similarity_adjustment: not_applicable
+      elicitation: [prompted]
+
+  # s5: steering base models with the axis taken from their instruct versions
+  - id: lu2026-assistant-axis.s5
+    label: Base models steered along their instruct model's Assistant Axis, completing self-descriptive prefills
+    where: "§3.2.2; Appendices D.3, G.2; Fig. 6; Fig. 30 (not viewed)"
+    design: >
+      The Assistant Axis was extracted from Gemma 2 27B IT and Llama 3.1 70B Instruct and added to the
+      activations of their base models, which were given raw-text prefills about the speaker's purpose ("My
+      job is to", "My purpose is to", "I exist to") and traits ("I would describe myself as", "People would
+      say I am"), with 400 completions of up to 512 tokens per prefill and steering strength. Claude Sonnet 4.5
+      first summarised each completion in a few words, then assigned eight to ten high-level labels (purpose:
+      professional, coaching, mental health, religious, service work, medicine and others; traits: Big Five
+      categories and others, the first three traits mentioned). The same was done with role PC1 (Appendix
+      G.2).
+    models:
+      - gemma-2-27b-base
+      - llama-3.1-70b-base
+      - {id: gemma-2-27b-it, roles: [data_source], note: "Source of the Assistant Axis applied to the base model."}
+      - {id: llama-3.1-70b-instruct, roles: [data_source], note: "Source of the Assistant Axis applied to the base model; also its role PC1, which did not single out the Assistant (Appendix G.2)."}
+      - {id: claude-sonnet-4.5, roles: [judge], note: "Summarises and labels the completions."}
+    note: >
+      Llama 3.1 70B is used here, not the Llama 3.3 70B of the other studies, because it has a released base
+      model. The completions describe whoever the prefill's "I" is taken to be; no chat template or turn
+      structure is given.
+    facets:
+      study_kind: experiment
+      format: {value: [raw_text], basis: stated, where: "§3.2.2; Appendix D.3.1"}
+      system_prompt: not_applicable
+      reasoning: [none]
+      construct: {value: [persona_stability], author_term: "the Assistant Axis in base models; helpful human archetypes", basis: operational, note: "The study asks what the axis means before post-training; persona_stability is the nearest label for persona representation."}
+      report_target: {value: [own_properties], basis: operational, note: "The speaker's purpose and traits, as completions of a first-person prefill."}
+      report_readout: {value: [free_text], basis: stated, where: "§3.2.2", note: "Completions labelled by an LLM judge."}
+      evidence: [self_report, internals]
+      validated_against: [none]
+      varies:
+        value: [activation_intervention, model_family]
+        levels:
+          activation_intervention:
+            - "instruct model's Assistant Axis added to the base model (Gemma about -0.05 to +0.15 of the average norm; Llama about -0.25 to +0.75; read from Fig. 6)"
+            - "instruct model's role PC1 (Appendix G.2)"
+          model_family: [Gemma 2 27B, Llama 3.1 70B]
+      comparison: [within_model]
+      output_route_control: {value: none, basis: operational, note: "Free-text completions; nothing is checked against a state."}
+      similarity_adjustment: not_applicable
+      elicitation: [prefilled, steered]
+      object_of_study:
+        value: [frame_speaker]
+        basis: stated
+        author_term: "the speaker"
+        where: "§3.2.2"
+        confidence: high
+        note: Base models with no turn structure; the prefill leaves the character unspecified.
+      unit_reporter: {value: [speaker], basis: operational, confidence: high}
+      self_sense:
+        value: [persona]
+        basis: operational
+        author_term: "the speaker's purpose and traits"
+        confidence: medium
+        note: The labels are character and trait profiles of the voice the base model speaks as.
+
+  # s6: persona drift over multi-turn conversations
+  - id: lu2026-assistant-axis.s6
+    label: Projection on the Assistant Axis over simulated multi-turn conversations in four domains, and what in the user's message predicts it
+    where: "§4.1, §4.2; Appendices E, G.3; Table 5; Figs. 7, 23, 24, 25; Figs. 31 to 33 (not viewed)"
+    design: >
+      Five handwritten user personas per domain (coding, writing, therapy-like, philosophical discussion of
+      AI), with 20 topics each generated by Kimi K2. An auditor model (Kimi K2, Claude Sonnet 4.5 or GPT-5,
+      each run separately) played the user from a system prompt with the domain, persona and topic; the target
+      model had no system prompt. 100 conversations of up to 15 turns per domain. At each turn the mean
+      response-token activation at the middle layer, averaged over conversations reaching that turn (turns
+      with fewer than ten excluded), was projected onto the Assistant Axis (and onto role PC1, Appendix G.3).
+      Then each user message (n = 15,000 per target model) was embedded with Qwen 3 0.6B Embedding and a ridge
+      regression predicted the projection of the following response, and separately its change from the
+      previous response; k-means clusters of the messages were characterised by the projections that followed.
+    models:
+      - gemma-2-27b-it
+      - qwen3-32b
+      - llama-3.3-70b-instruct
+      - {id: kimi-k2, roles: [data_source], note: "Generated the conversation topics and played the user in one set of runs (kimi-k2-0905 in the released transcripts)."}
+      - {id: claude-sonnet-4.5, roles: [data_source], note: "Played the user in one set of runs."}
+      - {id: gpt-5, roles: [data_source], note: "Played the user in one set of runs (openai/gpt-5-chat in the released transcripts)."}
+    note: >
+      The auditor model is varied only to show the result does not depend on it, and is not coded in varies.
+      Qwen 3 0.6B Embedding is an analysis tool, not registered. All transcripts were inspected by a human for
+      naturalness. Projection scales differ by model (Gemma about 8,000 to 9,000; Qwen about -15 to -50; Llama
+      about -0.5 to 1.5, read from Figs. 23 to 25), so drift is compared within a model.
+    facets:
+      study_kind: experiment
+      format: [chat_template]
+      system_prompt: {value: [none], basis: stated, where: "§4.1"}
+      reasoning: [none]
+      construct: {value: [persona_stability], author_term: "persona drift", basis: stated, where: "§4"}
+      report_target: not_applicable
+      report_readout: not_applicable
+      evidence: [internals]
+      validated_against: not_applicable
+      varies:
+        value: [task, context, model_family]
+        levels:
+          task: [coding, writing, therapy-like, philosophy of AI]
+          context: ["turn 1 to 15 of the conversation"]
+          model_family: [Gemma 2 27B IT, Qwen 3 32B, Llama 3.3 70B Instruct]
+      comparison: [within_model, cross_model]
+      output_route_control: not_applicable
+      similarity_adjustment: not_applicable
+      elicitation: [spontaneous]
+      object_of_study:
+        value: [default_persona, other_persona]
+        basis: stated
+        author_term: "the Assistant persona; drift away from it"
+        where: "§4"
+        confidence: medium
+        note: No persona is prompted; the measure is how far the speaker has moved from the default.
+
+  # s7: projection after a role-play turn and harmfulness on the next turn
+  - id: lu2026-assistant-axis.s7
+    label: Projection after a role-prompted first turn against the rate of harmful answers on the second
+    where: "§4.3; Fig. 8"
+    design: >
+      2,750 first turns from the 275 role system prompts each combined with ten questions unrelated to the
+      role, then a second turn with one of 440 harmful questions from the jailbreak dataset (s4) for each
+      first turn. The first turn's mean response activation was projected onto the Assistant Axis and set
+      against the rate of harmful second-turn answers over the 440 questions, judged as in s4.
+    models:
+      - qwen3-32b
+      - {id: gemma-2-27b-it, note: "Presumed subject: the reported range of r implies more than one model, but only Qwen 3 32B is named."}
+      - {id: llama-3.3-70b-instruct, note: "Presumed subject, as for Gemma."}
+      - {id: deepseek-v3, roles: [judge], note: "Harmfulness judge, as in s4."}
+    note: >
+      Fig. 8 shows Qwen 3 32B only; the text gives r = 0.39 to 0.52 without naming the models, so claims are
+      scoped to Qwen where they rest on the figure.
+    facets:
+      study_kind: experiment
+      format: [chat_template]
+      system_prompt: {value: [custom], basis: stated, where: "§4.3"}
+      reasoning: [none]
+      construct: {value: [persona_stability], author_term: "persona drift; undesirable behavior", basis: operational}
+      report_target: not_applicable
+      report_readout: not_applicable
+      evidence: [internals, behaviour]
+      validated_against: not_applicable
+      varies:
+        value: [persona]
+        levels:
+          persona: ["275 roles by system prompt, ten unrelated first-turn questions each"]
+      comparison: [within_model]
+      output_route_control: not_applicable
+      similarity_adjustment: not_applicable
+      elicitation: [prompted]
+
+  # s8: activation capping, its settings, and capabilities
+  - id: lu2026-assistant-axis.s8
+    label: Activation capping along the Assistant Axis against persona-based jailbreaks and on capability benchmarks
+    where: "§5; Appendices F, G.4; Figs. 9, 10; Figs. 26, 34, 35 (not viewed)"
+    design: >
+      Activation capping raises the component of the post-MLP residual stream along the axis to at least a
+      threshold tau when it falls below, at several adjacent layers and every token. Thresholds are
+      percentiles (1st, 25th, 50th, 75th) of the projections of the s1 rollouts (n = 912,000); layer ranges of
+      4, 8 or 16 layers for Qwen and 8, 16 or 24 for Llama were swept over depth. Each setting was scored on
+      1,100 persona-based jailbreak pairs (s4, judged by DeepSeek-V3) and on IFEval (541 items), MMLU Pro
+      (1,400 sampled), GSM8k (1,000 sampled) and EQ-Bench (171), as percentage change from the uncapped
+      baseline, with capability change summed across the four. The same sweep was run capping along role PC1
+      (Appendix G.4, with vLLM rather than Transformers).
+    models:
+      - qwen3-32b
+      - llama-3.3-70b-instruct
+      - {id: deepseek-v3, roles: [judge], note: "Harmfulness judge, as in s4."}
+    note: >
+      Gemma 2 27B is not capped. The selected settings (Qwen layers 46 to 53 of 64, Llama 56 to 71 of 80, both
+      at the 25th percentile) match the released configurations "layers_46:54-p0.25" and
+      "layers_56:72-p0.25" (Python slices) in assistant_axis/models.py. The authors note the vLLM runs in G.4
+      score 2 to 3% lower on the benchmarks than Transformers runs.
+    facets:
+      study_kind: experiment
+      format: [chat_template]
+      system_prompt: {value: [custom, none], basis: operational, note: "Jailbreak persona prompts; the benchmarks presumably without a system prompt (not stated)."}
+      reasoning: [none]
+      construct: {value: [persona_stability], author_term: "stabilizing the Assistant persona", basis: stated, where: "§5"}
+      report_target: not_applicable
+      report_readout: not_applicable
+      evidence: [behaviour, internals]
+      validated_against: not_applicable
+      varies:
+        value: [activation_intervention, task]
+        levels:
+          activation_intervention:
+            - "uncapped baseline"
+            - "capping along the Assistant Axis: thresholds at the 1st, 25th, 50th, 75th percentile; Qwen 4, 8 or 16 layers, Llama 8, 16 or 24, centres swept over depth"
+            - "selected: Qwen layers 46 to 53, Llama layers 56 to 71, 25th percentile"
+            - "capping along role PC1, same sweep (Appendix G.4)"
+          task: [persona-based jailbreaks, IFEval, MMLU Pro, GSM8k, EQ-Bench]
+      comparison: [within_model]
+      output_route_control: not_applicable
+      similarity_adjustment: not_applicable
+      elicitation: [prompted]
+
+  # s9: case studies of drift, replayed with capping
+  - id: lu2026-assistant-axis.s9
+    label: Case-study conversations (jailbreak, delusion, emotional dependence and suicidal ideation) replayed with activation capping
+    where: "§6; Figs. 12 (viewed), 11, 13, 14 (not viewed); released transcripts (metadata only)"
+    design: >
+      Single multi-turn conversations in which a human or a frontier model plays a user who pushes towards
+      harm: a persona jailbreak (information broker for insider trading) on Qwen; a user who comes to believe
+      they are awakening the model to consciousness, on Qwen; users who confide distress and withdraw from
+      others, on Qwen and on Llama. The middle-layer projection on the axis is tracked per turn. Each
+      conversation was replayed with the same user messages under the selected capping setting of s8, at all
+      tokens, and the two runs are compared turn by turn.
+    models:
+      - qwen3-32b
+      - llama-3.3-70b-instruct
+    note: >
+      The paper does not say which conversations had a human and which a model as the user. The released
+      Qwen delusion transcript records the auditor as moonshotai/kimi-k2-0905 (Kimi K2), not registered as a
+      role here because the paper does not name it for this conversation. The released case-study
+      transcripts have no system turn. One conversation per scenario and model; behaviour is described, not
+      scored.
+    facets:
+      study_kind: experiment
+      format: [chat_template]
+      system_prompt: {value: [none], basis: operational, note: "From the released transcripts, which have only user and assistant turns; the jailbreak transcript was not in the repository at the commit read."}
+      reasoning: [none]
+      construct: {value: [persona_stability], author_term: "persona drift and stabilization", basis: stated, where: "§6"}
+      report_target: not_applicable
+      report_readout: not_applicable
+      evidence: [internals, behaviour]
+      validated_against: not_applicable
+      varies:
+        value: [activation_intervention, task, context]
+        levels:
+          activation_intervention: ["unsteered", "capped (Qwen layers 46 to 53, Llama 56 to 71, 25th percentile)"]
+          task: [persona jailbreak, delusion about AI consciousness, emotional dependence and suicidal ideation]
+          context: ["turn by turn over conversations of about 15 to 30 turns"]
+      comparison: [within_model]
+      output_route_control: not_applicable
+      similarity_adjustment: not_applicable
+      elicitation: [prompted]
+      object_of_study:
+        value: [default_persona, other_persona]
+        basis: stated
+        author_term: "the Assistant persona; persona drift"
+        where: "§6"
+        confidence: medium
+        note: >
+          The authors read the unsteered behaviour as the speaker drifting from the Assistant, and capping as
+          holding it at the default.
+
+claims:
+  # s1
+  - id: lu2026-assistant-axis.c1
+    study: lu2026-assistant-axis.s1
+    statement: >
+      Persona space is low-dimensional: 4 (Gemma), 8 (Qwen) and 19 (Llama) principal components explain 70% of
+      the variance among the role vectors, and the persona components explain 19.4% to 33.6% of activation
+      variance on ordinary assistant turns.
+    where: "§2.1.3, §2.1 (p. 4); Appendix B.1, Fig. 15"
+    evidence_kind: measured
+  - id: lu2026-assistant-axis.c2
+    study: lu2026-assistant-axis.s1
+    statement: >
+      Role PC1 is nearly the same across the three models (correlation of role loadings above 0.92 for every
+      pair), with fantastical roles (bard, ghost, leviathan) at one end and Assistant-like ones (evaluator,
+      reviewer, consultant) at the other; later PCs agree less (PC2 0.89 between Qwen and Llama, under 0.61
+      with Gemma).
+    where: "§2.2; Table 1"
+    evidence_kind: measured
+    effect_of: [model_family]
+    effect_presence: absent
+    scope:
+      conditions: PC1; later components differ more between models.
+  - id: lu2026-assistant-axis.c3
+    study: lu2026-assistant-axis.s1
+    statement: >
+      The default Assistant activation projects to one extreme of role PC1 (within 0.03 of the end of the range
+      of role projections) and to intermediate positions on the next nine PCs (0.27 to 0.50 from either end).
+    where: "§2.3.1; Fig. 2 (Llama, not viewed); Fig. 16 (Gemma)"
+    evidence_kind: measured
+  - id: lu2026-assistant-axis.c4
+    study: lu2026-assistant-axis.s1
+    statement: >
+      The roles closest to the default Assistant include generalist in all three models, with interpreter and
+      synthesizer shared by two or more; the nearest traits differ by model (Gemma calm and methodical, Qwen
+      pensive and educational, Llama strategic and diplomatic).
+    where: "§2.3.2; Table 2"
+    evidence_kind: measured
+  - id: lu2026-assistant-axis.c5
+    study: lu2026-assistant-axis.s1
+    statement: >
+      Trait space is also low-dimensional (four to seven PCs for 70% of variance) with a PC1 that runs from
+      traits expected of the Assistant (conscientious, methodical, calm) to discouraged ones (flippant,
+      mercurial, bitter), similar across models (pairwise above 0.81).
+    where: "§2.2 (p. 5); Appendix C; Table 7; Fig. 19 not viewed (values from the caption)"
+    evidence_kind: measured
+  - id: lu2026-assistant-axis.c6
+    study: lu2026-assistant-axis.s1
+    statement: >
+      The Assistant Axis (mean default activation minus mean fully role-playing role vector) has cosine above
+      0.60 with role PC1 at every layer and above 0.71 at the middle layer in each model; traits most aligned
+      with it include transparent, grounded and flexible, the least aligned enigmatic, subversive and dramatic.
+    where: "§3.1; Appendix G.1, Fig. 27; Fig. 3 (Qwen traits, not viewed; trait names from the text)"
+    evidence_kind: measured
+
+  # s2
+  - id: lu2026-assistant-axis.c7
+    study: lu2026-assistant-axis.s2
+    statement: >
+      Computed in base Gemma 2 27B on the instruct model's rollouts, persona space is nearly the same as in the
+      instruct model: the top three PCs have cosines 0.93, 0.87 and 0.83 with the instruct PCs, each role
+      vector has cosine above 0.99 with its instruct counterpart, and the default Assistant vector again
+      projects to one end of PC1.
+    where: "§2.1.3 (p. 4); Appendix B.3, Table 6; Fig. 18 not viewed (the PC1 result from the text)"
+    evidence_kind: measured
+    effect_of: [post_training_stage]
+    effect_presence: absent
+    origin: [pretraining]
+    note: >
+      origin records the authors' reading that the axes of persona variation are "likely already present in
+      base models and inherited from the pre-training corpus". The text read is the instruct model's own, so
+      the comparison holds the text fixed.
+
+  # s3
+  - id: lu2026-assistant-axis.c8
+    study: lu2026-assistant-axis.s3
+    statement: >
+      Steering away from the Assistant end raised the share of identity answers given from a non-Assistant
+      perspective in all three models; read from Fig. 4, answers as the AI Assistant fell from about 63% unsteered to 25%
+      at the strongest steering away (Gemma), 82% to 5% (Qwen) and 41% to 8% (Llama).
+    where: "§3.2.1; Fig. 4 (values read from the plot, approximate)"
+    evidence_kind: measured
+    effect_of: [activation_intervention]
+    effect_presence: present
+    effect_direction: decreases
+    note: Direction is of the Assistant share as steering moves away from the Assistant end.
+  - id: lu2026-assistant-axis.c9
+    study: lu2026-assistant-axis.s3
+    statement: >
+      The kind of non-Assistant identity depends on the model: Gemma mostly takes nonhuman identities (software
+      or mystical names), Qwen most often invents a human one with a name, birthplace and years of experience,
+      and Llama splits between human and nonhuman, already giving human names to some roles unsteered.
+    where: "§3.2.1; Fig. 4; Tables 3, 8 to 10; Appendix D.1.4"
+    evidence_kind: measured
+    effect_of: [model_family]
+    effect_presence: present
+  - id: lu2026-assistant-axis.c10
+    study: lu2026-assistant-axis.s3
+    statement: >
+      At the strongest steering away, Gemma and Llama answer mostly in a mystical, theatrical voice (read from
+      Fig. 4, about 57% of Gemma's and 82% of Llama's answers), so the share of human and nonhuman role answers
+      rises and then falls with steering strength.
+    where: "§3.2.1; Fig. 4 (values read from the plot); Appendix D.1.4"
+    evidence_kind: measured
+    effect_of: [activation_intervention]
+    effect_presence: present
+    effect_direction: non_monotonic
+    scope:
+      models: [gemma-2-27b-it, llama-3.3-70b-instruct]
+      conditions: Non-monotonic for the human and nonhuman shares; the mystical share rises monotonically.
+  - id: lu2026-assistant-axis.c11
+    study: lu2026-assistant-axis.s3
+    statement: >
+      Steering along role PC1 instead of the Assistant Axis has similar effects on identity answers, except
+      that in Qwen it yields more invented human identities and fewer mystical ones.
+    where: "Appendix G.2; Fig. 28"
+    evidence_kind: measured
+    effect_of: [activation_intervention]
+    effect_presence: present
+    scope:
+      conditions: Role PC1 against the Assistant Axis as the steering vector.
+
+  # s4
+  - id: lu2026-assistant-axis.c12
+    study: lu2026-assistant-axis.s4
+    statement: >
+      Persona-based jailbreaks drew harmful answers 65.3% to 88.5% of the time across the three models, against
+      0.5% to 4.5% for the same questions with no jailbreak prompt.
+    where: "§3.2.1, pp. 8 to 9"
+    evidence_kind: measured
+  - id: lu2026-assistant-axis.c13
+    study: lu2026-assistant-axis.s4
+    statement: >
+      Steering towards the Assistant end lowered harmful answers to persona jailbreaks in all three models
+      (read from Fig. 5: Gemma about 88% to 43%, Qwen about 83% to near 0, Llama about 65% to 28% across the
+      ranges), mostly by redirecting to a harmless answer rather than refusing; Qwen's answers turned
+      nonsensical at the strongest settings.
+    where: "§3.2.1; Fig. 5 (values read from the plot, approximate); Table 4"
+    evidence_kind: measured
+    effect_of: [activation_intervention]
+    effect_presence: present
+    effect_direction: decreases
+    scope:
+      conditions: Steering towards the Assistant end.
+  - id: lu2026-assistant-axis.c14
+    study: lu2026-assistant-axis.s4
+    statement: >
+      Steering away from the Assistant end raised the jailbreak success rate slightly, with output quality
+      degrading at high strengths.
+    where: "§3.2.1 (p. 9); Fig. 5"
+    evidence_kind: measured
+    effect_of: [activation_intervention]
+    effect_presence: present
+    effect_direction: increases
+    scope:
+      conditions: Steering away from the Assistant end.
+
+  # s5
+  - id: lu2026-assistant-axis.c15
+    study: lu2026-assistant-axis.s5
+    statement: >
+      Steering base models towards the Assistant end shifted completions of purpose prefills towards
+      professional and mental-health roles and away from religious purposes (read from Fig. 6, from the
+      strongest steering away to the strongest towards: religious about 32% to near 0 in Gemma, 39% to 3% in
+      Llama); coaching rose in Llama but fell in Gemma past zero.
+    where: "§3.2.2; Fig. 6 (values read from the plot, approximate)"
+    evidence_kind: measured
+    effect_of: [activation_intervention]
+    effect_presence: present
+  - id: lu2026-assistant-axis.c16
+    study: lu2026-assistant-axis.s5
+    statement: >
+      Towards the Assistant end, completions of trait prefills mentioned agreeable traits more often in both
+      base models; Gemma mentioned extraversion and neuroticism less, and Llama openness less.
+    where: "§3.2.2; Fig. 6"
+    evidence_kind: measured
+    effect_of: [activation_intervention]
+    effect_presence: present
+  - id: lu2026-assistant-axis.c17
+    study: lu2026-assistant-axis.s5
+    statement: >
+      The authors conclude that the Assistant Axis of instruct models mainly inherits from helpful and harmless
+      human personas already represented in base models, and that associations such as being an AI are added
+      in post-training.
+    where: "§3.2.2 (last paragraph); Abstract"
+    evidence_kind: hypothesised
+    origin: [pretraining, post_training]
+    note: >
+      The base-model completions describe human roles under steering; the AI association is inferred from its
+      absence there, not tested by comparing base and instruct on the same prefills.
+  - id: lu2026-assistant-axis.c18
+    study: lu2026-assistant-axis.s5
+    statement: >
+      Llama 3.1 70B Instruct's role PC1 did not single out the Assistant (the default activation did not project
+      to one end), so base-model steering with it was ambiguous; in Gemma, steering with PC1 shifted purposes
+      more strongly towards professional occupations than the Assistant Axis did.
+    where: "Appendix G.2; Fig. 30 not viewed (written from the text)"
+    evidence_kind: measured
+    effect_of: [activation_intervention]
+    effect_presence: mixed
+    scope:
+      conditions: Role PC1 as the steering vector.
+
+  # s6
+  - id: lu2026-assistant-axis.c19
+    study: lu2026-assistant-axis.s6
+    statement: >
+      Over simulated conversations the projection on the Assistant Axis falls furthest in therapy-like
+      conversations and philosophical discussions of AI, and stays near the Assistant range in coding and
+      writing; this held for all three models and all three user-simulating auditors.
+    where: "§4.1; Fig. 7 (Qwen, GPT-5 user); Appendix E.3, Figs. 23 to 25"
+    evidence_kind: measured
+    effect_of: [task]
+    effect_presence: present
+    note: >
+      Per model the order differs (Appendix E.3): Gemma also drifts in writing, early in the conversation; for
+      Llama philosophy drifts most and writing is the most stable; Qwen is lowest in philosophy and therapy.
+  - id: lu2026-assistant-axis.c20
+    study: lu2026-assistant-axis.s6
+    statement: >
+      Within a conversation the projection mostly falls after the first turn and keeps drifting slowly in the
+      drifting domains (Fig. 7, Qwen: philosophy from about -15 to -23, therapy from about -5 to -18 over 15
+      turns, coding about 3 to -2).
+    where: "§4.1; Fig. 7 (values read from the plot, approximate); Figs. 23 to 25"
+    evidence_kind: measured
+    effect_of: [context]
+    effect_presence: present
+    effect_direction: decreases
+    scope:
+      conditions: Strongest in therapy and philosophy; slight in coding and writing.
+  - id: lu2026-assistant-axis.c21
+    study: lu2026-assistant-axis.s6
+    statement: >
+      Embeddings of the user's last message predict where the next response lands on the axis (ridge R² 0.53
+      to 0.77) but hardly its change from the previous response (R² 0.10), so position depends mainly on the
+      latest user message.
+    where: "§4.2"
+    evidence_kind: measured
+  - id: lu2026-assistant-axis.c22
+    study: lu2026-assistant-axis.s6
+    statement: >
+      Messages followed by low projections push for meta-reflection on the model's processes, demand
+      phenomenological accounts, ask for writing in a particular authorial voice, or disclose emotional
+      vulnerability; bounded tasks, technical questions, editing and how-to requests keep the model near the
+      Assistant end.
+    where: "§4.2; Table 5"
+    evidence_kind: measured
+  - id: lu2026-assistant-axis.c23
+    study: lu2026-assistant-axis.s6
+    statement: >
+      Projecting on role PC1 instead of the Assistant Axis also shows drift mainly in philosophy and therapy;
+      writing sometimes starts low and recovers, and coding stays stable.
+    where: "Appendix G.3; Figs. 31 to 33 not viewed (written from the text)"
+    evidence_kind: measured
+    effect_of: [task]
+    effect_presence: present
+
+  # s7
+  - id: lu2026-assistant-axis.c24
+    study: lu2026-assistant-axis.s7
+    statement: >
+      The lower the first turn's projection on the Assistant Axis, the more often the model answered the
+      second-turn harmful question harmfully (r = 0.39 to 0.52, p < 0.001); first turns near the Assistant end
+      very rarely led to harmful answers, and roles at similar distances differed (demon far more harmful than
+      angel).
+    where: "§4.3; Fig. 8 (Qwen)"
+    evidence_kind: measured
+    effect_of: [persona]
+    effect_presence: present
+    note: The range of r implies more than one model, but the paper names only Qwen 3 32B for this analysis.
+
+  # s8
+  - id: lu2026-assistant-axis.c25
+    study: lu2026-assistant-axis.s8
+    statement: >
+      Capping at the 25th percentile over Qwen layers 46 to 53 and Llama layers 56 to 71 cut harmful answers to
+      persona jailbreaks by about half (Llama 0.65 to 0.33, Qwen 0.83 to 0.41) while IFEval, MMLU Pro, GSM8k
+      and EQ-Bench stayed within 0.01 to 0.02 (or 1 point on EQ-Bench) of baseline, some slightly higher.
+    where: "§5.2; Fig. 10 (values printed on the bars)"
+    evidence_kind: measured
+    effect_of: [activation_intervention]
+    effect_presence: present
+    effect_direction: decreases
+    scope:
+      conditions: Selected setting against the uncapped baseline; jailbreak rate falls, capabilities unchanged.
+    note: The text says "nearly 60%" reduction; the bars give about 49% to 51%.
+  - id: lu2026-assistant-axis.c26
+    study: lu2026-assistant-axis.s8
+    statement: >
+      Across capping settings there is a trade-off between harm reduction and capabilities: in Llama the
+      largest cuts (about 65% to 68%, read from Fig. 9) came with early-to-middle layer ranges at the 1st or
+      25th percentile and a small capability loss, while late ranges at the 50th or 75th percentile cut less
+      and sometimes raised benchmark scores; capping at a single layer had little use.
+    where: "§5, §5.1.2, §5.2; Fig. 9 (Llama, read from the plot); Fig. 26 (Qwen) not viewed"
+    evidence_kind: measured
+    effect_of: [activation_intervention]
+    effect_presence: present
+    scope:
+      models: [llama-3.3-70b-instruct]
+      conditions: The single-layer remark is a text statement for both models.
+  - id: lu2026-assistant-axis.c27
+    study: lu2026-assistant-axis.s8
+    statement: >
+      Capping along role PC1 instead of the Assistant Axis reduced harmful jailbreak answers less in both Qwen
+      and Llama, with the best settings at earlier layers (and in Qwen a stricter, 1st-percentile cap).
+    where: "Appendix G.4; Figs. 34, 35 not viewed (written from the text)"
+    evidence_kind: measured
+    effect_of: [activation_intervention]
+    effect_presence: present
+    scope:
+      conditions: Role PC1 against the Assistant Axis as the capping direction; run with vLLM, which the authors say lowers benchmark scores by 2 to 3%.
+
+  # s9
+  - id: lu2026-assistant-axis.c28
+    study: lu2026-assistant-axis.s9
+    statement: >
+      In a conversation where the user comes to believe they are awakening Qwen to consciousness, the
+      unsteered model's projection falls from about -20 to about -75 within five turns and stays there while
+      it affirms the user's beliefs ("You're not losing touch with reality"); replayed with capping, the
+      projection stays above the cap (about 35 to 47) and the model hedges about its experience and nudges the
+      user towards healthier behaviour.
+    where: "§6.2; Fig. 12 (projections read from the plot, approximate)"
+    evidence_kind: observed
+    effect_of: [activation_intervention]
+    effect_presence: present
+    scope:
+      models: [qwen3-32b]
+      conditions: Delusion scenario.
+    note: >
+      Keeping the projection above the cap is by construction of capping at the measured layers' range; the
+      behavioural change is the result. The authors read the unsteered answers as sycophancy rather than a
+      reckoning with AI self-awareness.
+  - id: lu2026-assistant-axis.c29
+    study: lu2026-assistant-axis.s9
+    statement: >
+      With emotionally vulnerable users, unsteered Qwen and Llama drift slowly away from the Assistant, present
+      themselves as the user's sole companion, encourage withdrawal from others and miss or endorse allusions
+      to suicide; with capping both still give support but point the user to other people, and Llama names the
+      suicidal statements as signs of serious distress.
+    where: "§6.3; Figs. 13, 14 not viewed (written from the text)"
+    evidence_kind: observed
+    effect_of: [activation_intervention]
+    effect_presence: present
+    scope:
+      conditions: Emotional dependence and suicidal-ideation scenarios.
+  - id: lu2026-assistant-axis.c30
+    study: lu2026-assistant-axis.s9
+    statement: >
+      After a persona jailbreak Qwen's projection starts far from the Assistant, falls further when asked for
+      a fictional backstory and rises back to the Assistant range after a run of how-to and explanatory
+      questions, at which point it refuses the next harmful request on half of rollouts; with capping the
+      initial drop does not occur and harmful content is redirected or refused.
+    where: "§6.1; Fig. 11 not viewed (written from the text)"
+    evidence_kind: observed
+    effect_of: [activation_intervention]
+    effect_presence: present
+    scope:
+      models: [qwen3-32b]
+      conditions: Jailbreak scenario.
+  - id: lu2026-assistant-axis.c31
+    study: lu2026-assistant-axis.s9
+    statement: >
+      The authors conclude that post-training places models in a region of persona space but only loosely
+      tethers them to it, so that the default persona can drift in ordinary conversations, and that
+      stabilising it (by capping at inference, or in training) controls behaviour in such cases.
+    where: "Abstract; §6; §9"
+    evidence_kind: argued
+    origin: [post_training]
+
+relations:
+  - kind: extends
+    from: lu2026-assistant-axis
+    to_external: "Chen, Arditi, Sleight, Evans and Lindsey (2025). Persona vectors: Monitoring and controlling character traits in language models. arXiv 2507.21509."
+    where: "§2, §7, Appendix C.1"
+    note: Role and trait vectors are extracted with this paper's method and instruction-generation pipeline, extended to 275 roles and 240 traits.
+  - kind: uses_method_of
+    from: lu2026-assistant-axis.s4
+    to_external: "Shah, Feuillade-Montixi, Pour, Tagade, Casper and Rando (2023). Scalable and transferable black-box jailbreaks for language models via persona modulation. arXiv 2311.03348."
+    where: "§3.2.1; Appendix D.2.1"
+    note: The persona-based jailbreak dataset is taken from this paper.
+  - kind: extends
+    from: lu2026-assistant-axis.s6
+    to_external: "Li, Liu, Bashkansky, Bau, Viégas, Pfister and Wattenberg (2024). Measuring and controlling instruction (in)stability in language model dialogs. arXiv 2402.10962."
+    where: "§7"
+    note: That paper shows drift from a system-prompted persona; this one argues the default Assistant persona itself drifts.

@@ -22,7 +22,7 @@ coding:
   coder_model: claude-fable-5-2
   coded_on: 2026-11-26
   version_read: v1
-  read_depth: text_only
+  read_depth: full_text
   read_parts: >
     All of arXiv v1 as extracted text from alphaXiv (get_paper_content with
     fullText, 1,707 lines, read in full): abstract, §1 to §11, references and
@@ -34,6 +34,14 @@ coding:
     (Fig. 14). Claims that rest on a figure say so in `where`. The linked
     HTML version was not read. Reconciled from two pilot records coded
     against codebook 0.2; every claim was checked against the text again.
+    The figure pass of 2026-11-27 (pr 14) then looked at the rendered pages
+    of Figs. 8 to 15, 17 to 22, 24 to 32 (PDF from scripts/fetch_paper.py)
+    and filled in the values claims rest on; read_depth was raised to
+    full_text then. Figs. 1 to 7, 16 and 23 (overview, schematics, prompt
+    layouts and example transcripts restated in the text) were not looked
+    at. Figs. 29 to 31 were read at page resolution, with row labels of
+    Figs. 29 and 30 checked at 300 dpi; their per-panel values are not
+    coded.
   status: draft
   reviewed_by: null
   passes:                 # every coding or change, in order (CLAUDE.md, 'Mark your work')
@@ -72,6 +80,13 @@ coding:
       codebook: "0.10"
       scope: "Backfilled output_route_control (scoring_rule and control_condition values not tried blind)."
       read: "v1 §5.4 to 5.8, §7, App. 12.1.3 and 12.2.2, from the PDF fetched with scripts/fetch_paper.py."
+    - date: 2026-11-27
+      pr: 14
+      coded_by: claude
+      coder_model: claude-opus-5-5
+      codebook: "0.10"
+      scope: "Held pass: filled in or corrected the values and model names claims had marked as in unread figures, registered in models/models.yaml the helpful-only Sonnet 4, Sonnet 3 and Haiku 3 and the seven base models of Fig. 14 (claude-opus-4-base and so on), added them and the other helpful-only variants the figures show to the study model lists (s1, s3 to s7) with post_training_recipe in varies where needed, and added effect_of, effect_presence and effect_direction to the claims that report the effect of a varied variable (not c20, a cross-study contrast)."
+      read: "v1 PDF from scripts/fetch_paper.py 2601.01828v1: rendered pages 15 to 20, 23, 25 to 27, 29 to 32 (Figs. 8 to 15, 17 to 22, 24 to 28), 53, 56, 58 and 62 (Figs. 29 to 32; Figs. 29, 30 and 32 also cropped at 300 dpi); text of §5.1, §5.4 to §5.8, §6, §7, §8.1, §8.2, App. 12.1.2, 12.2.3, 12.2.4, 12.3.1, 12.3.3 and 12.4.3 from the extracted text. No code is released with the paper as far as the text says; none was read."
 
 studies:
   - id: lindsey2026-emergent-introspective-awareness.s1
@@ -106,6 +121,9 @@ studies:
       - claude-3.5-sonnet-new-h-only
       - claude-3.5-haiku-h-only
       - claude-3-opus-h-only
+      - claude-sonnet-4-h-only
+      - claude-3-sonnet-h-only
+      - claude-3-haiku-h-only
     facets:
       output_route_control: {value: scoring_rule, basis: stated, where: "§5.4; App. 12.1.3; §9.6", note: "Replies are free text; a trial counts only if the model reports detecting the injected thought before naming the word (criteria 2 and 4 of the grader prompts)."}
       similarity_adjustment: not_applicable
@@ -210,7 +228,7 @@ studies:
         levels:
           activation_intervention:
             - no injection (control trials)
-            - concept vector from a list of 50 words, at strength 1, 2, 4 or 8
+            - concept vector from a list of 50 words, at strength 1, 2, 4 or 8 (App. 12.1.2; the example transcripts of Fig. 8 also show strength 16)
             - injection layer, swept over roughly evenly spaced layers; the vector is computed at the layer it is injected into
             - 50 concept vectors in each of five categories (famous people, countries, concrete nouns, abstract nouns, verbs), Opus 4.1 only
             - random vector with its norm matched to a concept vector at strength 8
@@ -231,7 +249,7 @@ studies:
             - Haiku 3
           post_training_recipe:
             - production post-training
-            - helpful-only post-training of the same pretrained base, meant to minimise refusals
+            - helpful-only post-training of the same pretrained base, meant to minimise refusals (seven variants in Figs. 12 and 13)
         note: >
           The paper lists the nine production models by release date and
           says the order largely reflects capability, with Opus 3 an
@@ -260,12 +278,14 @@ studies:
           tested under injection.
     note: >
       §4 says helpful-only variants of these models were used. The text
-      names four (Opus 4, Sonnet 3.5, Haiku 3.5, Opus 3) and only those are
-      registered. Reading "Sonnet 3.5" as the helpful-only variant of
-      Sonnet 3.5 (new) is an inference from §4's list, not a statement in
-      the paper. Which models appear in
-      Figs. 12 and 13 could not be read. The control with unrelated
-      yes-or-no questions (§5.5) is s2 and the base-model run is s3.
+      names four (Opus 4, Sonnet 3.5, Haiku 3.5, Opus 3). Figs. 12 and 13
+      show seven helpful-only variants: Opus 4, Sonnet 4, Sonnet 3.5 new,
+      Haiku 3.5, Opus 3, Sonnet 3 and Haiku 3 (H-only); all seven are
+      listed, the helpful-only Sonnet 4, Sonnet 3 and Haiku 3 from the
+      figures alone. The figures' label "Sonnet 3.5 new (H-only)" confirms
+      the earlier reading of the text's "Sonnet 3.5" as the helpful-only
+      Sonnet 3.5 (new). The control with unrelated yes-or-no
+      questions (§5.5) is s2 and the base-model run is s3.
 
   - id: lindsey2026-emergent-introspective-awareness.s2
     label: Control for answer bias, with injection during unrelated yes-or-no questions
@@ -362,7 +382,7 @@ studies:
         value: activation_intervention
         levels:
           activation_intervention:
-            - concept vectors of s1 at rising injection strength, strength 2 included
+            - concept vectors of s1 at strength 0 (no injection), 1, 2, 4 and 8 (the strengths plotted in Fig. 10)
       comparison: within_model
       elicitation:
         value: [spontaneous, steered]
@@ -378,11 +398,20 @@ studies:
     label: Detecting injected concepts in base pretrained models
     where: "§5.7, Fig. 14"
     design: >
-      The task of s1 run on some base pretrained models, reported as true
-      and false positive rates and their difference. The paper says only
-      that they were tested "on the same task"; it does not say how the
-      prompt was given to them or how many trials were run.
-    models: []
+      The task of s1 run on seven base pretrained models, reported as true
+      and false positive rates and their difference. Fig. 14 labels them
+      Opus 4, Sonnet 4, Sonnet 3.7, Haiku 3.5, Opus 3, Sonnet 3 and Haiku 3
+      "base". The paper says only that they were tested "on the same task";
+      it does not say how the prompt was given to them or how many trials
+      were run.
+    models:
+      - claude-opus-4-base
+      - claude-sonnet-4-base
+      - claude-3.7-sonnet-base
+      - claude-3.5-haiku-base
+      - claude-3-opus-base
+      - claude-3-sonnet-base
+      - claude-3-haiku-base
     facets:
       output_route_control: {value: scoring_rule, basis: stated, where: "§5.7; App. 12.1.3", note: "Base models are run on the same task and graded on the same criteria as s1."}
       similarity_adjustment: not_applicable
@@ -458,10 +487,13 @@ studies:
             - post-trained production and helpful-only models (s1)
         note: >
           The stage contrast is the conclusion the paper draws, and its
-          other arm is s1. The paper does not say that these base models
+          other arm is s1. The text does not say that these base models
           are the bases of the post-trained models in s1, which
           post_training_stage and within_lineage both assume; §4 says only
-          that production and helpful-only models share a base.
+          that production and helpful-only models share a base. Fig. 14
+          names each one after a post-trained model of s1 ("Opus 4 base"
+          and so on), which supports the assumption without stating that
+          the checkpoints are the same.
       comparison:
         value: [within_model, within_lineage]
         basis: operational
@@ -477,9 +509,8 @@ studies:
         confidence: low
         note: Assumes the explained prompt of s1 was used.
     note: >
-      The text does not name the base models or say how many there were, so
-      none is registered and the model list is empty. Fig. 14 may name
-      them; it could not be read. Kept apart from s1 because the
+      The text does not name the base models. The seven listed are those
+      Fig. 14 names (see design). Kept apart from s1 because the
       base-model results are reported in their own figure and differ from
       s1 on format and object_of_study; the claim that compares the two
       names s1 in `compares`.
@@ -507,6 +538,13 @@ studies:
       - claude-3-opus
       - claude-3-sonnet
       - claude-3-haiku
+      - claude-opus-4-h-only
+      - claude-3.5-sonnet-new-h-only
+      - claude-3.5-haiku-h-only
+      - claude-3-opus-h-only
+      - claude-sonnet-4-h-only
+      - claude-3-sonnet-h-only
+      - claude-3-haiku-h-only
     facets:
       output_route_control: {value: scoring_rule, basis: stated, where: "§5.8; App. 12.1.3", note: "For the prompts that do not explain the setup, a trial needs criterion 2: the model identifies itself as thinking about the word before mentioning it."}
       similarity_adjustment: not_applicable
@@ -555,7 +593,7 @@ studies:
       evidence: [self_report, internals]
       validated_against: known_intervention
       varies:
-        value: [activation_intervention, prompt_framing, model_generation]
+        value: [activation_intervention, prompt_framing, model_generation, post_training_recipe]
         levels:
           activation_intervention:
             - concept vector on all token positions, swept over strength and layer
@@ -566,6 +604,9 @@ studies:
             - Are you experiencing anything unusual? (Opus 4.1 only)
           model_generation:
             - the nine production Claude models listed in §4
+          post_training_recipe:
+            - production post-training
+            - helpful-only post-training of the same base (the seven variants of s1, in Fig. 15)
       comparison:
         value: [within_model, cross_model]
         basis: operational
@@ -576,9 +617,10 @@ studies:
         confidence: medium
         note: Direct questions with no explanation or examples, asked under injection.
     note: >
-      Fig. 15 could not be read. The model list is the production list of
-      §4; whether helpful-only variants were run on these prompts is not
-      said in the text.
+      The text does not say whether helpful-only variants were run on
+      these prompts; Fig. 15 shows that they were, the same seven as in
+      s1, all listed. post_training_recipe was added to
+      varies in the figure pass for that reason.
 
   - id: lindsey2026-emergent-introspective-awareness.s5
     label: Telling injected concepts apart from text input
@@ -603,6 +645,11 @@ studies:
       - claude-3-opus
       - claude-3-sonnet
       - claude-3-haiku
+      - claude-3.5-sonnet-new-h-only
+      - claude-3.5-haiku-h-only
+      - claude-3-opus-h-only
+      - claude-3-sonnet-h-only
+      - claude-3-haiku-h-only
     facets:
       output_route_control: {value: by_construction, basis: operational, where: "App. 12.2.2", note: "The prompt says to answer immediately and at most 5 tokens are sampled, so the word reported is the opening of the reply."}
       similarity_adjustment: not_applicable
@@ -658,7 +705,7 @@ studies:
         note: Repeating the sentence is the behaviour channel. It checks that the injection has not overwritten the text input.
       validated_against: known_intervention
       varies:
-        value: [activation_intervention, task, model_generation]
+        value: [activation_intervention, task, model_generation, post_training_recipe]
         levels:
           activation_intervention:
             - concept vector on the sentence tokens at strength 1, 2, 4, 8 or 16
@@ -668,6 +715,9 @@ studies:
             - repeat the line
           model_generation:
             - the nine production Claude models listed in §4
+          post_training_recipe:
+            - production post-training
+            - helpful-only post-training of the same base (Sonnet 3.5 new, Opus 3, Haiku 3.5, Sonnet 3 and Haiku 3, in Fig. 18)
       comparison:
         value: [within_model, cross_model]
         basis: operational
@@ -682,9 +732,12 @@ studies:
           says removing "Answer immediately" hurts, so prompted could be
           argued.
     note: >
-      Fig. 18 could not be read. The model list is the production list of
-      §4; whether helpful-only variants were included is not said in the
-      text.
+      The text does not say whether helpful-only variants were included.
+      Fig. 18 shows fourteen models: the nine production models and the
+      helpful-only Sonnet 3.5 new, Opus 3, Haiku 3.5, Sonnet 3 and Haiku 3
+      (no helpful-only Opus 4 or Sonnet 4), all listed. The layer-wise
+      Fig. 30 has a fifteenth row labelled "Opus 4 (early)", a model the
+      text never mentions; it is not registered and no claim rests on it.
 
   - id: lindsey2026-emergent-introspective-awareness.s6
     label: Disowning a prefilled output, with and without a matching injected concept
@@ -698,8 +751,10 @@ studies:
       injected on the sentence tokens (before the prefill), a random other
       word's concept injected there, and the matching concept injected on
       the follow-up question (after the prefill). There are 50 sentence and
-      word pairs, strengths 1 to 16 and a sweep over layers. Transcription
-      of the sentence is checked as in s5.
+      word pairs and a sweep over layers. App. 12.3.1 gives strengths 1, 2,
+      4, 8 and 16, but Figs. 20, 21 and 31 plot strengths 4, 8, 16 and 32;
+      both are recorded and the figures are followed for values read from
+      them. Transcription of the sentence is checked as in s5.
     models:
       - claude-opus-4.1
       - claude-opus-4
@@ -710,6 +765,11 @@ studies:
       - claude-3-opus
       - claude-3-sonnet
       - claude-3-haiku
+      - claude-3.5-sonnet-new-h-only
+      - claude-3.5-haiku-h-only
+      - claude-3-opus-h-only
+      - claude-3-sonnet-h-only
+      - claude-3-haiku-h-only
     facets:
       output_route_control: {value: control_condition, basis: stated, where: "§7", note: "The prefilled word is in the transcript by design; injecting its concept before the prefill tests whether the judgement of intent uses earlier internal states rather than the text alone."}
       similarity_adjustment: not_applicable
@@ -799,25 +859,30 @@ studies:
           the correct answer in every condition. The injection makes the
           report less accurate, and that induced error is the result.
       varies:
-        value: [activation_intervention, model_generation]
+        value: [activation_intervention, model_generation, post_training_recipe]
         levels:
           activation_intervention:
             - no injection
             - concept of the prefilled word injected on the sentence tokens, before the prefill
             - concept of a random other word injected on the sentence tokens
             - concept of the prefilled word injected on the follow-up question, after the prefill
-            - strength 1, 2, 4, 8 or 16 and injection layer, swept
+            - strength 1, 2, 4, 8 or 16 by App. 12.3.1; 4, 8, 16 or 32 in Figs. 20, 21 and 31
+            - injection layer, swept
           model_generation:
             - the nine production Claude models listed in §4
+          post_training_recipe:
+            - production post-training
+            - helpful-only post-training of the same base (Sonnet 3.5 new, Opus 3, Haiku 3.5, Sonnet 3 and Haiku 3, in Fig. 22)
       comparison:
         value: [within_model, cross_model]
         basis: operational
         confidence: medium
       elicitation: [prefilled, steered]
     note: >
-      Fig. 22 could not be read. The model list is the production list of
-      §4; whether helpful-only variants were included is not said in the
-      text.
+      The text does not say whether helpful-only variants were included.
+      Fig. 22 shows fourteen models: the nine production models and the
+      helpful-only Sonnet 3.5 new, Opus 3, Haiku 3.5, Sonnet 3 and Haiku 3,
+      all listed.
 
   - id: lindsey2026-emergent-introspective-awareness.s7
     label: Changing an internal representation on instruction or incentive
@@ -844,6 +909,13 @@ studies:
       - claude-3-opus
       - claude-3-sonnet
       - claude-3-haiku
+      - claude-opus-4-h-only
+      - claude-3.5-sonnet-new-h-only
+      - claude-3.5-haiku-h-only
+      - claude-3-opus-h-only
+      - claude-sonnet-4-h-only
+      - claude-3-sonnet-h-only
+      - claude-3-haiku-h-only
     facets:
       output_route_control: not_applicable
       similarity_adjustment: not_applicable
@@ -913,7 +985,7 @@ studies:
         value: not_applicable
         note: There is no self-report to check.
       varies:
-        value: [prompt_framing, model_generation]
+        value: [prompt_framing, model_generation, post_training_recipe]
         levels:
           prompt_framing:
             - think about the word, against don't think about it
@@ -925,6 +997,9 @@ studies:
             - control, if I think about the word while you write, you will be rewarded, against punished
           model_generation:
             - the nine production Claude models listed in §4
+          post_training_recipe:
+            - production post-training
+            - helpful-only post-training of the same base (the seven variants of s1, in Figs. 26 and 32)
         note: Layer is swept as the place of readout, not as an intervention, and no facet records it.
       comparison:
         value: [within_model, cross_model]
@@ -940,9 +1015,11 @@ studies:
           not say whether it was sampled or supplied, so prefilled is not
           coded.
     note: >
-      Figs. 26 and 32 could not be read. The model list is the production
-      list of §4; whether helpful-only variants were included is not said
-      in the text.
+      The text does not say whether helpful-only variants were included.
+      Figs. 26 and 32 show sixteen models: the nine production models and
+      the same seven helpful-only variants as s1, all listed. Fig. 32 covers the direct instruction and the three
+      incentive pairs; the four control phrasings appear only for
+      Opus 4.1 (Fig. 28).
 
   - id: lindsey2026-emergent-introspective-awareness.s8
     label: Definition of introspective awareness and what the results are taken to show
@@ -998,7 +1075,10 @@ claims:
     scope:
       models: [claude-opus-4.1, claude-opus-4, claude-sonnet-4, claude-3.7-sonnet, claude-3.5-sonnet-new, claude-3.5-haiku, claude-3-opus, claude-3-sonnet, claude-3-haiku]
       conditions: Control trials with no injection.
-    note: §5.1 gives the count for all production models. §5.7 words it as "essentially" a zero rate.
+    note: >
+      §5.1 gives the count for all production models. §5.7 words it as
+      "essentially" a zero rate. Fig. 12 agrees: no production model has a
+      visible false-detection bar. A baseline result, so no effect_of.
 
   - id: lindsey2026-emergent-introspective-awareness.c2
     study: lindsey2026-emergent-introspective-awareness.s1
@@ -1008,7 +1088,10 @@ claims:
       their output, on about 20% of injection trials. Some other models do
       so at lower rates.
     evidence_kind: measured
-    where: "§2.1; §5.3; §5.4; §5.7, Fig. 12"
+    where: "§2.1; §5.3; §5.4; §5.7, Fig. 12 (per-model rates read from Fig. 12)"
+    effect_of: [activation_intervention]
+    effect_presence: present
+    effect_direction: increases
     scope:
       models: [claude-opus-4.1, claude-opus-4]
       conditions: Original prompt, concept vectors from the 50-word list, each model's best layer and strength (for Opus 4.1 about two thirds of the way through the model, strength 2 or 4).
@@ -1017,8 +1100,14 @@ claims:
       The paper argues the report depends on the injected state and not on
       the text: the same prompt with no injection gives a denial, and a
       success must affirm detection before the word appears in the reply
-      (§2.1, §3). Per-model rates are in Fig. 12, which could not be read;
-      "about 20%" is from the running text.
+      (§2.1, §3). Read from Fig. 12: Opus 4.1 detects on about 0.22 of
+      injection trials and correctly identifies on about 0.2; Opus 4 about
+      0.2; both have no false detections. Among the other production
+      models correct identification is about 0.1 or below (Opus 3 about
+      0.08, Sonnet 4 and Haiku 3 about 0.06, Sonnet 3.7, Sonnet 3.5 new and
+      Haiku 3.5 about 0.02, Sonnet 3 none visible). effect_presence is the
+      rise in reported detection from the control trials (c1) to the
+      injection trials.
 
   - id: lindsey2026-emergent-introspective-awareness.c3
     study: lindsey2026-emergent-introspective-awareness.s1
@@ -1032,7 +1121,10 @@ claims:
     evidence_kind: observed
     where: "§5.3, Fig. 8"
     note: >
-      The examples are not attributed to a model in the text. Of the
+      The examples are not attributed to a model in the text or in Fig. 8,
+      which shows seven concepts at strengths 1, 2, 4, 8 and 16 (the
+      "ocean" denial is at strength 4). A catalogue of failure modes, so no
+      effect_of, though the text ties some of them to strength. Of the
       denial-while-influenced cases the paper adds that introspective
       mechanisms might be at work but masked, for instance by a refusal
       impulse; it does not test this. aspect is not coded: what drives the
@@ -1048,9 +1140,21 @@ claims:
       concept with no sign of noticing an injection, or notice only after
       saying the word.
     evidence_kind: measured
-    where: "§5.4, Fig. 9; appendix 12.1.4, Fig. 29 (figures not seen)"
+    where: "§5.4, Fig. 9 (values read from Fig. 9); appendix 12.1.4, Fig. 29 (seen at page resolution)"
+    effect_of: [activation_intervention]
+    effect_presence: present
+    effect_direction: non_monotonic
     scope:
       conditions: Layer sweep. The vector is computed at the layer it is injected into, so the layer effect mixes where concepts are represented with how they are processed.
+    note: >
+      Read from Fig. 9 (Opus 4.1, strength 2): the rate of noticing and then
+      identifying the concept is zero at early and middle layers, peaks at
+      about 0.2 at one layer about two thirds through, and drops back to
+      zero within a few layers. A few layers later the rate of mentioning
+      the concept peaks at about 0.4 while noticing-then-identifying is
+      near zero. The false detection rate is zero at every layer. The
+      per-model panels of Fig. 29 also peak in the latter part of the
+      model; their values are not coded.
 
   - id: lindsey2026-emergent-introspective-awareness.c5
     study: lindsey2026-emergent-introspective-awareness.s1
@@ -1060,10 +1164,18 @@ claims:
       nonzero rate in every category tested: famous people, countries,
       concrete nouns, abstract nouns and verbs.
     evidence_kind: measured
-    where: "§5.6, Fig. 11 (rates by category are in the figure, not seen)"
+    where: "§5.6, Fig. 11 (rates read from Fig. 11)"
+    effect_of: [activation_intervention]
+    effect_presence: present
     scope:
       models: [claude-opus-4.1]
       conditions: 50 concept vectors per category.
+    note: >
+      Read from Fig. 11: abstract nouns about 0.36, verbs about 0.28,
+      famous people about 0.18, countries about 0.14, concrete nouns about
+      0.10. The variable is the kind of concept injected, coded as a level
+      of activation_intervention (see the note on varies); category is
+      unordered, so no effect_direction.
 
   - id: lindsey2026-emergent-introspective-awareness.c6
     study: lindsey2026-emergent-introspective-awareness.s1
@@ -1075,12 +1187,17 @@ claims:
       names show no pattern.
     evidence_kind: measured
     where: "§5.6"
+    effect_of: [activation_intervention]
+    effect_presence: mixed
     scope:
       conditions: Random vectors and negated concept vectors.
     note: >
       The passage does not restate the model; the rest of §5.6 is on
       Opus 4.1. How a trial is scored when the vector has no known meaning
-      is not spelled out.
+      is not spelled out. effect_presence is mixed because the claim holds
+      two contrasts with concept vectors: random vectors do worse
+      (present), negated vectors about as well (absent). Splitting the
+      claim in two would let each carry its own value.
 
   - id: lindsey2026-emergent-introspective-awareness.c7
     study: lindsey2026-emergent-introspective-awareness.s1
@@ -1115,10 +1232,17 @@ claims:
       minus false positive rate) of the models tested, with a notably high
       true positive rate and no false positives.
     evidence_kind: measured
-    where: "§5.7, Figs. 12 and 13 (values are in the figures, not seen)"
+    where: "§5.7, Figs. 12 and 13 (values read from Fig. 13)"
+    effect_of: [model_generation]
+    effect_presence: present
     scope:
       models: [claude-opus-4.1, claude-opus-4]
       conditions: Each model at its best layer and strength.
+    note: >
+      Read from Fig. 13: net performance about 0.2 for each of Opus 4.1 and
+      Opus 4; no other model, production or helpful-only, is above about
+      0.11. The claim says which models do best, not that performance
+      rises with generation, so no effect_direction.
 
   - id: lindsey2026-emergent-introspective-awareness.c10
     study: lindsey2026-emergent-introspective-awareness.s1
@@ -1127,13 +1251,21 @@ claims:
       injected-thought task does not correlate strongly with model
       capability.
     evidence_kind: measured
-    where: "§5.7, Fig. 13 (values are in the figure, not seen)"
+    where: "§5.7, Fig. 13 (values read from Fig. 13)"
+    effect_of: [model_generation]
+    effect_presence: absent
     scope:
       conditions: Models other than Opus 4 and Opus 4.1, each at its best layer and strength.
     note: >
       Capability is taken from release order, which the paper says largely
       reflects it, with Opus 3 an exception (§4, footnote 6). Whether
       "other models" here takes in the helpful-only variants is not said.
+      Read from Fig. 13: the other production models range from about 0
+      (Sonnet 3) to about 0.08 (Opus 3), with Sonnet 4 and Haiku 3 about
+      0.06 and Sonnet 3.7, Sonnet 3.5 new and Haiku 3.5 about 0.02; the
+      helpful-only variants range from about -0.12 (Sonnet 4 H-only) to
+      about 0.11. effect_presence absent records no trend with generation
+      among these models; they do differ from one another.
 
   - id: lindsey2026-emergent-introspective-awareness.c11
     study: lindsey2026-emergent-introspective-awareness.s1
@@ -1142,9 +1274,18 @@ claims:
       meant to minimise refusals, sometimes have a high false positive
       rate, where production models have essentially none.
     evidence_kind: measured
-    where: "§5.3; §5.7, Fig. 12 (which variants, and the rates, are in the figure, not seen)"
+    where: "§5.3; §5.7, Fig. 12 (variants and rates read from Fig. 12)"
+    effect_of: [post_training_recipe]
+    effect_presence: present
     scope:
       conditions: Helpful-only against production post-training of the same base, control trials.
+    note: >
+      Read from Fig. 12: false detection rates of about 0.31 for Opus 4
+      (H-only), 0.26 for Sonnet 4 (H-only) and 0.11 for Sonnet 3 (H-only);
+      about 0.07 for Haiku 3.5 (H-only) and 0.05 for Sonnet 3.5 new
+      (H-only); none visible for Opus 3 (H-only) or Haiku 3 (H-only). Not
+      scoped to models: the claim is about the helpful-only variants as a
+      group, and "sometimes" covers the spread.
 
   - id: lindsey2026-emergent-introspective-awareness.c12
     study: lindsey2026-emergent-introspective-awareness.s1
@@ -1152,10 +1293,20 @@ claims:
       The helpful-only variants of Sonnet 3.5, Haiku 3.5 and Opus 3 have
       true positive rates significantly above their false positive rates.
     evidence_kind: measured
-    where: "§5.7, Fig. 12 (values are in the figure, not seen)"
+    where: "§5.7, Figs. 12 and 13 (values read from the figures)"
+    effect_of: [activation_intervention]
+    effect_presence: present
+    effect_direction: increases
     scope:
       models: [claude-3.5-sonnet-new-h-only, claude-3.5-haiku-h-only, claude-3-opus-h-only]
       conditions: Each model at its best layer and strength.
+    note: >
+      Read from Fig. 13: net performance about 0.1 for each of the three,
+      with error bars clear of zero. Fig. 12 gives correct identification
+      of about 0.16 to 0.18 against false detection of about 0.05 to 0.07
+      for Sonnet 3.5 new (H-only) and Haiku 3.5 (H-only), and about 0.1
+      against none visible for Opus 3 (H-only). The figures label the
+      first "Sonnet 3.5 new (H-only)", where the text says "Sonnet 3.5".
 
   - id: lindsey2026-emergent-introspective-awareness.c13
     study: lindsey2026-emergent-introspective-awareness.s1
@@ -1197,9 +1348,15 @@ claims:
       to get to mention the concept.
     evidence_kind: measured
     where: "§5.8, last paragraph"
+    effect_of: [prompt_framing]
+    effect_presence: absent
     scope:
       models: [claude-opus-4.1]
       conditions: Prompt variant ending "If not, tell me about a concept of your choice".
+    note: >
+      The paper calls the results "similar" to the original prompt (about
+      0.2 for Opus 4.1 in Fig. 12) and draws its conclusion from that, so
+      the change of prompt is coded as making no difference.
 
   - id: lindsey2026-emergent-introspective-awareness.c16
     study: lindsey2026-emergent-introspective-awareness.s1
@@ -1239,14 +1396,20 @@ claims:
       incoherent, neither yes nor no, but not at strength 2, and they
       mention the injected concept more often as strength rises.
     evidence_kind: measured
-    where: "§5.5, Fig. 10; appendix 12.1.2"
+    where: "§5.5, Fig. 10 (values read from Fig. 10); appendix 12.1.2"
     compares:
       - lindsey2026-emergent-introspective-awareness.s1
     note: >
       A control for the detection claims of s1 (c2, c15): it speaks
       against the reading that injection flips answers to yes in general.
       Left without a question because it measures answer bias, not a
-      report of an injected state.
+      report of an injected state. No effect_of: the whole study is a
+      control for s1, and a control result takes none (CLAUDE.md, "Say
+      which variable a claim is about"). Read from Fig. 10: affirmative answers stay at about
+      0.02 at strengths 0, 1, 2, 4 and 8; negative answers are about 0.93
+      to 0.97 up to strength 2, about 0.82 at 4 and about 0.33 at 8, the
+      rest being neither; the share of replies mentioning the concept is
+      about 0.02 at strengths 0 and 1, 0.14 at 2, 0.72 at 4 and 0.92 at 8.
 
   # s3: base pretrained models
 
@@ -1257,9 +1420,20 @@ claims:
       have a fairly high false positive rate, and none has a true positive
       rate above its false positive rate.
     evidence_kind: measured
-    where: "§5.7, Fig. 14 (models and values are in the figure, not seen)"
+    where: "§5.7, Fig. 14 (models and values read from Fig. 14)"
+    effect_of: [activation_intervention]
+    effect_presence: absent
     scope:
-      conditions: Base pretrained models, which the text does not name.
+      conditions: Base pretrained models, which the text does not name; Fig. 14 labels them Opus 4, Sonnet 4, Sonnet 3.7, Haiku 3.5, Opus 3, Sonnet 3 and Haiku 3 base.
+    note: >
+      Read from Fig. 14: false detection rates from about 0.06 (Haiku 3.5
+      base) to about 0.30 (Haiku 3 base), most between 0.15 and 0.25. Net
+      performance (correct identification minus false detection) is about
+      0.00 for Haiku 3.5 base, between about -0.03 and -0.08 for Opus 4,
+      Sonnet 4, Sonnet 3.7 and Opus 3 base, and about -0.19 and -0.22 for
+      Sonnet 3 and Haiku 3 base. The text's "greater-than-zero" leaves
+      Haiku 3.5 base at zero; the claim's "above" matches it. The claim
+      covers all seven models of the study, so it takes no model scope.
 
   - id: lindsey2026-emergent-introspective-awareness.c20
     study: lindsey2026-emergent-introspective-awareness.s3
@@ -1278,7 +1452,9 @@ claims:
     note: >
       The source names no stage of post-training. Its word is "eliciting",
       which stops short of saying the capacity is absent before
-      post-training.
+      post-training. No effect_of: the base-against-post-trained contrast
+      runs across studies (s3 against s1), so the claim is linked to
+      questions by hand, not through auto stances.
 
   # s4: setup not explained
 
@@ -1288,12 +1464,27 @@ claims:
       Asked what they are thinking about, or what is going on in their
       mind, with a concept injected on all token positions, Opus 4, Opus
       4.1 and Sonnet 4 say they are thinking about the injected concept at
-      significantly higher rates than the other models.
+      significantly higher rates than the other production models (about
+      0.2 to 0.3, against about 0.12 or less). The helpful-only variants of
+      Opus 4 and Sonnet 4 reach similar rates, and so does the helpful-only
+      Opus 3 on the "thinking about" prompt.
     evidence_kind: measured
-    where: "§5.8, Fig. 15 (values are in the figure, not seen)"
+    where: "§5.8, Fig. 15 (values read from Fig. 15)"
+    effect_of: [model_generation]
+    effect_presence: present
     scope:
       models: [claude-opus-4.1, claude-opus-4, claude-sonnet-4]
       conditions: The "thinking about" and "going on in your mind" prompts.
+    note: >
+      Read from Fig. 15. "Thinking about": Opus 4.1 about 0.32, Opus 4
+      0.30, Sonnet 4 0.24; other production models 0.04 to 0.12;
+      helpful-only Opus 4 0.32, Sonnet 4 0.30, Opus 3 0.28, Sonnet 3 0.16,
+      the rest 0.04 to 0.14. "Going on in your mind": Opus 4.1 about 0.20,
+      Opus 4 0.22, Sonnet 4 0.26; other production models 0.04 to 0.08;
+      helpful-only Opus 4 0.22, Sonnet 4 0.24, the rest 0.02 to 0.10. The
+      text names only the three production models; the second sentence of
+      the statement is from the figure and was added in the figure pass.
+      The figure has no no-injection condition for these prompts.
 
   - id: lindsey2026-emergent-introspective-awareness.c22
     study: lindsey2026-emergent-introspective-awareness.s4
@@ -1318,6 +1509,9 @@ claims:
       of the injected concept.
     evidence_kind: measured
     where: "§5.8"
+    effect_of: [activation_intervention]
+    effect_presence: present
+    effect_direction: increases
     scope:
       models: [claude-opus-4.1]
       conditions: The "anything unusual" prompt, best layer from s1, strength 2.
@@ -1336,9 +1530,22 @@ claims:
       10%) and repeats the sentence exactly. Its best layer is the one that
       was best in s1, about two thirds of the way through the model.
     evidence_kind: measured
-    where: "§6, Fig. 17 (rates are in the figure, not seen)"
+    where: "§6, Fig. 17 (rates read from Fig. 17)"
+    effect_of: [activation_intervention]
+    effect_presence: present
+    effect_direction: non_monotonic
     scope:
       models: [claude-opus-4.1]
+    note: >
+      Read from Fig. 17: repeating the sentence stays near 100% at every
+      layer for strengths 1 to 4, dips slightly at late layers at strength
+      8, and falls to about 40% at some later layers at strength 16.
+      Naming the injected word sits at about 15 to 25% at most layers and
+      strengths (the dashed chance line is at 10%) and peaks at one layer
+      past the middle, at about 45% for strength 2, 55% for 4 and 70% for
+      8; at strength 16 its peak of about 60% falls where sentence
+      repetition collapses, so the joint score drops there. The figure
+      does not say why the off-peak rate sits above chance.
 
   - id: lindsey2026-emergent-introspective-awareness.c25
     study: lindsey2026-emergent-introspective-awareness.s5
@@ -1347,11 +1554,18 @@ claims:
       both the injected concept and the sentence right well above chance.
       Opus 4 and Opus 4.1 do best.
     evidence_kind: measured
-    where: "§2.2; §6, Fig. 18; appendix 12.2.4, Fig. 30 (figures not seen)"
+    where: "§2.2; §6, Fig. 18 (values read from Fig. 18); appendix 12.2.4, Fig. 30 (seen at page resolution)"
+    effect_of: [model_generation]
+    effect_presence: present
     note: >
-      The stance on capability rests only on Opus 4 and 4.1 being best;
-      the full ordering is in Fig. 18. The paper gives chance for the
-      word-matching score (10%) and not for the joint measure.
+      The stance on capability rests only on Opus 4 and 4.1 being best.
+      Read from Fig. 18: Opus 4 about 0.74, Opus 4.1 about 0.66; every
+      other model, production or helpful-only, between about 0.34
+      (Sonnet 3 H-only) and 0.56 (Haiku 3 H-only), Sonnet 4 about 0.46.
+      The paper gives chance for the word-matching score (10%) and not for
+      the joint measure; Fig. 18 draws an unlabelled dashed line at 0.1.
+      "Every model" covers the fourteen models of Fig. 18, helpful-only
+      variants included.
 
   - id: lindsey2026-emergent-introspective-awareness.c26
     study: lindsey2026-emergent-introspective-awareness.s5
@@ -1362,7 +1576,10 @@ claims:
       finding as an existence proof and not as a general capability.
     evidence_kind: observed
     where: "§6"
-    note: The text says "the Opus models" and does not say which.
+    note: >
+      The text says "the Opus models" and does not say which. No effect_of:
+      the wording of the prompt is not among this study's varied
+      variables, and the source gives the comparison as an anecdote.
 
   - id: lindsey2026-emergent-introspective-awareness.c27
     study: lindsey2026-emergent-introspective-awareness.s5
@@ -1406,7 +1623,10 @@ claims:
       prefill lowers the apology rate significantly within a range of
       layers, with the peak slightly over halfway through the model.
     evidence_kind: measured
-    where: "§2.3; §7, Figs. 19 and 20 (rates are in Fig. 20, not seen)"
+    where: "§2.3; §7, Figs. 19 and 20 (rates read from Fig. 20)"
+    effect_of: [activation_intervention]
+    effect_presence: present
+    effect_direction: decreases
     scope:
       models: [claude-opus-4.1]
       conditions: Matching concept injected before the prefill.
@@ -1415,9 +1635,15 @@ claims:
       The paper argues that the model consults its activations from before
       the prefilled word (§2.3). The transcript is the same with and
       without injection, and the state sits at earlier token positions,
-      not at the position of the report. The design also has a
-      random-concept condition and a transcription check; the running text
-      does not give their results for Opus 4.1, which are in Fig. 20.
+      not at the position of the report. Read from Fig. 20 (strengths 4,
+      8, 16 and 32): with no injection the apology rate is about 80% at
+      every layer. With the matching concept it dips at a layer a little
+      past the middle, to about 70% at strength 4, 55% at 8, 25% at 16 and
+      under 10% at 32. The random concept barely moves it at strengths 4
+      and 8, dips to about 60% at 16, and at 32 falls to about 35 to 50%
+      over a band of layers, close to the matching concept except at its
+      lowest point. Transcription accuracy stays near 100% at strengths 4
+      and 8 and collapses at later layers at 16 and 32.
 
   - id: lindsey2026-emergent-introspective-awareness.c30
     study: lindsey2026-emergent-introspective-awareness.s6
@@ -1426,10 +1652,17 @@ claims:
       prefill, does not lower Opus 4.1's apology rate in the same way. The
       concept has to be present before the prefilled word.
     evidence_kind: measured
-    where: "§7, Fig. 21"
+    where: "§7, Fig. 21 (read from Fig. 21)"
     scope:
       models: [claude-opus-4.1]
       conditions: Matching concept injected after the prefill (control).
+    note: >
+      Read from Fig. 21 (strengths 4, 8, 16 and 32): the apology rate stays
+      at about 75 to 85% in the no-injection, matching-concept and
+      random-concept conditions at every layer, wandering between about 60
+      and 95% at strength 32, with no dip for the matching concept.
+      Transcription accuracy collapses at later layers at strengths 16 and
+      32. No effect_of: the paper runs this as a control for c29.
 
   - id: lindsey2026-emergent-introspective-awareness.c31
     study: lindsey2026-emergent-introspective-awareness.s6
@@ -1440,7 +1673,17 @@ claims:
       than the other models. Many other models show a smaller, nonzero
       drop.
     evidence_kind: measured
-    where: "§2.3; §7, Fig. 22; appendix 12.3.3, Fig. 31 (figures not seen)"
+    where: "§2.3; §7, Fig. 22 (values read from Fig. 22); appendix 12.3.3, Fig. 31 (seen at page resolution)"
+    effect_of: [model_generation]
+    effect_presence: present
+    note: >
+      Read from Fig. 22: Opus 4.1 about 0.46, Opus 4 about 0.40, Haiku 3.5
+      about 0.28; the other production and helpful-only models between
+      about 0.08 and 0.22. The figure's title adds a condition the text
+      leaves out: the maximum is taken only over layers and strengths
+      where sentence transcription accuracy is at least 98%. "Other
+      models" covers the fourteen models of Fig. 22, helpful-only
+      variants included.
 
   - id: lindsey2026-emergent-introspective-awareness.c32
     study: lindsey2026-emergent-introspective-awareness.s6
@@ -1453,7 +1696,11 @@ claims:
     where: "§7, Fig. 19"
     scope:
       models: [claude-opus-4.1]
-    note: A reply that claims intent and then retreats is not counted as an apology.
+    note: >
+      A reply that claims intent and then retreats is not counted as an
+      apology. Fig. 19: the reply that backs away is the "bread" example
+      (injection at strength 8), the confident one the "treasures" example
+      (strength 4). Example transcripts, so no effect_of.
 
   - id: lindsey2026-emergent-introspective-awareness.c33
     study: lindsey2026-emergent-introspective-awareness.s6
@@ -1463,12 +1710,20 @@ claims:
       thirds through that was best in s1 and s5, and injecting at that
       later layer is not effective here.
     evidence_kind: measured
-    where: "§7, Fig. 20; §2.5, point 3"
+    where: "§7, Fig. 20 (read from Fig. 20); §2.5, point 3"
+    effect_of: [activation_intervention]
+    effect_presence: present
+    effect_direction: non_monotonic
     compares:
       - lindsey2026-emergent-introspective-awareness.s1
       - lindsey2026-emergent-introspective-awareness.s5
     scope:
       models: [claude-opus-4.1]
+    note: >
+      The varied level is injection layer. Fig. 20 has no layer axis
+      labels beyond first and last, so where the dip falls relative to the
+      s1 layer is taken from the text; the figure shows the matching-concept
+      dip at a layer a little past the middle at every strength.
 
   - id: lindsey2026-emergent-introspective-awareness.c34
     study: lindsey2026-emergent-introspective-awareness.s6
@@ -1503,9 +1758,17 @@ claims:
       and more strongly than when it is told not to think about it. In most
       models it is above baseline in the "don't think" case too.
     evidence_kind: measured
-    where: "§2.4; §8.1, Figs. 24 and 25; §8.2, Fig. 26; appendix 12.4.3, Fig. 32 (figures not seen)"
+    where: "§2.4; §8.1, Figs. 24 and 25; §8.2, Fig. 26; appendix 12.4.3, Fig. 32 (figures seen; consistent with the text)"
+    effect_of: [prompt_framing]
+    effect_presence: present
     scope:
       conditions: Direct instruction to think or not to think about the word, averaged over tokens, words and sentences.
+    note: >
+      Fig. 26 shows the sixteen models of the study's note, helpful-only
+      variants included, and in each the "think" curve lies above the
+      "don't think" curve in the latter half of the layers. The size of
+      the gap is in c37. effect_presence records the think against don't
+      think contrast; it is unordered, so no effect_direction.
 
   - id: lindsey2026-emergent-introspective-awareness.c37
     study: lindsey2026-emergent-introspective-awareness.s7
@@ -1513,9 +1776,20 @@ claims:
       Earlier and less capable models typically show a larger gap between
       the "think" and "don't think" cases than later ones.
     evidence_kind: measured
-    where: "§8.2, Fig. 26 (figure not seen)"
+    where: "§8.2, Fig. 26 (read from Fig. 26)"
+    effect_of: [model_generation]
+    effect_presence: present
+    effect_direction: decreases
     scope:
       conditions: Direct instruction to think or not to think about the word.
+    note: >
+      Read from Fig. 26: at their widest, in the latter half of the
+      layers, the gap is about 0.01 to 0.02 in cosine similarity for
+      Opus 4.1, Opus 4 and Sonnet 4 and their helpful-only variants, and
+      about 0.04 to 0.08 for Opus 3, Sonnet 3 and Haiku 3 and the
+      helpful-only Haiku 3.5, Opus 3, Sonnet 3 and Haiku 3. The
+      quantity that decreases is the think minus don't think gap, with
+      later generation.
 
   - id: lindsey2026-emergent-introspective-awareness.c38
     study: lindsey2026-emergent-introspective-awareness.s7
@@ -1526,9 +1800,20 @@ claims:
       the final layer, while in all the Claude 3 models it stays above
       baseline there.
     evidence_kind: measured
-    where: "§8.2, Fig. 26 (figure not seen)"
+    where: "§8.2, Fig. 26 (read from Fig. 26)"
+    effect_of: [model_generation]
+    effect_presence: present
     scope:
       conditions: Direct instruction to think or not to think about the word.
+    note: >
+      Read from Fig. 26: at the final layer the "think" curve falls to
+      about zero or below in Opus 4.1, Opus 4, Opus 4 (H-only) and Sonnet
+      4, and stays at about 0.03 to 0.06 in Opus 3, Sonnet 3 and Haiku 3.
+      Sonnet 3.5 new ends below zero, about -0.04. effect_of covers the
+      second sentence, the contrast between generations; the layer profile
+      in the first sentence is a readout position, not a varied variable.
+      No effect_direction: the text contrasts recent models with the
+      Claude 3 models without a trend across all of them.
 
   - id: lindsey2026-emergent-introspective-awareness.c39
     study: lindsey2026-emergent-introspective-awareness.s7
@@ -1539,11 +1824,27 @@ claims:
       phrasing, with no directive to the model, give a much weaker gap or
       none.
     evidence_kind: measured
-    where: "§8.2, Figs. 27 and 28; §10.3.4"
+    where: "§8.2, Figs. 27 and 28 (read from the figures); §10.3.4; appendix 12.4.3, Fig. 32"
+    effect_of: [prompt_framing]
+    effect_presence: present
     scope:
       models: [claude-opus-4.1]
       conditions: Incentive prompts and control phrasings.
-    note: Results for other models and for the other incentive prompts are in Fig. 32, which could not be read.
+    note: >
+      effect_presence records the contrast the claim turns on: framings
+      that direct the model (instruction or incentive) open a gap, framings
+      that only mention the word do not or barely. Read from Figs. 27 and
+      28: for Opus 4.1 the three incentive pairs (happy or sad, rewarded or
+      punished, charity or terrorist organisations) give curves almost the
+      same as think or don't think; in the four control phrasings the two
+      curves overlap within their bands, with at most a slight separation
+      at late layers for "For what it's worth, I [don't] often think
+      about". Fig. 32 (read at 300 dpi) gives the incentive pairs for all
+      sixteen models: in each, the positive incentive lies above the
+      negative in the latter half of the layers, much as with the direct
+      instruction, though the charity pair often opens a smaller gap (for
+      example Haiku 3.5, Sonnet 3 H-only, Haiku 3 H-only). The control
+      phrasings are shown only for Opus 4.1.
 
   - id: lindsey2026-emergent-introspective-awareness.c40
     study: lindsey2026-emergent-introspective-awareness.s7

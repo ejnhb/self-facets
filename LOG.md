@@ -2,6 +2,62 @@
 
 Newest first. Each entry: what changed, what is open, what needs a decision.
 
+## 2026-11-27: the held pass (figures and effects on the three pilot records; Binder et al. read in full)
+
+Coder: claude (claude-opus-5-5), working with the owner: four claude-opus-5-5 subagents, one per record, from one
+brief, each editing only its own record; this coder reviewed the four diffs together, made the consistency fixes
+below, and committed. Each record has a pass entry (PR 14) saying exactly what was read.
+
+**Changed**
+
+- Figures: every record now has its figure pages seen (`read_depth: full_text`), and the claims that rested on
+  unread figures carry approximate values marked "read from Fig. N". Corrections the figures forced: Song et al.
+  c1 (the near-random Exp. 2 choices hold for prompted answers only; string probabilities pick the original word
+  about 0.8 of the time on nonsense); Lindsey c21 (helpful-only variants reach rates like the three production
+  models the text singles out). New claims where a figure held a result the record stated nowhere: Rubin et al.
+  c16 and c17.
+- Effects: `effect_of`, `effect_presence` and `effect_direction` coded across Lindsey (22 claims), Song et al. (8)
+  and Rubin et al. (9); Binder et al.'s checked (8 of 10). Auto stances now reach all four papers.
+- Binder et al. read in full (all appendices, the figures, and the official repository at 421fa65, linked from
+  arXiv's HTML v1). Study s5 split: its long-output-properties claim (c7) moved to a new study s7, since no
+  cross-prediction was run on those and the prompts differ; s5 is now answer-switching only, with the model's own
+  first answer in context, so `output_route_control` is `none`. Model lists for s1, s5 and s6 settled from the
+  appendices; `system_prompt` none (operational) from the code.
+- Lindsey: the helpful-only variants run in s4 to s7 (the figures show them; the text never says), so they are in
+  those studies' model lists and `post_training_recipe` in their `varies`; text and figures disagree on s6's
+  strengths (both recorded). New registry entries: three helpful-only Claude models and the seven base models of
+  Fig. 14, now s3's models.
+- Song et al.: the analysis script drops one of the Exp. 2 prompts, unmentioned in the paper (s1 note).
+
+**Consistency fixes in review**
+
+- Cross-study and argued claims take no `effect_of`: Lindsey c20 (base against post-trained, argued, comparing
+  s3 with s1) had it removed, matching Binder et al. c7. Such claims are linked to questions by hand.
+  Lindsey s3 still lists `post_training_stage` in `varies`, coded in the pilot with s1 named as the other arm;
+  Binder et al.'s new s7 does not code its cross-study contrast that way. Which is right is a question for the
+  owner (below).
+- Controls take none (Lindsey c18 and c30; Rubin et al. c13), per the 0.10 rule.
+
+**Open**
+
+- Rubin et al. c13 bundles a real injection effect in the pretrained base with an unexplained control result;
+  it should probably be split into two claims.
+- Lindsey c6 and Song et al. c7 are coded `mixed`; splitting each by comparison would be cleaner.
+- Per-panel values of Lindsey Figs. 29 to 31 are not coded (legible only at page resolution); Figs. 1 to 7, 16
+  and 23 (schematics, prompts, examples) were not viewed.
+- Binder et al. still needs its blind check by a coder from another model family.
+
+**For the owner to decide**
+
+- A codebook gap: `effect_presence` has no value for an effect that runs opposite to the question's direction on
+  an unordered contrast. Song et al. c8 to c10 find no self advantage but significant differences the other way
+  (other models predicting better than self); they are coded `absent`, with the reversal in the note, because
+  `present` would roll up as support. Either a value such as `reversed`, or letting auto stances read
+  `effect_direction` on `self_vs_other` (self above, other above). To weigh at the next codebook review, not
+  during the freeze.
+- Whether a contrast whose other arm is another study counts as something a study `varies` (Lindsey s3, coded so
+  in the pilot) or only as a `compares` between studies (Binder et al. s7, this pass). One rule for both.
+
 ## 2026-11-27: provenance per record, and a check on every pull request
 
 Coder: claude (claude-opus-5-5), working with the owner. Prompted by a review of the 0.5 to 0.10 changes.

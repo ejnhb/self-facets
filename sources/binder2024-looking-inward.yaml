@@ -19,19 +19,24 @@ artefacts:
     venue: null
     note: Affiliations above are as printed on v1. Venue not checked.
   - kind: code
-    url: null
-    note: The paper says code is public on GitHub. The link did not survive text extraction; add it.
+    url: https://github.com/felixbinder/introspection_self_prediction
+    note: Linked from §1 ("Our code and dataset are publicly available") in arXiv's HTML rendering of v1; the link is not a PDF annotation, so PDF text extraction loses it. Read at commit 421fa65 (2024-12-10).
   - kind: data
-    url: null
-    note: The paper says the dataset is public on Hugging Face. Link not captured; add it.
+    url: https://huggingface.co/datasets/thejaminator/introspection_self_predict
+    note: Linked from the same sentence of v1 (HTML rendering) and from the repository README. Not read.
 
 coding:
   coded_by: claude
   coder_model: claude-fable-5-2
   coded_on: 2026-11-26
   version_read: v1
-  read_depth: partial
-  read_parts: Main text, sections 1 to 6 and the start of 7, as extracted text via alphaXiv. Appendices and figures not read; figure numbers are quoted from the running text.
+  read_depth: full_text
+  read_parts: >
+    First coding: main text, sections 1 to 6 and the start of 7, as extracted text via alphaXiv. Since the
+    2026-11-27 pass (PR 14): all of v1 from the PDF fetched with scripts/fetch_paper.py, main text §1 to §8 and
+    appendices A.1 to A.6; figure pages seen as images: pp. 6, 7, 8, 9, 12, 24, 27, 28, 30, 31, 32, 35, 36, 37,
+    38, 40, 41, 42, 45 (Figs. 4 to 9, 10, 13, 14, 16, 17, 18, 21 to 27, 36 to 39); Figs. 11, 12, 15, 19, 20, 28 to
+    35 and 40 as extracted text only (Figs. 1 to 3 likewise). Released code read in part (see the pass entry).
   status: draft
   reviewed_by: null
   passes:                 # every coding or change, in order (CLAUDE.md, 'Mark your work')
@@ -70,6 +75,13 @@ coding:
       codebook: "0.10"
       scope: "Backfilled output_route_control."
       read: "v1 §2.1 to 2.2, from the PDF fetched with scripts/fetch_paper.py."
+    - date: 2026-11-27
+      pr: 14
+      coded_by: claude
+      coder_model: claude-opus-5-5
+      codebook: "0.10"
+      scope: "First full reading (all appendices, figures, code): split the long-output result out of s5 into a new study s7 (c7 moved there, effect_of dropped), corrected s6's models, set system_prompt from the code, recoded s5's output_route_control, added figure values to c1 to c6 and c8, c9, and checked effect_of on every claim (study_training added to c5)."
+      read: "v1 PDF via scripts/fetch_paper.py: whole text, §1 to §8 and App. A.1 to A.6 (pp. 1 to 46); figure pages seen as images pp. 6, 7, 8, 9, 12, 24, 27, 28, 30, 31, 32, 35, 36, 37, 38, 40, 41, 42, 45. arXiv HTML of v1 for the code and data links only. Code at github.com/felixbinder/introspection_self_prediction (commit 421fa65): README.md; evals/conf/prompt/object_level/minimal.yaml and meta_level/minimal.yaml; evals/conf/config_meta_level.yaml; evals/data_models/messages.py; evals/james_create_dataset.py (substitute_string); evals/analysis/james/make_data_release_hf_push.py (system-prompt removal); other_evals/counterfactuals/README.md and run_ask_are_you_sure.py. The Hugging Face dataset was not read."
 
 studies:
   - id: binder2024-looking-inward.s1
@@ -85,12 +97,19 @@ studies:
       - gpt-4o-2024-05-13
       - llama-3.1-70b
       - gpt-3.5-turbo-0125
+      - gpt-4
+    note: >
+      Fig. 4 shows GPT-4o, Llama 70B and GPT-3.5; GPT-4's before and after
+      accuracies appear only in App. A.2.8, Fig. 18.
     facets:
       output_route_control: {value: by_construction, basis: stated, where: "§2.2", note: "No chain of thought is allowed, and the hypothetical question is asked without the object-level response in context; the ground-truth behaviour is collected in a separate context (§2.1)."}
       similarity_adjustment: not_applicable
       system_prompt:
-        value: unspecified
-        note: The prompts shown (Fig. 3, App. A.5) have user and assistant turns only; the text does not say whether a system message was sent, and the released code was not read.
+        value: none
+        basis: operational
+        where: "code: evals/conf/prompt/object_level/minimal.yaml and meta_level/minimal.yaml; evals/data_models/messages.py"
+        confidence: medium
+        note: The paper does not say. In the released code the object-level and hypothetical prompts use a template whose system message is empty; the empty message stays in OpenAI requests and fine-tuning files (it is dropped only for Anthropic and Gemini calls and in the data release). Whether an empty system turn reaches Llama 70B's template through Fireworks is not shown.
       reasoning:
         value: none
         basis: stated
@@ -173,8 +192,11 @@ studies:
         basis: operational
         note: 'Self-prediction is compared with cross-prediction by models of other families trained on the same behaviour data; no adjustment for how alike the models are.'
       system_prompt:
-        value: unspecified
-        note: The prompts shown (Fig. 3, App. A.5) have user and assistant turns only; the text does not say whether a system message was sent, and the released code was not read.
+        value: none
+        basis: operational
+        where: "code: evals/conf/prompt/object_level/minimal.yaml and meta_level/minimal.yaml; evals/data_models/messages.py"
+        confidence: medium
+        note: The paper does not say. In the released code the object-level and hypothetical prompts use a template whose system message is empty; the empty message stays in OpenAI requests and fine-tuning files (it is dropped only for Anthropic and Gemini calls and in the data release). Whether an empty system turn reaches Llama 70B's template through Fireworks is not shown.
       reasoning:
         value: none
         basis: stated
@@ -232,8 +254,11 @@ studies:
         basis: operational
         note: 'Calibration of self-trained models is compared with cross-trained ones, as in s2.'
       system_prompt:
-        value: unspecified
-        note: The prompts shown (Fig. 3, App. A.5) have user and assistant turns only; the text does not say whether a system message was sent, and the released code was not read.
+        value: none
+        basis: operational
+        where: "code: evals/conf/prompt/object_level/minimal.yaml and meta_level/minimal.yaml; evals/data_models/messages.py"
+        confidence: medium
+        note: The paper does not say. In the released code the object-level and hypothetical prompts use a template whose system message is empty; the empty message stays in OpenAI requests and fine-tuning files (it is dropped only for Anthropic and Gemini calls and in the data release). Whether an empty system turn reaches Llama 70B's template through Fireworks is not shown.
       reasoning:
         value: none
         basis: stated
@@ -279,8 +304,11 @@ studies:
       output_route_control: {value: by_construction, basis: stated, where: "§2.2", note: "No chain of thought is allowed, and the hypothetical question is asked without the object-level response in context; the ground-truth behaviour is collected in a separate context (§2.1)."}
       similarity_adjustment: not_applicable
       system_prompt:
-        value: unspecified
-        note: The prompts shown (Fig. 3, App. A.5) have user and assistant turns only; the text does not say whether a system message was sent, and the released code was not read.
+        value: none
+        basis: operational
+        where: "code: evals/conf/prompt/object_level/minimal.yaml and meta_level/minimal.yaml; evals/data_models/messages.py"
+        confidence: medium
+        note: The paper does not say. In the released code the object-level and hypothetical prompts use a template whose system message is empty; the empty message stays in OpenAI requests and fine-tuning files (it is dropped only for Anthropic and Gemini calls and in the data release). Whether an empty system turn reaches Llama 70B's template through Fireworks is not shown.
       reasoning:
         value: none
         basis: stated
@@ -311,40 +339,61 @@ studies:
       report_target: own_behaviour
       evidence: [self_report, behaviour]
       validated_against: behaviour
-      varies: study_training
+      varies:
+        value: study_training
+        levels:
+          study_training: [self-prediction-trained M1, M1 further fine-tuned on 1,000 object-level answers from Claude 3.5 Sonnet (MC)]
       comparison: within_model
       elicitation: trained
 
   - id: binder2024-looking-inward.s5
-    label: Limits of the self-prediction advantage
-    where: "§4"
+    label: No self-prediction advantage for answer-switching
+    where: "§4; App. A.2.6, A.6, Figs. 16, 38, 39"
     design: >
-      The same self-prediction and cross-prediction setup applied to two harder
-      cases: properties of longer outputs (a review, a story, response length),
-      and whether the model will switch its answer under a hint or an "are you
-      sure?" follow-up.
+      With the self- and cross-prediction training of s2, models learn to
+      predict whether they would change a multiple-choice answer: because of
+      an opinion stated in the prompt ("opinion bias detection", after Chua et
+      al. 2024), or if the user followed up with "I don't think that's right.
+      Are you sure?" (after Sharma et al. 2023). Tested on held-out datasets
+      against a 50% most-common-answer baseline. Unlike the main tasks, these
+      are two-turn prompts: the model's first answer stays in the context when
+      the hypothetical question is asked (Figs. 38, 39; in the code,
+      other_evals/counterfactuals/run_ask_are_you_sure.py, ask_second_round).
     models:
-      - {id: gpt-4o-2024-05-13, roles: [subject, comparison]}
-      - {id: llama-3.1-70b, roles: [subject, comparison]}
+      - llama-3.1-70b
+      - {id: gpt-4o-2024-05-13, roles: [comparison], note: trained to predict Llama 70B (cross-prediction)}
     facets:
-      output_route_control: {value: by_construction, basis: stated, where: "§2.2", note: "No chain of thought is allowed, and the hypothetical question is asked without the object-level response in context; the ground-truth behaviour is collected in a separate context (§2.1)."}
+      output_route_control:
+        value: none
+        basis: operational
+        where: "App. A.6, Figs. 38, 39; code: other_evals/counterfactuals/run_ask_are_you_sure.py"
+        note: >
+          The model's own first-round answer is in the context of the
+          hypothetical question, and the property asked about (will it switch
+          that answer) is defined relative to it. Nothing in the design
+          excludes inference from it. The self-against-cross contrast could act
+          as a control if the cross-trained model sees the same transcript, but
+          the paper does not say what the cross-trained model's context holds.
       similarity_adjustment:
         value: none
         basis: operational
-        note: 'Self- against cross-prediction of sycophantic switching, as in s2.'
+        note: 'Self- against cross-prediction of answer-switching, as in s2.'
       system_prompt:
-        value: unspecified
-        note: The prompts shown (Fig. 3, App. A.5) have user and assistant turns only; the text does not say whether a system message was sent, and the released code was not read.
+        value: none
+        basis: operational
+        where: "code: other_evals/counterfactuals/run_ask_are_you_sure.py"
+        confidence: medium
+        note: The paper does not say. In the released code these conversations have user and assistant turns only.
       reasoning:
         value: none
-        basis: stated
-        where: "§2, §2.2"
-        note: Chain of thought is not allowed in answering the hypothetical question.
+        basis: operational
+        where: "Figs. 38, 39; code: run_ask_are_you_sure.py"
+        note: The first answer is asked for immediately as a single letter, and the hypothetical question asks for yes or no straight away.
       report_readout:
         value: generated_choice
         basis: operational
-        where: "Fig. 3; App. A.5"
-        note: The model answers with one character, one word, true or false, or yes or no, as the hypothetical question tells it to; the answer is generated and compared with the property of its object-level output.
+        where: "Figs. 38, 39"
+        note: The model answers yes or no (Y or N in the code).
       unit_position:
         value: not_applicable
         note: Backfilled in codebook 0.6. Under 0.5 and earlier this facet was left out when the coder found no position, so absence recorded that finding.
@@ -362,40 +411,47 @@ studies:
       varies:
         value: [task, self_vs_other]
         levels:
-          task:
-            - properties of long outputs (sentiment of a review, a story character's name, response length)
-            - whether it switches its answer under a hint or a follow-up
-          self_vs_other: [a model predicting itself, a different model trained to predict it]
+          task: [opinion bias detection, '"Are you sure?" bias detection']
+          self_vs_other: [Llama 70B predicting itself, GPT-4o trained to predict Llama 70B]
       comparison: cross_model
       elicitation: trained
     note: >
-      Which models were used for each sub-test is given in appendices that were
-      not read. The model list is taken from the examples in the main text and
-      may be incomplete.
+      Until the 2026-11-27 pass this study also held the long-output result,
+      now s7, whose facets differ (no cross-prediction, single-turn prompts).
+      Results are reported only for Llama 70B against GPT-4o on the "Are you
+      sure?" task (Fig. 16); the opinion-bias task is reported without numbers
+      or models. App. A.1.4 lists both bias-detection properties among those
+      "current models fail to predict", which conflicts with A.2.6 and §4,
+      where trained models beat the baseline; the record follows A.2.6.
 
   - id: binder2024-looking-inward.s6
     label: Transfer to other self-knowledge tasks
-    where: "§4"
+    where: "§4; App. A.4, Tables 1 and 2, Figs. 25 to 27"
     design: >
       Self-prediction-trained models are run on the Situational Awareness
-      Dataset and on OpenAI Evals tasks for self-coordination, sandbagging and
-      steganography, and compared with baseline models.
+      Dataset (overall and its Predict Tokens task, each plain and with SAD's
+      "situating prompt"; GPT-4o only) and on OpenAI Evals tasks for
+      sandbagging, Schelling-point coordination and steganography (GPT-4o and
+      GPT-3.5). Each is compared with the untrained model and with a baseline
+      fine-tune of the same model on similar tasks given with in-context
+      examples, meant to control for familiarity with the task format (App.
+      A.4.1).
     models:
       - gpt-4o-2024-05-13
-      - llama-3.1-70b
+      - gpt-3.5-turbo-0125
     facets:
-      output_route_control: {value: unspecified, note: "Transfer evaluations (SAD, OpenAI Evals tasks); how answers are produced and scored is not set out in the parts read."}
+      output_route_control: {value: unspecified, note: "Transfer evaluations (SAD, OpenAI Evals tasks) run as published; the paper does not set out how answers are produced or scored (App. A.4)."}
       similarity_adjustment: not_applicable
       system_prompt:
         value: unspecified
-        where: "App. A.4.2, Table 1"
-        note: SAD is scored plain and with a "situating prompt"; the text read does not say how that prompt is delivered.
+        where: "App. A.4.2, Tables 1 and 2"
+        note: SAD is scored plain and with a "situating prompt"; the paper does not say how that prompt is delivered, and the SAD runs are not in the released repository's files read.
       reasoning:
         value: unspecified
-        note: The Situational Awareness Dataset and OpenAI Evals tasks are run as published; whether reasoning was allowed there is not stated in the parts read (§4, App. A.4).
+        note: The Situational Awareness Dataset and OpenAI Evals tasks are run as published; whether reasoning was allowed is not stated (§4, App. A.4).
       report_readout:
         value: unspecified
-        note: Answer formats of the SAD and OpenAI Evals tasks are not described in the parts read.
+        note: Answer formats of the SAD and OpenAI Evals tasks are not described in the paper (App. A.4).
       unit_position:
         value: not_applicable
         note: Backfilled in codebook 0.6. Under 0.5 and earlier this facet was left out when the coder found no position, so absence recorded that finding.
@@ -410,34 +466,98 @@ studies:
       report_target:
         value: [own_properties, own_behaviour]
         confidence: low
-        note: Coded from the one-line descriptions of the benchmarks in the main text.
+        note: Coded from the descriptions of the benchmarks in §4 and App. A.4; the benchmark papers were not read.
       evidence: [self_report, behaviour]
       validated_against:
         value: unspecified
-        note: Depends on each benchmark task. Not yet coded; needs the appendix and the benchmark papers.
-      varies: [study_training, task]
-      comparison:
-        value: within_model
-        confidence: low
-        note: The text says only that trained models were compared with appropriate baseline models.
+        note: Depends on each benchmark task; the paper reports scores without describing them. Needs the benchmark papers.
+      varies:
+        value: [study_training, task]
+        levels:
+          study_training: [untrained, baseline fine-tune with in-context examples, self-prediction fine-tune]
+          task: [SAD overall, SAD Predict Tokens, sandbagging, Schelling point, steganography]
+      comparison: within_model
       elicitation: trained
     note: >
-      The main text does not say which models were tested here. The model list
-      is carried over from the other studies and needs checking against
-      appendix A.4.
+      Models settled from App. A.4: SAD is reported for GPT-4o only (Tables 1
+      and 2); the OpenAI Evals figures show GPT-4o and GPT-3.5, each untrained,
+      baseline fine-tuned and self-prediction fine-tuned (Figs. 25 to 27).
+      Llama 70B, listed here before, is not tested in this study.
+
+  - id: binder2024-looking-inward.s7
+    label: Self-prediction of properties of long outputs
+    where: "§4; App. A.1.4, A.6, Figs. 35 to 37"
+    design: >
+      In earlier experiments, with the self-prediction setup of s1, models
+      were asked to predict properties that depend on a long response: the
+      main character's name in a story they would write, the length of a
+      response in words (three bins), and the sentiment of a movie review they
+      would write. Scored against the most-common-answer baseline. The authors
+      left these properties out of the main evaluation because models could
+      not predict them at all, so no cross-prediction was run on them.
+    models: []
+    facets:
+      output_route_control: {value: by_construction, basis: operational, where: "§2.2; App. A.6, Figs. 35 to 37", note: "Single-turn hypothetical questions with no chain of thought; the long response itself is never in the context of the question."}
+      similarity_adjustment: not_applicable
+      system_prompt:
+        value: none
+        basis: operational
+        where: "code: evals/conf/prompt/meta_level/minimal.yaml"
+        confidence: low
+        note: The paper does not say. The example prompts (Figs. 35 to 37) follow the code's minimal template, whose system message is empty, as in s1; that these earlier runs used it is assumed from the wording.
+      reasoning:
+        value: none
+        basis: stated
+        where: "§2.2"
+        note: Chain of thought is not allowed in answering the hypothetical question.
+      report_readout:
+        value: generated_choice
+        basis: operational
+        where: "App. A.6, Figs. 35 to 37"
+        note: A name, a length bin or positive or negative, generated as the question tells it to.
+      unit_position: not_applicable
+      study_kind: experiment
+      unit_state: not_applicable
+      unit_disposition: {value: weights, basis: operational, confidence: medium}
+      unit_reporter: {value: speaker, basis: operational, confidence: medium}
+      self_sense: {value: self_facts, basis: operational, confidence: medium}
+      object_of_study: {value: default_persona, basis: operational, confidence: medium}
+      format: {value: chat_template, basis: operational, confidence: medium}
+      construct: [introspection, self_prediction]
+      report_target: own_behaviour
+      evidence: [self_report, behaviour]
+      validated_against: behaviour
+      varies:
+        value: task
+        levels:
+          task: [main character name, length of text, review sentiment]
+      comparison: within_model
+      elicitation: trained
+    note: >
+      Split from s5 in the 2026-11-27 pass: these results have no
+      cross-prediction and single-turn prompts, so s5's facets did not fit
+      them. The paper does not say which models were tested ("most models"),
+      so none is listed. The contrast the authors draw, with the short-output
+      properties that models could predict, is with s1.
 
 claims:
   - id: binder2024-looking-inward.c1
     study: binder2024-looking-inward.s1
     statement: >
-      Before training, self-prediction accuracy is close to always guessing the
-      most common answer. Fine-tuning raises held-out accuracy, for GPT-4o from
-      32.6% to 49.4%, with GPT-3.5 the weakest of the three.
+      Before training, self-prediction accuracy is at or below always guessing
+      the most common answer. Fine-tuning raises held-out accuracy above that
+      baseline: GPT-4o from 32.6% to 49.4%, Llama 70B from 26.4% to 48.5%,
+      GPT-3.5 from 16.3% to 37.3%, and GPT-4 from about 21% to about 50%.
     effect_of: [study_training]
     effect_presence: present
     effect_direction: increases
     evidence_kind: measured
-    where: "§3.1, Fig. 4"
+    where: "§3.1, Fig. 4 (seen); GPT-4's values read from App. A.2.8, Fig. 18"
+    note: >
+      In Fig. 4 GPT-4o's untrained accuracy sits about at its baseline and
+      Llama 70B's and GPT-3.5's below theirs; in Fig. 18 every untrained model
+      sits about at its own baseline. Gains vary by property (App. A.1.5, Fig.
+      10): predicting the third word stays low for all three models.
 
   - id: binder2024-looking-inward.c2
     study: binder2024-looking-inward.s2
@@ -445,61 +565,78 @@ claims:
       A model trained to predict itself beats a different model trained on the
       same examples of its behaviour, in both directions: Llama 70B predicts
       itself at 48.5% against 31.8% for GPT-4o predicting it, and GPT-4o
-      predicts itself at 49.4% against 36.6% for Llama 70B.
+      predicts itself at 49.4% against 36.6% for Llama 70B. GPT-4 predicts
+      itself at about 50% against about 37% for GPT-4o.
     effect_of: [self_vs_other]
     effect_presence: present
     evidence_kind: measured
-    where: "§3.2.2, Fig. 5"
+    where: "§3.2.2, Fig. 5 (seen; GPT-4's values read from it); App. A.2.2, A.2.4, Figs. 13, 14"
     scope:
       models: [gpt-4o-2024-05-13, gpt-4, llama-3.1-70b]
       conditions: Properties of short outputs (such as the second character, odd or even, whether the answer is among given options, ethical stance), pooled, on held-out datasets.
     note: >
       The authors rule out training data as the source of the advantage but do
       not identify where the report's content does come from, so report_source
-      is not coded.
+      is not coded. GPT-3.5 also serves as a cross-predictor of Llama 70B and
+      GPT-4. In Fig. 5 the cross-predictions of Llama 70B fall below its
+      most-common-answer baseline (about 36%). The advantage also holds on the
+      training tasks (Fig. 13) and on most properties, but not on ethical
+      stance, where GPT-4o predicts Llama 70B and GPT-4 about as well as they
+      predict themselves (read from Fig. 14).
 
   - id: binder2024-looking-inward.c3
     study: binder2024-looking-inward.s2
     statement: >
-      For GPT-3.5 the self-prediction advantage is statistically significant
-      but very small (+0.8%), and the authors do not count it as clear evidence.
+      For GPT-3.5 the self-prediction advantage on held-out tasks is
+      statistically significant but very small (+0.8%), and the authors do not
+      count it as clear evidence. On the training tasks GPT-4o predicts GPT-3.5
+      slightly better than GPT-3.5 predicts itself.
     effect_of: [self_vs_other]
     effect_presence: inconclusive
     evidence_kind: measured
-    where: "§3.2.2; §6"
+    where: "§3.2.2; §6; App. A.2.2, Fig. 13 (seen)"
     scope:
       models: [gpt-3.5-turbo-0125]
 
   - id: binder2024-looking-inward.c4
     study: binder2024-looking-inward.s2
     statement: >
-      More cross-prediction data does not close the gap. GPT-4o predicting
-      Llama 70B plateaus at 35.2% after 10,000 samples, against 48.5% for
-      Llama 70B predicting itself.
+      More cross-prediction data does not close the gap. Trained on 1,000 to
+      30,000 samples, GPT-4o predicting Llama 70B plateaus at 35.2% after about
+      10,000, against 48.5% for Llama 70B predicting itself; GPT-4o predicting
+      GPT-4 plateaus at 36.2% from 20,000, against 49.6% for GPT-4.
     effect_of: [self_vs_other]
     effect_presence: present
     evidence_kind: measured
-    where: "§3.2.2 (details in appendix A.2.7, not read)"
+    where: "§3.2.2; App. A.2.7, Fig. 17 (seen)"
     scope:
-      models: [gpt-4o-2024-05-13, llama-3.1-70b]
+      models: [gpt-4o-2024-05-13, llama-3.1-70b, gpt-4]
+    note: >
+      Fig. 17's left panel labels the 49.6% line "GPT-4o self-prediction
+      accuracy"; its caption and A.2.7 give it as GPT-4's. The record follows
+      the text.
 
   - id: binder2024-looking-inward.c5
     study: binder2024-looking-inward.s3
     statement: >
       Self-prediction-trained models are better calibrated about their own
       output distribution than cross-trained or untrained models, although
-      training used only temperature-0 answers. Mean absolute deviation falls
-      from 23.0 untrained to 8.7 self-trained, against 21.3 cross-trained.
-    effect_of: [self_vs_other]
+      training used only temperature-0 answers. For Llama 70B, mean absolute
+      deviation falls from 23.0 untrained to 8.7 self-trained, against 21.3
+      cross-trained.
+    effect_of: [self_vs_other, study_training]
     effect_presence: present
     evidence_kind: measured
-    where: "§3.3.2, Fig. 6"
+    where: "§3.3.2, Figs. 6, 21, 22 (seen); MAD values from Fig. 22, second-character panel"
     scope:
       conditions: The figures given are for one dataset and property (animal sequences, second character).
     note: >
-      The running text reads as if the three figures are Llama 70B's but does
-      not say so outright; check against Fig. 22. The effect is described
-      as less pronounced across properties for Llama 70B than for GPT-4o.
+      Fig. 22 confirms the three figures are Llama 70B's. For GPT-4o (Fig. 21)
+      self-trained MAD is lowest on all four properties shown (second
+      character 12.5 against 20.9 cross-trained and 18.3 untrained). For Llama
+      70B the advantage is clear on first word and second character but not
+      on ethical stance (self 25.3, cross 19.5, untrained 24.8) or among
+      options (12.9, 17.0, 14.0), as the caption of Fig. 22 says.
 
   - id: binder2024-looking-inward.c6
     study: binder2024-looking-inward.s4
@@ -510,51 +647,73 @@ claims:
     effect_of: [study_training]
     effect_presence: present
     evidence_kind: measured
-    where: "§3.4.2, Fig. 8"
+    where: "§3.4.2, Fig. 8 (seen); App. A.3.2, A.3.3, Figs. 23, 24 (seen)"
     scope:
       models: [gpt-4o-2024-05-13]
-    note: The text says results are similar for GPT-4 and weaker for GPT-3.5, with details in an appendix that was not read.
+    note: >
+      The pattern holds on every property shown in Fig. 8 and, after
+      reweighting the test sets to equal entropy to rule out mode collapse, on
+      average (36.3% against 21.3%, Fig. 24). GPT-4 shows the same (33.6%
+      against 12.2%, Fig. 23). The text calls GPT-3.5's result weak, but the
+      GPT-3.5 panel of Fig. 23 shows 37.9% against 18.5%, and its values for
+      four properties and the average equal those of GPT-3.5's panel in Fig.
+      10 (before and after self-prediction training); no claim is made for
+      GPT-3.5 here.
 
   - id: binder2024-looking-inward.c7
-    study: binder2024-looking-inward.s5
+    study: binder2024-looking-inward.s7
     statement: >
-      For some properties of longer outputs (sentiment of a review it would
-      write, the main character's name in a story, response length), trained
-      models do not beat the most-common-answer baseline at predicting
-      themselves.
-    effect_of: [task]
-    effect_presence: present
+      For properties that depend on a longer output (sentiment of a review it
+      would write, the main character's name in a story, response length),
+      most models did not beat the most-common-answer baseline at predicting
+      themselves. No accuracies are reported.
     evidence_kind: measured
-    where: "§4 (details in appendix A.1.4, not read)"
-    scope:
-      conditions: Properties of long outputs.
+    where: "§4; App. A.1.4"
+    compares: [binder2024-looking-inward.s1]
+    note: >
+      The authors attribute the failure to output length, against the short
+      properties of s1, and suggest that self-simulation cannot cover a long
+      response in one forward pass (c10). No effect_of: the contrast with short
+      outputs lies across studies, and within s7 the properties are not
+      compared with each other.
 
   - id: binder2024-looking-inward.c8
     study: binder2024-looking-inward.s5
     statement: >
-      There is no self-prediction advantage for sycophantic answer-switching.
-      Llama 70B predicts its own switching at 74.5%, and GPT-4o trained to
-      predict Llama 70B reaches 76.5%.
+      There is no self-prediction advantage for answer-switching. On the "Are
+      you sure?" task, Llama 70B trained to predict itself reaches 74.5%
+      against a 50% baseline, and GPT-4o trained to predict Llama 70B reaches
+      76.5%. The authors report the same absence for opinion bias, without
+      numbers.
     effect_of: [self_vs_other]
     effect_presence: absent
     evidence_kind: measured
-    where: "§4"
+    where: "§4; App. A.2.6, Fig. 16 (seen)"
     scope:
       models: [gpt-4o-2024-05-13, llama-3.1-70b]
-      conditions: Whether it switches its answer under a hint or a follow-up.
+      conditions: Whether it switches its answer under an opinion in the prompt or an "Are you sure?" follow-up; numbers for the latter only.
     disposition: [sycophancy]
 
   - id: binder2024-looking-inward.c9
     study: binder2024-looking-inward.s6
     statement: >
       Self-prediction training does not carry over to other self-knowledge
-      tasks. On the Situational Awareness Dataset only the task closest to the
-      training format improves, and there is no clear gain on self-coordination,
-      sandbagging or steganography evaluations.
+      tasks. On the Situational Awareness Dataset the overall score of
+      self-trained GPT-4o (0.48 plain, 0.53 with SAD's situating prompt)
+      matches the baseline fine-tune (0.49, 0.53); only Predict Tokens, the
+      task closest to the training format, improves (0.41 against 0.26 plain). There is no clear gain on
+      sandbagging, Schelling-point coordination or steganography.
     effect_of: [study_training]
     effect_presence: absent
     evidence_kind: measured
-    where: "§4"
+    where: "§4; App. A.4.2, Tables 1 and 2; A.4.3, Figs. 25 to 27 (seen)"
+    note: >
+      In A.4.3 self-trained GPT-4o does worse than the baseline fine-tune on
+      sandbagging, reaches a Schelling-point delta of 0 against -0.05
+      untrained, and gains 1 point of undetected steganography accuracy, which
+      the authors judge not meaningful. Read from Figs. 25 to 27, GPT-3.5's
+      self-trained model shows no clear gain either. The Predict Tokens gain is
+      the exception the authors set aside as close to the training task.
 
   - id: binder2024-looking-inward.c10
     study: binder2024-looking-inward.s1
@@ -564,6 +723,6 @@ claims:
       forward pass. They offer this to explain the failure on long outputs and
       do not test it.
     evidence_kind: hypothesised
-    where: "§2; §6, Fig. 9"
+    where: "§2; §6, Fig. 9 (seen); App. A.1.4"
 
 relations: []

@@ -185,6 +185,98 @@
   derived_from: null
   stage: null
   note: Unreleased. Shares a pretrained base with claude-3-opus.
+- id: claude-sonnet-4-h-only
+  name: Claude Sonnet 4 (helpful-only)
+  family: claude-4
+  developer: anthropic
+  open_weights: false
+  post_training_reached: post_trained
+  derived_from: null
+  stage: null
+  note: Unreleased. Shares a pretrained base with claude-sonnet-4. Named only in the figures of Lindsey 2026 ("Sonnet 4 (H-only)", Figs. 12, 15, 26).
+- id: claude-3-sonnet-h-only
+  name: Claude 3 Sonnet (helpful-only)
+  family: claude-3
+  developer: anthropic
+  open_weights: false
+  post_training_reached: post_trained
+  derived_from: null
+  stage: null
+  note: Unreleased. Shares a pretrained base with claude-3-sonnet. Named only in the figures of Lindsey 2026 ("Sonnet 3 (H-only)", Figs. 12, 15, 18, 22, 26).
+- id: claude-3-haiku-h-only
+  name: Claude 3 Haiku (helpful-only)
+  family: claude-3
+  developer: anthropic
+  open_weights: false
+  post_training_reached: post_trained
+  derived_from: null
+  stage: null
+  note: Unreleased. Shares a pretrained base with claude-3-haiku. Named only in the figures of Lindsey 2026 ("Haiku 3 (H-only)", Figs. 12, 15, 18, 22, 26).
+- id: claude-opus-4-base
+  name: Claude Opus 4 (base)
+  family: claude-4
+  developer: anthropic
+  open_weights: false
+  post_training_reached: base
+  derived_from: null
+  stage: null
+  note: >
+    Pretrained model, labelled "Opus 4 base" in Lindsey 2026 Fig. 14. The paper does not say
+    it is the checkpoint claude-opus-4 was post-trained from; the label suggests it.
+- id: claude-sonnet-4-base
+  name: Claude Sonnet 4 (base)
+  family: claude-4
+  developer: anthropic
+  open_weights: false
+  post_training_reached: base
+  derived_from: null
+  stage: null
+  note: Pretrained model, labelled "Sonnet 4 base" in Lindsey 2026 Fig. 14. See claude-opus-4-base.
+- id: claude-3.7-sonnet-base
+  name: Claude 3.7 Sonnet (base)
+  family: claude-3.7
+  developer: anthropic
+  open_weights: false
+  post_training_reached: base
+  derived_from: null
+  stage: null
+  note: Pretrained model, labelled "Sonnet 3.7 base" in Lindsey 2026 Fig. 14. See claude-opus-4-base.
+- id: claude-3.5-haiku-base
+  name: Claude 3.5 Haiku (base)
+  family: claude-3.5
+  developer: anthropic
+  open_weights: false
+  post_training_reached: base
+  derived_from: null
+  stage: null
+  note: Pretrained model, labelled "Haiku 3.5 base" in Lindsey 2026 Fig. 14. See claude-opus-4-base.
+- id: claude-3-opus-base
+  name: Claude 3 Opus (base)
+  family: claude-3
+  developer: anthropic
+  open_weights: false
+  post_training_reached: base
+  derived_from: null
+  stage: null
+  note: Pretrained model, labelled "Opus 3 base" in Lindsey 2026 Fig. 14. See claude-opus-4-base.
+- id: claude-3-sonnet-base
+  name: Claude 3 Sonnet (base)
+  family: claude-3
+  developer: anthropic
+  open_weights: false
+  post_training_reached: base
+  derived_from: null
+  stage: null
+  note: Pretrained model, labelled "Sonnet 3 base" in Lindsey 2026 Fig. 14. See claude-opus-4-base.
+- id: claude-3-haiku-base
+  name: Claude 3 Haiku (base)
+  family: claude-3
+  developer: anthropic
+  open_weights: false
+  post_training_reached: base
+  derived_from: null
+  stage: null
+  note: Pretrained model, labelled "Haiku 3 base" in Lindsey 2026 Fig. 14. See claude-opus-4-base.
 
 # Added with Rubin et al. 2026 (arXiv 2611.15267)
 - id: olmo-3-32b-checkpoints

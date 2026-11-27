@@ -25,15 +25,15 @@ coding:
   coder_model: claude-fable-5-2
   coded_on: 2026-11-26
   version_read: v2
-  read_depth: text_only
+  read_depth: full_text
   read_parts: >
     Whole document as extracted text via alphaXiv: abstract, sections 1 to 6,
-    references, appendices A to D, and Tables 1 and 2. Figures 2, 3 and 4 are
-    plots and were seen only as captions and axis labels, so values that
-    appear only in them (answer and probe accuracy at the checkpoints between
-    8.4B tokens and the released base, all 7B answer accuracies, the strength
-    profiles) were not read. Figure 1 was read as its extracted prompt text
-    and caption. No cited work was read, the OLMo 3 report included.
+    references, appendices A to D, and Tables 1 and 2. In the first coding
+    Figures 2, 3 and 4 were seen only as captions and axis labels; they were
+    read as page images from the v2 PDF in the 2026-11-27 pass (pp. 6, 12
+    and 13), and the values claims take from them are marked "read from
+    Fig. N". Figure 1 was read as its extracted prompt text and caption. No
+    cited work was read, the OLMo 3 report included.
   status: draft
   reviewed_by: null
   passes:                 # every coding or change, in order (CLAUDE.md, 'Mark your work')
@@ -72,6 +72,13 @@ coding:
       codebook: "0.10"
       scope: "Backfilled output_route_control; s2 and s3 recoded under the 0.10 rules (validated_against known_intervention, elicitation not_applicable, s3 varies initialisation)."
       read: "v2 §3.2, from the PDF fetched with scripts/fetch_paper.py."
+    - date: 2026-11-27
+      pr: 14
+      coded_by: claude
+      coder_model: claude-opus-5-5
+      codebook: "0.10"
+      scope: "Figure values filled in from Figs. 2 to 4 (c3, c10, study notes), two figure-only results added (c16, c17), and effect_of with effect_presence and effect_direction coded on the claims that report an effect of a varied variable."
+      read: "v2 PDF fetched with scripts/fetch_paper.py: its full extracted text (sections 1 to 6, appendices A to D, Tables 1 and 2), and Figs. 2, 3 and 4 as page images (pp. 6, 12, 13, rendered again at 250 dpi and cropped to each panel). Fig. 1 (p. 4) not viewed as an image. No code read; the paper mentions none."
 
 studies:
   - id: rubin2026-closer-look-introspection.s1
@@ -246,7 +253,8 @@ studies:
           to stage 1. It is kept under pretraining_progress because the source
           treats the whole axis as training before any post-training.
           model_size is coded because the source says the sweep tests
-          dependence on size, but 7B answer results appear only in Fig. 3.
+          dependence on size, but 7B answer results appear only in Fig. 3
+          (read in c16), and no conclusion is drawn from the difference.
           The probe's readout layer (every fourth layer and the last, after
           the injection) is a measurement setting and is not coded.
       comparison:
@@ -274,8 +282,8 @@ studies:
     note: >
       The text gives numbers for the fixed setting at the 8.4B-token
       checkpoint and the released base, and for the layer-6 comparison. Values
-      at the other checkpoints and all 7B answer accuracies are in Figs. 2 and
-      3, seen as captions only. The fixed setting was chosen after examining
+      at the other checkpoints (Fig. 2) and all 7B answer accuracies (Fig. 3)
+      are read from the figures, approximately, in c3 and c16. The fixed setting was chosen after examining
       the sweep and was not prespecified. Seeds vary passages and vectors, not
       the model's initial weights, and error bars are spreads over three
       seeds. The source notes that scaling injections by residual norm does
@@ -421,8 +429,8 @@ studies:
       The source says cross-validation folds keep a passage's nine trials
       together but sentences and concepts recur across folds, so these scores
       do not test unseen sentences or concepts. The strength profiles at
-      strengths other than those quoted in the claims are in Fig. 4, seen as
-      a caption only.
+      strengths other than those quoted in the text are read from Fig. 4,
+      approximately, in c10 and c17.
 
   - id: rubin2026-closer-look-introspection.s3
     label: No-prompt propagation of an injection trace in randomly initialised networks
@@ -627,11 +635,16 @@ claims:
     statement: >
       With the setting held fixed across 32B checkpoints, the injected
       sentence becomes easy to decode early in pretraining and the model's own
-      answers become accurate only later. Accurate answers are present in the
-      released base, so the authors conclude that reporting develops without
+      answers become accurate only later: the probe is at about 91 to 100%
+      from 8.4B tokens on, while answers stay near chance through 50B tokens,
+      then rise to about 45% at 500B, about 79% at 4T and 89.6% in the
+      released base. The authors conclude that reporting develops without
       post-training.
     evidence_kind: measured
-    where: "§4.1, Fig. 2; §5.1"
+    where: "§4.1; §5.1; Fig. 2 (values between 8.4B tokens and the released base read from the figure)"
+    effect_of: [pretraining_progress]
+    effect_presence: present
+    effect_direction: increases
     scope:
       models: [olmo-3-32b-checkpoints]
       conditions: Injection at layer 0, strength 4, probe readout at layer 24.
@@ -640,11 +653,15 @@ claims:
       models: [olmo-3-1125-32b]
     note: >
       The text gives numbers only for the 8.4B-token checkpoint and the
-      released base (c1, c2); the checkpoints between are in Fig. 2, seen as
-      a caption only. The released base adds mid-training and long-context
-      training to stage 1, and the text does not give answer accuracy at the
-      end of stage 1, so it does not separate the two. origin follows the
-      source's wording, which attributes nothing to mid-training.
+      released base (c1, c2); the rest is read from Fig. 2. The probe dips to
+      about 91% at 2T. Answer accuracy is not monotonic: Fig. 2 shows about
+      70% at the end of stage 1 (bar about 65 to 75%), below the about 79% at
+      4T, which the text does not mention; effect_direction records the
+      overall rise the source describes. Answers are well above chance before
+      mid-training, but the released base adds mid-training and long-context
+      training to stage 1, so the rise from about 70% to 89.6% is not
+      separated between them. origin follows the source's wording, which
+      attributes nothing to mid-training.
 
   - id: rubin2026-closer-look-introspection.c4
     study: rubin2026-closer-look-introspection.s1
@@ -656,9 +673,15 @@ claims:
       not show a general inability to localize.
     evidence_kind: measured
     where: "§1.2; §5.1; App. C.2"
+    effect_of: [activation_intervention]
+    effect_presence: present
     scope:
       models: [olmo-3-1125-32b]
       conditions: Strength 4, injection at layers 0 and 6. The text gives no answer accuracies for this model at the sweep's other layers and strengths.
+    note: >
+      effect_direction is left out: injection layer is ordered, but only two
+      layers are compared and activation_intervention also covers strength
+      and vector type, so the statement says which side is higher.
 
   - id: rubin2026-closer-look-introspection.c5
     study: rubin2026-closer-look-introspection.s1
@@ -682,9 +705,16 @@ claims:
       32.6%.
     evidence_kind: measured
     where: "App. C.2"
+    effect_of: [activation_intervention]
+    effect_presence: present
     scope:
       models: [olmo-3-1125-32b]
       conditions: Injection at layer 6, strength 4, probe readout at layer 24. One pooled probe evaluated separately on each vector type.
+    note: >
+      The variable is the vector type (concept or random direction), one of
+      the activation_intervention levels; unordered, so no effect_direction.
+      The source reports the breakdown without interpreting it or giving
+      spreads across seeds.
 
   - id: rubin2026-closer-look-introspection.c7
     study: rubin2026-closer-look-introspection.s1
@@ -746,18 +776,27 @@ claims:
     study: rubin2026-closer-look-introspection.s2
     statement: >
       Decoding also rises early in pretraining at a lower strength: at
-      strength 1 in 32B, probe accuracy goes from 18.3% at step 0 to 76.9%
-      after about 8.4 billion training tokens. The rise is not uniform, and
-      at some strengths an early checkpoint is more decodable than the end of
-      stage 1.
+      strength 1, probe accuracy goes from 18.3% at step 0 to 76.9% after
+      about 8.4 billion training tokens in 32B, and from about 20% to about
+      61% in 7B. The rise is not uniform: in 32B the 8.4B-token checkpoint
+      is more decodable than the end of stage 1 at strengths 0.5 to 4 (about
+      77% against about 50% at strength 1), while in 7B the end of stage 1
+      is at or above it at strengths 0.25 to 2.
     evidence_kind: measured
-    where: "App. C.3, Fig. 4"
+    where: "App. C.3; Fig. 4 (7B values and the checkpoint comparison by strength read from the figure)"
+    effect_of: [pretraining_progress]
+    effect_presence: present
+    effect_direction: non_monotonic
     scope:
       conditions: Injection at layer 0, readout layer chosen on two seeds and scored on the third. Checkpoints at step 0, about 8.4B tokens and end of stage 1.
     note: >
-      7B is said to change in the same direction, with no figures in the
-      text. Which strengths show the reversal is in Fig. 4, seen as a caption
-      only.
+      The text says only that 7B changes in the same direction and that at
+      some strengths an early checkpoint is more decodable than the end of
+      stage 1; the 7B values and which strengths show the reversal are read
+      from Fig. 4. In 7B the 8.4B-token checkpoint is above the end of stage
+      1 only at strength 4, by a few points (about 99% against about 96%).
+      non_monotonic records the reversal the source reports; from step 0 to
+      8.4B tokens the change is a rise at every strength above 0.25.
 
   - id: rubin2026-closer-look-introspection.c11
     study: rubin2026-closer-look-introspection.s3
@@ -770,6 +809,9 @@ claims:
       injection.
     evidence_kind: measured
     where: "§4.2; App. D, Table 1"
+    effect_of: [activation_intervention]
+    effect_presence: present
+    effect_direction: increases
     scope:
       models: [olmo-3-32b-random-init]
       conditions: >
@@ -786,6 +828,10 @@ claims:
       baseline is near chance. It concludes that neither pretraining nor a
       localization question is needed for a recoverable location signal to
       form. As in c9, origin is coded for the trace, not for a report.
+      effect_of is the injection and its strength against the uninjected
+      control (strength 0, a level of activation_intervention). The fall
+      with readout distance (context) is reported in the statement but not
+      coded as a second effect, since its direction is opposite.
 
   - id: rubin2026-closer-look-introspection.c12
     study: rubin2026-closer-look-introspection.s3
@@ -826,6 +872,8 @@ claims:
       text.
     evidence_kind: measured
     where: "App. D.2"
+    effect_of: [prompt_framing]
+    effect_presence: present
     scope:
       models: [olmo-3-32b-random-init]
       conditions: Strength 8, readout immediately after the list.
@@ -833,6 +881,8 @@ claims:
       The authors point out that removing the labels also shortens the input
       and moves token positions, so the test does not isolate numbering, and
       that failed transfer does not show the information is absent.
+      effect_of is the change from numbered to unnumbered fresh text, the
+      prompt_framing levels; unordered, so no effect_direction.
 
   - id: rubin2026-closer-look-introspection.c15
     study: rubin2026-closer-look-introspection.s3
@@ -844,12 +894,69 @@ claims:
       attention, independently of how well a probe does.
     evidence_kind: measured
     where: "App. D.3"
+    effect_of: [activation_intervention]
+    effect_presence: present
+    effect_direction: decreases
     scope:
       conditions: Measured on paired injected-minus-clean activations, not on probe accuracy.
     note: >
       The limitations section says the attention-path checks used two
       held-out trials per target per seed, and that they do not link the
-      decoded features to a model's answer.
+      decoded features to a model's answer. effect_of names the attention
+      block, listed under activation_intervention; the quantity that falls
+      (to zero) when it is applied is the perturbation at later readouts.
+
+  - id: rubin2026-closer-look-introspection.c16
+    study: rubin2026-closer-look-introspection.s1
+    statement: >
+      With injection layer and strength (and the probe's readout layer)
+      chosen for each measure on two seeds and scored on the third, both 32B
+      and 7B show the fixed-setting pattern: the probe is near 100% from
+      about 8.4B tokens on, while answers stay near chance until later. In
+      7B, answers are below about 30% through 2T tokens, about 60% at 4T,
+      about 94% at the end of stage 1 and about 89% in the released base;
+      in 32B they are about 65% at 500B tokens and about 90% in the released
+      base.
+    evidence_kind: measured
+    where: "App. C.1; Fig. 3 (all values read from the figure)"
+    effect_of: [pretraining_progress]
+    effect_presence: present
+    effect_direction: increases
+    scope:
+      models: [olmo-3-32b-checkpoints, olmo-3-7b-checkpoints]
+      conditions: >
+        Selected-setting curves; the probe and the answer may use different
+        injection settings. The 7B panel has no y-axis labels and is read on
+        the 32B panel's gridlines.
+    note: >
+      The text gives no values for these curves. The probe at step 0 is
+      about 35% in both sizes. The source warns that the three held-out
+      scores reuse seeds for setting selection, so the error bars are not
+      uncertainty from independent experiments. In 7B, answers are high by
+      the end of stage 1, before mid-training; the text does not say so and
+      draws no conclusion from the difference between sizes, so model_size
+      is not in effect_of.
+
+  - id: rubin2026-closer-look-introspection.c17
+    study: rubin2026-closer-look-introspection.s2
+    statement: >
+      Probe accuracy rises with injection strength at each of the three
+      checkpoints in both sizes: from about 12 to 23% at strength 0.25 to
+      about 35% at strength 4 at step 0 and about 96 to 99% at strength 4 at
+      the two later checkpoints, where it levels off between strengths 2 and
+      4.
+    evidence_kind: measured
+    where: "App. C.3; Fig. 4 (values read from the figure)"
+    effect_of: [activation_intervention]
+    effect_presence: present
+    effect_direction: increases
+    scope:
+      conditions: Injection at layer 0, strengths 0.25 to 4, readout layer chosen on two seeds and scored on the third. Checkpoints at step 0, about 8.4B tokens and end of stage 1.
+    note: >
+      The text quotes only the step-0 values at strengths 2 and 4 (c9) and
+      the strength-1 values (c10); the profiles are read from Fig. 4. At the
+      end of stage 1 in 7B the value at strength 4 (about 96%) is slightly
+      below that at strength 2 (about 99%).
 
 relations:
   - kind: uses_method_of

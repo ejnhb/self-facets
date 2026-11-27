@@ -147,3 +147,16 @@
 - id: warsaw-university-of-technology
   name: Warsaw University of Technology
   kind: university
+# Added with G. and Lindsey 2026 (arXiv 2605.25459)
+- id: ias-princeton
+  name: Institute for Advanced Study, Princeton
+  kind: university
+  note: Printed "Institute for Advanced Study, Princeton". An independent research institute; kind university is the nearest value (an academic institute).
+- id: deepseek
+  name: DeepSeek
+  kind: company
+  note: Developer of DeepSeek LLM, by the Hugging Face namespace deepseek-ai/ in the code of G. and Lindsey 2026. Kind not taken from a source.
+- id: 01-ai
+  name: 01.AI
+  kind: company
+  note: Developer of Yi, by the Hugging Face namespace 01-ai/ in the code of G. and Lindsey 2026. Kind not taken from a source.

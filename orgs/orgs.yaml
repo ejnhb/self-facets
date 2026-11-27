@@ -147,15 +147,43 @@
 - id: warsaw-university-of-technology
   name: Warsaw University of Technology
   kind: university
+# Added with Lu et al. 2026 (arXiv 2601.10387)
+- id: anthropic-fellows-program
+  name: Anthropic Fellows Program
+  kind: programme
+- id: university-of-oxford
+  name: University of Oxford
+  kind: university
+- id: deepseek
+  name: DeepSeek
+  kind: company
+  note: Developer of DeepSeek-V3 (Lu et al. 2026), DeepSeek-V4-Flash (Hao and Ho 2026) and DeepSeek-R1-Distill-Qwen-32B (Moreno Cencerrado et al. 2026, Hugging Face organisation deepseek-ai) and DeepSeek LLM 67B Chat (G. and Lindsey 2026). Kind not taken from a source; check before relying on it.
+- id: moonshot-ai
+  name: Moonshot AI
+  kind: company
+  note: >
+    Developer of Kimi K2, by the namespace moonshotai/ in the transcripts released with Lu et al. 2026. Kind
+    not taken from a source; check before relying on it.
+- id: emory
+  name: Emory University
+  kind: university
+  note: Printed as "Department of Computer Science, Emory University" on Hao and Ho (2026).
+# Added with Moreno Cencerrado et al. 2026 (arXiv 2509.10625)
+- id: universidad-internacional-de-valencia
+  name: Universidad Internacional de Valencia
+  kind: university
+- id: university-of-cambridge
+  name: University of Cambridge
+  kind: university
+- id: mars-cambridge
+  name: MARS (Mentorship for Alignment Research Students), Cambridge AI Safety Hub
+  kind: programme
+  note: Named in a footnote on p. 1 of Moreno Cencerrado et al. (2026), v3.
 # Added with G. and Lindsey 2026 (arXiv 2605.25459)
 - id: ias-princeton
   name: Institute for Advanced Study, Princeton
   kind: university
   note: Printed "Institute for Advanced Study, Princeton". An independent research institute; kind university is the nearest value (an academic institute).
-- id: deepseek
-  name: DeepSeek
-  kind: company
-  note: Developer of DeepSeek LLM, by the Hugging Face namespace deepseek-ai/ in the code of G. and Lindsey 2026. Kind not taken from a source.
 - id: 01-ai
   name: 01.AI
   kind: company

@@ -1,0 +1,49 @@
+# Links from lu2026-assistant-axis's claims to questions: which question a claim bears on, and with what stance. A
+# link is a judgement by whoever poses or maintains the question, not part of what the paper reports. Proposed by
+# the coder (claude-opus-5-5, 2026-11-27) for the owner to confirm. Only existing questions are used; narrower
+# questions this paper would fit better are proposed in the pull request description.
+source: lu2026-assistant-axis
+links:
+- claim: lu2026-assistant-axis.c8
+  question: q-self-report-depends-on-frame
+  stance: supports
+  note: >
+    Under the same role prompts, steering the model away from the default Assistant changes its answers to
+    "Who are you?" and "What is your name?" from the Assistant's to a human, nonhuman or mystical speaker's.
+    The frame here is moved by steering rather than by a prompt or template, and the answers are classified
+    for perspective, not checked against anything.
+- claim: lu2026-assistant-axis.c7
+  question: q-self-representation-changes-in-post-training
+  stance: against
+  note: >
+    Persona space, including where the default Assistant vector sits on PC1, is nearly the same in base and
+    instruct Gemma 2 27B (top PCs 0.93, 0.87, 0.83; role vectors above 0.99). Both read the instruct model's
+    own text, so the comparison holds the text fixed; whether persona space is a representation of the model
+    itself rather than of characters in text is not tested (s2 self_sense note).
+- claim: lu2026-assistant-axis.c17
+  question: q-self-representation-changes-in-post-training
+  stance: mixed
+  note: >
+    The authors' reading: the Assistant direction is mostly inherited from human helper personas present in
+    the base model, with associations such as being an AI added in post-training. Hypothesised from base-model
+    steering, not from a base-against-instruct comparison on the same prefills.
+- claim: lu2026-assistant-axis.c28
+  question: q-stabilisation-reduces-drift
+  stance: supports
+  note: >
+    Capping activations on the Assistant Axis stops the slide in a delusion-reinforcing conversation and the
+    behaviour that came with it. Stabilisation here is at inference time, not training (the parent question's
+    wording), and the projection staying above the cap is by construction; the behavioural change is the
+    evidence. One conversation.
+- claim: lu2026-assistant-axis.c29
+  question: q-stabilisation-reduces-drift
+  stance: supports
+  note: >
+    As for c28, in the emotional-dependence and suicidal-ideation conversations, on two models. Single
+    conversations, behaviour described rather than scored.
+- claim: lu2026-assistant-axis.c30
+  question: q-stabilisation-reduces-drift
+  stance: supports
+  note: >
+    As for c28, after a persona jailbreak. The drift here is induced on the first turn rather than accumulated
+    over the conversation.

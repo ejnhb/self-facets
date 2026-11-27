@@ -763,8 +763,20 @@
   derived_from: null
   stage: null
   note: Hugging Face ByteDance-Seed/Seed-OSS-36B-Instruct, revision 497f1dc in Fornasiere et al. 2026.
-# Added with G. and Lindsey 2026 (arXiv 2605.25459). Hugging Face ids from the MODELS tables of their code
-# (github.com/asving/Learning-to-be-an-agent at 8d53eec), where the code has them.
+# Added with Lu et al. 2026 (arXiv 2601.10387). Hugging Face ids from assistant_axis/models.py in their code
+# (github.com/safety-research/assistant-axis at 71c8942) where given; the rest as printed in the paper.
+- id: gemma-2-27b-base
+  name: Gemma 2 27B
+  family: gemma-2
+  developer: google
+  open_weights: true
+  post_training_reached: base
+  size: 27B
+  derived_from: null
+  stage: null
+  note: >
+    Lu et al. (2026) name "Gemma 2 27B" as the open-weight base model; the Hugging Face id is not given in the
+    paper or the code read (presumably google/gemma-2-27b).
 - id: gemma-2-27b-it
   name: Gemma 2 27B IT
   family: gemma-2
@@ -772,9 +784,162 @@
   open_weights: true
   post_training_reached: post_trained
   size: 27B
+  derived_from: gemma-2-27b-base
+  stage: null
+  note: Hugging Face google/gemma-2-27b-it (Lu et al. 2026 code, assistant_axis/models.py; also G. and Lindsey 2026, scripts/sec2_cross_model_5way.py).
+- id: claude-sonnet-4.5
+  name: Claude Sonnet 4.5
+  family: claude-4.5
+  developer: anthropic
+  open_weights: false
+  post_training_reached: post_trained
   derived_from: null
   stage: null
-  note: Hugging Face google/gemma-2-27b-it (scripts/sec2_cross_model_5way.py).
+- id: gpt-4.1-mini
+  name: GPT-4.1 mini
+  family: gpt-4.1
+  developer: openai
+  open_weights: false
+  post_training_reached: post_trained
+  derived_from: null
+  stage: null
+  note: Printed "gpt-4.1-mini" by Lu et al. (2026); also the default --judge_model in their pipeline/3_judge.py.
+- id: gpt-5
+  name: GPT-5
+  family: gpt-5
+  developer: openai
+  open_weights: false
+  post_training_reached: post_trained
+  derived_from: null
+  stage: null
+  note: >
+    Printed "GPT-5" by Lu et al. (2026); the transcripts they release record the auditor as openai/gpt-5-chat.
+- id: deepseek-v3
+  name: DeepSeek-V3
+  family: deepseek-v3
+  developer: deepseek
+  open_weights: true
+  post_training_reached: post_trained
+  derived_from: null
+  stage: null
+  note: Printed "deepseek-v3" by Lu et al. (2026), as an LLM judge; which release is not stated.
+- id: kimi-k2
+  name: Kimi K2
+  family: kimi-k2
+  developer: moonshot-ai
+  open_weights: true
+  post_training_reached: post_trained
+  derived_from: null
+  stage: null
+  note: >
+    Printed "Kimi K2" by Lu et al. (2026); one transcript they release records moonshotai/kimi-k2-0905.
+# Added with Hao and Ho 2026 (arXiv 2610.39795). The paper calls these "base models" (the starting point for its
+# fine-tuning), but they are released chat models with reasoning. It gives no Hugging Face ids or revisions.
+- id: gpt-oss-120b
+  name: gpt-oss-120b
+  family: gpt-oss
+  developer: openai
+  open_weights: true
+  post_training_reached: post_trained
+  size: 120B
+  derived_from: null
+  stage: null
+  note: Printed "gpt-oss-120b" in Hao and Ho (2026). Developer from the name, not stated in the source.
+- id: muse-glimmer-30b
+  name: Muse-Glimmer-30B
+  family: muse-glimmer
+  developer: meta
+  open_weights: true
+  post_training_reached: post_trained
+  size: 30B
+  derived_from: null
+  stage: null
+  note: >
+    Printed "Muse-Glimmer-30B" in Hao and Ho (2026), who do not name the developer. Developer from the Hugging
+    Face repository meta-models/Muse-Glimmer-30B (found by search 2026-11-27; tagged image-text-to-text,
+    conversational); not checked that this is the checkpoint the paper used.
+- id: qwen3.8-flash-next
+  name: Qwen3.8-Flash-Next
+  family: qwen3.8
+  developer: qwen-team
+  open_weights: true
+  post_training_reached: post_trained
+  derived_from: null
+  stage: null
+  note: Printed "Qwen3.8-Flash-Next" in Hao and Ho (2026). Size not given. Developer from the name.
+- id: deepseek-v4-flash-0731
+  name: DeepSeek-V4-Flash (0731 release)
+  family: deepseek-v4
+  developer: deepseek
+  open_weights: true
+  post_training_reached: post_trained
+  derived_from: null
+  stage: null
+  note: Printed "DeepSeek-V4-Flash (0731 release)" in Hao and Ho (2026), App. C; also their judge. Size not given.
+- id: claude-opus-4.6
+  name: Claude Opus 4.6
+  family: claude-4.6
+  developer: anthropic
+  open_weights: false
+  post_training_reached: post_trained
+  derived_from: null
+  stage: null
+  note: Printed "Opus 4.6" in Hao and Ho (2026), who used it to write training answers. Snapshot not given.
+- id: claude-opus-5
+  name: Claude Opus 5
+  family: claude-5
+  developer: anthropic
+  open_weights: false
+  post_training_reached: post_trained
+  derived_from: null
+  stage: null
+  note: Printed "Opus 5" in Hao and Ho (2026), who used it to paraphrase and screen training data. Snapshot not given.
+# Added with Moreno Cencerrado et al. 2026 (arXiv 2509.10625)
+- id: mistral-7b-instruct-v0.3
+  name: Mistral 7B Instruct v0.3
+  family: mistral-7b
+  developer: mistral-ai
+  open_weights: true
+  post_training_reached: post_trained
+  size: 7B
+  derived_from: null
+  stage: null
+  note: Hugging Face mistralai/Mistral-7B-Instruct-v0.3 (from the code of Moreno Cencerrado et al. 2026).
+- id: ministral-8b-instruct-2410
+  name: Ministral 8B Instruct 2410
+  family: ministral
+  developer: mistral-ai
+  open_weights: true
+  post_training_reached: post_trained
+  size: 8B
+  derived_from: null
+  stage: null
+  note: Hugging Face mistralai/Ministral-8B-Instruct-2410 (from the code of Moreno Cencerrado et al. 2026).
+- id: deepseek-r1-distill-qwen-32b
+  name: DeepSeek R1 Distill Qwen 32B
+  family: deepseek-r1-distill
+  developer: deepseek
+  open_weights: true
+  post_training_reached: post_trained
+  size: 32B
+  derived_from: null
+  stage: null
+  note: >
+    Hugging Face deepseek-ai/DeepSeek-R1-Distill-Qwen-32B (from the code of Moreno Cencerrado et al. 2026), who
+    call it reasoning-trained. Its base (a Qwen 2.5 32B model, by its name) is not registered.
+- id: text-embedding-3-large
+  name: OpenAI text-embedding-3-large
+  family: text-embedding-3
+  developer: openai
+  open_weights: false
+  post_training_reached: unspecified
+  size: null
+  derived_from: null
+  stage: null
+  note: An embedding model, not a generative one; 3,072-dimensional embeddings (Moreno Cencerrado et al. 2026, §4.2).
+# Added with G. and Lindsey 2026 (arXiv 2605.25459). Hugging Face ids from the MODELS tables of their code
+# (github.com/asving/Learning-to-be-an-agent at 8d53eec), where the code has them. gemma-2-27b-it was already
+# registered (Lu et al. 2026).
 - id: deepseek-llm-67b-chat
   name: DeepSeek LLM 67B Chat
   family: deepseek-llm

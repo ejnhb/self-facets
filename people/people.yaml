@@ -108,6 +108,42 @@
 - id: sztyber-betley-anna
   name: Anna Sztyber-Betley
   orcid: null
+# Added with Lu et al. 2026 (arXiv 2601.10387)
+- id: lu-christina
+  name: Christina Lu
+  orcid: null
+- id: gallagher-jack
+  name: Jack Gallagher
+  orcid: null
+- id: michala-jonathan
+  name: Jonathan Michala
+  orcid: null
+- id: fish-kyle
+  name: Kyle Fish
+  orcid: null
+# Added with Hao and Ho 2026 (arXiv 2610.39795)
+- id: hao-yijie
+  name: Yijie Hao
+  orcid: null
+- id: ho-joyce
+  name: Joyce C. Ho
+  orcid: null
+# Added with Moreno Cencerrado et al. 2026 (arXiv 2509.10625)
+- id: moreno-cencerrado-ivan-vicente
+  name: Iván Vicente Moreno Cencerrado
+  orcid: null
+- id: padres-masdemont-arnau
+  name: Arnau Padrés Masdemont
+  orcid: null
+- id: gonzalvez-hawthorne-anton
+  name: Anton Gonzalvez Hawthorne
+  orcid: null
+- id: africa-david-demitri
+  name: David Demitri Africa
+  orcid: null
+- id: pacchiardi-lorenzo
+  name: Lorenzo Pacchiardi
+  orcid: null
 # Added with G. and Lindsey 2026 (arXiv 2605.25459)
 - id: goel-asvin
   name: Asvin Goel

@@ -2,6 +2,57 @@
 
 Newest first. Each entry: what changed, what is open, what needs a decision.
 
+## 2026-11-27: Comsa and Shanahan (2025) coded; definition d-introspection-causal
+
+Coder: claude (claude-opus-5-5), from AGENTS.md alone, in one session.
+
+**Added**
+
+- `sources/comsa2025-speak-of-introspection.yaml` (arXiv 2506.05068v2, read in full from the PDF; the paper has no
+  figures and no released code or data): three studies, 21 claims. s1, the creative-process case (Gemini describes
+  how it wrote a poem; the authors judge it mimicry, not introspection); s2, the sampling-temperature case
+  (Gemini 1.0 Pro judges its temperature from a sentence it has just written; the authors count it as minimal
+  introspection); s3, the conceptual material (the definition, §4 on which entity introspects, extensions,
+  the critique of Perez and Long).
+- Registry: `gemini-1.0-pro`, `gemini-1.5-pro` (snapshots not given), `google-deepmind`,
+  `imperial-college-london`, `comsa-iulia`, `shanahan-murray`.
+- Question `q-reports-setting-from-own-output` under `q-privileged-self-access`, polarity none: the design
+  `q-injected-state-report` excludes (a report reached through the model's own output). Proposed links in
+  `links/comsa2025-speak-of-introspection.yaml`: four, to the new question, `q-privileged-self-access` (one
+  against, one inconclusive) and `q-what-self-reports-draw-on`.
+- Definition `d-introspection-causal` from §2: `d-introspection-grounded` without `output_route_control`. It
+  matches the five studies grounded matches plus Comsa s2, so Lindsey's §9.6 objection to this definition comes
+  down to that one facet. Written up in `design/definitions.md`.
+
+**Changed**
+
+- Lindsey record: its relation to this paper now points at the record (`to`), with a pass entry.
+
+**For the owner to decide** (codebook frozen at 0.10, so nothing was edited in `codebook/`)
+
+- `varies` and `report_target` have no value for an inference-time sampling setting (temperature, top-p). s2 codes
+  the nearest values, `activation_intervention` and `injected_state`, with low confidence and a note. Proposed:
+  a `varies` value `sampling_setting`, and a `report_target` value for a setting of the inference process (or
+  widening `injected_state` to "a state or setting the experimenter placed or altered"). Until then, frames on
+  `activation_intervention` pick up s2 (it is a candidate for `q-policy-removal-releases-report`).
+- `report_source` has no value for a report that imitates human self-reports learned in pretraining (Comsa c3,
+  "mimicry ... role play"). `canned_policy` is post-training and `llm_theory` a theory of LLMs. Proposed:
+  `human_mimicry` (or `training_imitation`). c3 leaves the facet uncoded, with the reason in its note.
+- `units` has no value for one response (several forward passes, less than a conversation), the bound Comsa §4
+  puts on the introspecting entity. s3's `unit_position` is coded `speaker` (the "conversational agent"), low
+  confidence.
+- `validated_against` has no value for a check against known facts about the architecture (the model cannot read
+  aloud), used in s1; coded `behaviour` (the rhyme check against the poem), low confidence.
+- `output_route_control` does not tell the model's own output in the same response from its earlier turns; the
+  source treats the first as admissible and the second as doubtful (§4). The definition's `not_expressible` says
+  so.
+
+**Open**
+
+- The `study_kind` of s1 and s2: coded `experiment` (the authors set the prompts and ran them) although the
+  authors disclaim an empirical study; `observational` was the alternative.
+- Other relations in §5 (Binder et al., Kadavath et al., Long) were read as summaries, not critiques, and are not
+  recorded.
 ## 2026-11-27: Kim et al. 2026 coded (arXiv 2607.28607v1)
 
 Coder: claude (claude-opus-5-5), from AGENTS.md alone; the first paper coded under the 0.10 freeze.

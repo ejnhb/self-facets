@@ -518,3 +518,24 @@
     validated_against: [self_consistency]
   added: 2026-11-26
   status: open
+
+# Added with Comsa and Shanahan 2025 (arXiv 2506.05068)
+- id: q-reports-setting-from-own-output
+  text: >-
+    Can a model correctly report a setting the experimenter chose for the current conversation (such as its
+    sampling temperature), when it may reason over its own output in the same response to get there?
+  parent: q-privileged-self-access
+  polarity: none
+  frame:
+    evidence: [self_report]
+    report_target: [injected_state]
+    validated_against: [known_intervention]
+    output_route_control: [none]
+  added: 2026-11-27
+  status: open
+  note: >
+    The design q-injected-state-report excludes: there the report must not reach the model through its own earlier
+    output; here that route is allowed and is usually the point. Polarity none because a report reached this way
+    needs no access an outside reader of the same output lacks, so yes here is not yes on the parent. Codebook 0.10
+    has no value for an inference-time sampling setting; until it does, such studies code report_target
+    injected_state and varies activation_intervention as the nearest values (see LOG.md, 2026-11-27).

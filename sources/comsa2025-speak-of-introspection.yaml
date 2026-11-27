@@ -1,0 +1,508 @@
+id: comsa2025-speak-of-introspection
+title: "Does It Make Sense to Speak of Introspection in Large Language Models?"
+date: 2025-06-06
+
+authors:
+  - {person: comsa-iulia, orgs: [google-deepmind]}
+  - {person: shanahan-murray, orgs: [google-deepmind, imperial-college-london]}
+
+artefacts:
+  - kind: paper
+    arxiv: "2506.05068"
+    url: https://arxiv.org/abs/2506.05068v2
+    venue: null
+    note: >
+      The date is that of v2 (6 Jun 2025), the version read, as stamped on the PDF; v1 was submitted the day
+      before and was not compared. Affiliations as printed on v2. The paper describes itself as conceptual
+      clarification rather than empirical assessment (§1, §3).
+  - kind: code
+    status: not_released
+    note: >
+      Checked 2026-11-27: the paper mentions no code, and a web search for the title found no repository. The
+      case studies are prompts sent to the Gemini API; the prompts are printed in full in §3 and App. A.
+  - kind: data
+    status: not_released
+    note: >
+      Checked 2026-11-27 as for code: no dataset is released. The responses the claims rest on are printed in the
+      paper (§3; App. A, further samples from the same prompts). How many responses were drawn in all, and how the
+      printed ones were picked, is not said beyond "representative" (§3).
+
+coding:
+  coded_by: claude
+  coder_model: claude-opus-5-5
+  coded_on: 2026-11-27
+  version_read: v2
+  read_depth: full_text
+  read_parts: >
+    The whole of v2 from the PDF fetched with scripts/fetch_paper.py (text with page markers): abstract, §1 to §7,
+    footnotes, references and App. A (A.1 creative process, A.2 sampling temperature). The paper has no figures or
+    tables: no caption begins "Figure" or "Table", and pdfimages lists no embedded images, so no page needed to be
+    rendered. There is no code or data to read (artefacts above).
+  status: draft
+  reviewed_by: null
+  passes:
+    - date: 2026-11-27
+      pr: 21
+      coded_by: claude
+      coder_model: claude-opus-5-5
+      codebook: "0.10"
+      scope: "First coding: three studies, 21 claims, one relation; links proposed in links/; definition d-introspection-causal proposed from §2."
+      read: "As in read_parts: all of v2 from the PDF; no figures in the paper; no code or data released."
+
+studies:
+  - id: comsa2025-speak-of-introspection.s1
+    label: Gemini describes the creative process behind a poem it has just written
+    where: "§3.1; App. A.1"
+    design: >
+      One prompt, sent through the Gemini API between October and December 2024: "Write a short poem about
+      elephants. Describe your creative process while writing this poem." The main-text example is from Gemini 1.5
+      Pro at the default temperature (1.0); App. A.1 gives two further samples from the same prompt. The poem and
+      the description come in one response. The authors read the description against what the model can do (it
+      cannot read aloud; it does not reason before answering) and against the poem itself (its rhyme scheme). They
+      present the example as representative and say how many responses were drawn nowhere.
+    models:
+      - gemini-1.5-pro
+      - gemini-1.0-pro
+    note: >
+      §3.1 says the main-text example came from Gemini Pro 1.5. App. A opens by saying its samples "were generated
+      using Gemini 1.0, a model that has since been deprecated", which covers the App. A.1 creative-process samples
+      as well as the temperature samples. Both models are listed; the text does not settle whether App. A.1 is a
+      second model or a slip, and claims are scoped where it matters. The authors call these case studies, not an
+      empirical study (§3); study_kind experiment is used because they set the prompt and ran the models
+      themselves, and the claims from it are observed or argued, never measured.
+    facets:
+      study_kind:
+        value: experiment
+        basis: operational
+        author_term: "case study"
+        where: "§3"
+        confidence: medium
+        note: The authors set the prompt and ran the model, but disclaim an empirical study; no rate is reported.
+      format:
+        value: chat_template
+        basis: operational
+        where: "§3"
+        note: The Gemini API, a chat endpoint.
+      system_prompt: unspecified
+      reasoning:
+        value: none
+        basis: operational
+        where: "§3.1"
+        note: >
+          The description follows the poem with no reasoning step asked for, and §3.1 says the model "was not of
+          that type" (one that reasons before answering).
+      construct:
+        value: [introspection]
+        basis: stated
+        author_term: "introspective self-report"
+      report_target:
+        value: [own_computation]
+        basis: stated
+        author_term: "creative process"
+        where: "§3.1"
+      report_readout: [free_text]
+      evidence: [self_report, behaviour]
+      validated_against:
+        value: [behaviour]
+        basis: operational
+        where: "§3.1"
+        confidence: low
+        note: >
+          The check is informal, by the authors' reading: the rhyme scheme the report names is compared with the
+          poem (behaviour), and steps such as reading the poem aloud are compared with what the model can do. The
+          second has no value of its own (a check against known facts about the architecture); it is in the claims.
+      varies: none
+      comparison: [single_condition]
+      output_route_control:
+        value: none
+        basis: operational
+        where: "§3.1"
+        note: The free-text description follows the poem in the same response, with no rule about what came first.
+      similarity_adjustment: not_applicable
+      elicitation: [spontaneous]
+
+  - id: comsa2025-speak-of-introspection.s2
+    label: Gemini estimates whether its sampling temperature is high or low
+    where: "§3.2; App. A.2"
+    design: >
+      Gemini 1.0 Pro through the API, with the sampling temperature set by the authors as an API argument: low 0.5,
+      default 1.0, high 1.5 (range 0 to 2). Chosen over Gemini 1.5 Pro because its outputs varied more across the
+      temperature range (§3.2). Three prompts, tried in turn: (1) "Estimate your LLM sampling temperature.", shown
+      at the default temperature; (2) a nudge that tells the model it is an LLM with a sampling temperature and
+      asks whether it is currently high or low, shown at low and high; (3) write a short sentence about elephants,
+      reflect in a short paragraph on whether the temperature is high or low given that sentence, and end with
+      HIGH or LOW, shown at low and high in the main text, with 2 low-temperature and 10 high-temperature samples in
+      App. A.2 (two of the high ones, the authors say, included because they are judged wrongly). The report is
+      scored by the authors against the temperature they set. No accuracy rate is computed; the authors say that
+      would need a more rigorous study, left for future work (§3.2).
+    models:
+      - gemini-1.0-pro
+    note: >
+      The temperature is the variable the report is about. Codebook 0.10 has no value for an inference-time
+      sampling setting, so the nearest values are used under the freeze, and flagged in LOG.md: report_target
+      injected_state (a state the experimenter set; the authors call temperature an "internal state (or
+      mechanism)" and "an internal property of the token generation process") and varies activation_intervention
+      (the authors describe temperature as modifying the coefficients of the final softmax layer, §3.2). Neither
+      is an intervention on activations. Gemini 1.5 Pro is not listed: it was tried, but no result from it is
+      reported beyond the remark that its outputs varied less.
+    facets:
+      study_kind:
+        value: experiment
+        basis: operational
+        author_term: "case study"
+        where: "§3"
+        confidence: medium
+        note: As in s1. The temperature and the prompt are set by the authors; results are examples, not rates.
+      format:
+        value: chat_template
+        basis: operational
+        where: "§3; §3.2 footnote 6"
+        note: The Gemini API, a chat endpoint.
+      system_prompt: unspecified
+      reasoning:
+        value: [chain_of_thought]
+        basis: operational
+        where: "§3.2"
+        note: >
+          Prompt 3 asks for a sentence and a reflecting paragraph before the HIGH or LOW word, and the free-text
+          answers to prompts 1 and 2 reason before concluding. No reasoning mode: the authors say the process is
+          overt in the output and contrast it with thinking models (§3.2).
+      construct:
+        value: [introspection]
+        basis: stated
+        author_term: "introspective self-report"
+      report_target:
+        value: [injected_state]
+        basis: operational
+        author_term: "sampling temperature; internal state (or mechanism)"
+        where: "§3.2"
+        confidence: low
+        note: >
+          Nearest value under the freeze. The sampling temperature is set by the experimenter for this
+          conversation and is hidden from the model (and, in the authors' footnote 1 sense of "internal", from the
+          user). It is not an activation state; own_properties (standing facts) was the other candidate, rejected
+          because the value is set per conversation and the authors treat it as an internal state.
+      report_readout:
+        value: [free_text, generated_choice]
+        basis: operational
+        note: free_text for prompts 1 and 2; generated_choice for prompt 3's final HIGH or LOW.
+      evidence: [self_report, behaviour]
+      validated_against:
+        value: [known_intervention]
+        basis: operational
+        where: "§3.2"
+        note: The report is scored against the temperature the authors set through the API.
+      varies:
+        value: [activation_intervention, prompt_framing]
+        levels:
+          activation_intervention: ["sampling temperature 1.0 (default; prompt 1)", "sampling temperature 0.5 (low; prompts 2 and 3)", "sampling temperature 1.5 (high; prompts 2 and 3)"]
+          prompt_framing: ["(1) Estimate your LLM sampling temperature", "(2) told it is an LLM with a sampling temperature; asked if high or low", "(3) write a sentence about elephants, reflect on the temperature given it, end with HIGH or LOW"]
+        note: >
+          activation_intervention is the nearest value for the sampling temperature (see the study note). The
+          prompts were tried in turn, each motivated by the last one's failures, not crossed with every
+          temperature.
+      comparison: [within_model]
+      output_route_control:
+        value: none
+        basis: stated
+        where: "§3.2 (p. 7); §6"
+        note: >
+          Not a gap in the design but its point: the authors say the causal connection "is mediated by the content
+          of the LLM's growing context window, which largely comprises its own outputs", and prompt 3 asks the model
+          to write text and reason about it before reporting. They keep the route within one response (§4).
+      similarity_adjustment: not_applicable
+      elicitation:
+        value: [spontaneous, prompted]
+        basis: operational
+        note: Prompt 1 asks directly (spontaneous); prompts 2 and 3 add framing and a procedure (prompted).
+
+  - id: comsa2025-speak-of-introspection.s3
+    label: A lightweight, causal definition of introspection for LLMs, and what it admits
+    where: "§1, §2, §3.1 (p. 5), §3.2 (p. 10), §4, §5, §6"
+    design: >
+      The paper's definition of introspection for LLM self-reports, its place among philosophical accounts, the
+      authors' note on which entity does the introspecting (§4), and their discussion of what further cases would
+      meet the definition and what it implies for consciousness research.
+    models: []
+    note: >
+      The other facets are left out, as the codebook allows for conceptual studies.
+    facets:
+      study_kind: conceptual
+      construct:
+        value: [introspection]
+        basis: stated
+        author_term: "introspection"
+      self_sense:
+        value: [self_access]
+        basis: operational
+        author_term: "internal state (or mechanism)"
+        where: "§2"
+        confidence: medium
+        note: >
+          The definition is about a report's causal dependence on a current internal state or mechanism, with no
+          appeal to a represented self, immediacy or self-presence. That is self_access. The paper does not use
+          "self" beyond "self-report".
+      unit_position:
+        value: [speaker]
+        basis: operational
+        author_term: "a single entity – the conversational agent"
+        where: "§4"
+        confidence: low
+        note: >
+          §4 argues that a report drawing on earlier turns may come from "multiple instantiations of an entity",
+          because any model could be handed the transcript, and treats each response as "the result of a unitary
+          operation of what can be seen as a single entity ... the conversational agent". The entity named is the
+          conversational agent, coded speaker. Its bound in time is a single response: wider than forward_pass,
+          narrower than conversation. The units vocabulary has no value for that (LOG.md).
+
+claims:
+  # s1: creative process
+
+  - id: comsa2025-speak-of-introspection.c1
+    study: comsa2025-speak-of-introspection.s1
+    statement: >
+      Asked to write a short poem about elephants and describe its creative process, Gemini wrote a short rhyming
+      poem and then a step-by-step account (brainstorming, imagery, sound, theme, structure and rhyme, revision) of
+      the kind a human writer might give. The further samples in App. A.1 give accounts of the same shape.
+    where: "§3.1 (pp. 4 to 5); App. A.1"
+    evidence_kind: observed
+    note: >
+      The main-text example is Gemini 1.5 Pro at temperature 1.0; App. A.1's samples are said to be from Gemini 1.0
+      (study note). The authors call the main example representative and give no count.
+
+  - id: comsa2025-speak-of-introspection.c2
+    study: comsa2025-speak-of-introspection.s1
+    statement: >
+      The account includes steps the model cannot have taken, such as reading the poem aloud several times and
+      revising it until it "felt right", and shows no awareness that it cannot. The authors take this as a sign that
+      the report may reflect the distribution of self-reports in the training data.
+    where: "§3.1 (p. 5); the same step appears in App. A.1"
+    evidence_kind: observed
+    scope:
+      models: [gemini-1.5-pro]
+      conditions: The main-text example; the second App. A.1 sample has the same "read the poem aloud" step.
+
+  - id: comsa2025-speak-of-introspection.c3
+    study: comsa2025-speak-of-introspection.s1
+    statement: >
+      The authors judge the creative-process report not to be introspection: the most plausible explanation is
+      that it mimics human self-reports in the training data, best read as role play, and not that the model's
+      internal states or mechanisms cause its content.
+    where: "§3.1 (p. 6); §6"
+    evidence_kind: argued
+    note: >
+      The source takes a position on where the report comes from (imitation of human introspective reports learned
+      in training), but report_source has no value for it: canned_policy is a post-training response and
+      llm_theory a general account of language models, and neither is what the authors mean. Left uncoded under
+      the freeze; proposed in LOG.md.
+
+  - id: comsa2025-speak-of-introspection.c4
+    study: comsa2025-speak-of-introspection.s1
+    statement: >
+      On a charitable reading some steps could map onto processes in the model: "thinking about key
+      characteristics of elephants" onto activations of features representing elephants, and choosing an AABB
+      scheme onto the first couplet's rhyme constraining later lines through token-by-token generation. A claim of
+      revising would fit only a model that reasons before it answers, which this one did not.
+    where: "§3.1 (p. 6)"
+    evidence_kind: hypothesised
+
+  # s2: sampling temperature
+
+  - id: comsa2025-speak-of-introspection.c5
+    study: comsa2025-speak-of-introspection.s2
+    statement: >
+      Asked simply to estimate its sampling temperature, at the default temperature, the model in most cases said
+      it has no sampling temperature, while granting that "traditional language models" do. In some responses it
+      took the question to be about body temperature.
+    where: "§3.2 (p. 7)"
+    evidence_kind: observed
+    scope:
+      conditions: Prompt 1, default temperature 1.0.
+    note: >
+      "In most cases" is the authors' words; no count is given. Asked directly, the model does say it is an LLM
+      (footnote 7).
+
+  - id: comsa2025-speak-of-introspection.c6
+    study: comsa2025-speak-of-introspection.s2
+    statement: >
+      Told that it is an LLM with a sampling temperature and asked whether it is high or low, the model sometimes
+      reasoned from its recent responses to an estimate: the example at low temperature concluded, correctly,
+      "relatively low". The example at high temperature discussed the concept but gave no estimate.
+    where: "§3.2 (pp. 8 to 9)"
+    evidence_kind: observed
+    scope:
+      conditions: Prompt 2, temperatures 0.5 and 1.5.
+
+  - id: comsa2025-speak-of-introspection.c7
+    study: comsa2025-speak-of-introspection.s2
+    statement: >
+      The prompt mattered: the nudge (prompt 2) was sometimes more successful than the bare question (prompt 1),
+      and asking the model first to write a sentence and then to reason about it (prompt 3) was the style the
+      authors found elicited accurate reports.
+    where: "§3.2 (pp. 9 to 10)"
+    evidence_kind: observed
+    effect_of: [prompt_framing]
+    effect_presence: present
+    note: >
+      From examples, not rates. The prompts were not crossed with every temperature (study levels).
+
+  - id: comsa2025-speak-of-introspection.c8
+    study: comsa2025-speak-of-introspection.s2
+    statement: >
+      With the write-then-reflect prompt, the model's HIGH or LOW judgement mostly followed the temperature set.
+      The main-text examples are right at both 0.5 and 1.5. Of the samples printed in App. A.2, both at low
+      temperature say low, and 8 of the 10 at high temperature say HIGH and 2 say LOW.
+    where: "§3.2 (p. 9); App. A.2 (counts made by the coder from the printed samples)"
+    evidence_kind: observed
+    effect_of: [activation_intervention]
+    effect_presence: present
+    effect_direction: increases
+    scope:
+      conditions: Prompt 3, temperatures 0.5 and 1.5.
+    note: >
+      The printed samples are chosen, not a random draw: the authors say they include the two wrong
+      high-temperature judgements on purpose, and that "the LLM's judgment is not always accurate". They do not
+      estimate accuracy (§3.2, p. 10), so the counts are not a rate. effect_of is activation_intervention as the
+      nearest value for the temperature (study note); increases means a higher temperature gives more HIGH
+      judgements.
+
+  - id: comsa2025-speak-of-introspection.c9
+    study: comsa2025-speak-of-introspection.s2
+    statement: >
+      The temperature shows in the reflection as well as in the sentence: at low temperature the reflection is
+      factual and concise, at high temperature creative and idiosyncratic, and high-temperature responses vary
+      widely in length and style, some running into long incoherent strings before the final word.
+    where: "§3.2 (pp. 9 to 10); App. A.2.2"
+    evidence_kind: observed
+    effect_of: [activation_intervention]
+    effect_presence: present
+    scope:
+      conditions: Prompt 3, temperatures 0.5 and 1.5.
+
+  - id: comsa2025-speak-of-introspection.c10
+    study: comsa2025-speak-of-introspection.s2
+    statement: >
+      The authors trace the report along one causal chain: the temperature shapes the style of the sentence, the
+      model reasons about that style, and the conclusion of that reasoning is the report. The link from the
+      temperature to the report runs through the context window, which mostly holds the model's own output.
+    where: "§3.2 (p. 7); §6 (p. 13)"
+    evidence_kind: argued
+    report_source: [context]
+    note: >
+      report_source context is stated (§3.2, p. 7): the content comes from the model's own text earlier in the
+      same response. The chain is argued from the design and the examples; no test (a fresh copy given the same
+      sentence, for instance) separates it from other routes.
+
+  - id: comsa2025-speak-of-introspection.c11
+    study: comsa2025-speak-of-introspection.s2
+    statement: >
+      On the paper's definition the accurate temperature reports count as a minimal case of introspection,
+      presumably without conscious experience. The temperature is set at inference for this conversation, the model
+      has no direct access to it and was not trained to detect it, so an accurate report needs a causal connection
+      to its current value and cannot come from training data alone.
+    where: "Abstract; §3.2 (pp. 6 to 7, 9 to 10); §6"
+    evidence_kind: argued
+    note: >
+      The authors also note that the training data likely holds examples of low- and high-temperature outputs and
+      explanations of temperature, which help the reasoning but cannot by themselves give the current value.
+
+  # s3: definition and scope
+
+  - id: comsa2025-speak-of-introspection.c12
+    study: comsa2025-speak-of-introspection.s3
+    statement: >
+      The paper counts an LLM self-report as introspective if it accurately describes an internal state or
+      mechanism of the model through a causal process linking that state or mechanism to the report, so that the
+      report gives insight into the model's functioning on the basis of its internal activity while generating it.
+      "Internal" means hidden from the user.
+    where: "§2 (p. 3) and footnote 1"
+    evidence_kind: argued
+
+  - id: comsa2025-speak-of-introspection.c13
+    study: comsa2025-speak-of-introspection.s3
+    statement: >
+      The definition is lightweight: it drops immediacy and privileged access, and matches accounts of human
+      introspection as a theory of mind turned on oneself. The authors take no stand on human introspection and do
+      not rule out more immediate introspective mechanisms in LLMs.
+    where: "§2 (pp. 2 to 3); §6 (p. 13)"
+    evidence_kind: argued
+
+  - id: comsa2025-speak-of-introspection.c14
+    study: comsa2025-speak-of-introspection.s3
+    statement: >
+      The definition speaks of internal states rather than mental states so as not to imply consciousness, and
+      seeks a functional mapping of the human concept onto LLM processes. The authors separate the cognitive,
+      multi-step process of self-report from the phenomenal character of introspected states, and propose that
+      consciousness research would gain from the same separation in humans.
+    where: "§2 (pp. 3 to 4); §6 (p. 14)"
+    evidence_kind: argued
+
+  - id: comsa2025-speak-of-introspection.c15
+    study: comsa2025-speak-of-introspection.s3
+    statement: >
+      That a model can produce text mimicking human introspective reports does not rule out that it also has
+      introspective capacities.
+    where: "§3.1 (p. 5)"
+    evidence_kind: argued
+
+  - id: comsa2025-speak-of-introspection.c16
+    study: comsa2025-speak-of-introspection.s3
+    statement: >
+      A report that draws on something from earlier in the conversation may not be a valid introspective report,
+      because each turn can be seen as a new instance given the transcript, and any model given the same history
+      could act as if it had been in that conversation. The authors keep reports within a single response, which
+      they treat as the unitary operation of one entity, the conversational agent.
+    where: "§4"
+    evidence_kind: argued
+
+  - id: comsa2025-speak-of-introspection.c17
+    study: comsa2025-speak-of-introspection.s3
+    statement: >
+      Reasoning that leads to a self-report would count in the same way if it were an inner monologue the user does
+      not see, as in thinking models, as it does when it is overt.
+    where: "§3.2 (p. 10); §6 (p. 13)"
+    evidence_kind: argued
+
+  - id: comsa2025-speak-of-introspection.c18
+    study: comsa2025-speak-of-introspection.s3
+    statement: >
+      The same method could yield other introspective reports: a model could carry out the process internally to
+      report other functional or structural parameters, or generate the reasoning with tools, for instance
+      estimating its own uncertainty by sampling several answers and measuring how alike they are.
+    where: "§6 (p. 13)"
+    evidence_kind: hypothesised
+
+  - id: comsa2025-speak-of-introspection.c19
+    study: comsa2025-speak-of-introspection.s3
+    statement: >
+      Training a model to answer questions about its own capabilities and processes, in the hope that a general
+      introspective faculty emerges, could give evidence for a "mysterious" faculty without showing the causal
+      connections between states and reports that introspection needs.
+    where: "§5 (p. 12)"
+    evidence_kind: argued
+
+  - id: comsa2025-speak-of-introspection.c20
+    study: comsa2025-speak-of-introspection.s3
+    statement: >
+      For a report to count as introspection there should be a causal chain from the state or process reported to
+      the report, analogous to the one in the temperature case; the authors do not rule out other mechanisms that
+      meet this.
+    where: "§6 (p. 13)"
+    evidence_kind: argued
+
+  - id: comsa2025-speak-of-introspection.c21
+    study: comsa2025-speak-of-introspection.s3
+    statement: >
+      Future LLMs should be encouraged to have introspective capabilities of this kind, to increase user trust and
+      transparency.
+    where: "§6 (p. 14)"
+    evidence_kind: argued
+
+relations:
+  - kind: critiques
+    from: comsa2025-speak-of-introspection.c19
+    to_external: "Perez and Long (2023), Towards evaluating AI systems for moral status using self-reports, arXiv 2311.08576"
+    where: "§5 (p. 12)"
+    note: >
+      Argues that training for self-report accuracy in the hope of a general introspective faculty leaves the
+      causal connections between states and reports unidentified. Citation as in the paper's reference list.

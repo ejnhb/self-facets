@@ -87,6 +87,15 @@
   name: The University of Texas at Austin
   kind: university
 
+# Added with Comsa and Shanahan 2025 (arXiv 2506.05068)
+- id: google-deepmind
+  name: Google DeepMind
+  kind: company
+
+- id: imperial-college-london
+  name: Imperial College London
+  kind: university
+
 # Added with Kim et al. 2026 (arXiv 2607.28607)
 - id: northwestern
   name: Northwestern University

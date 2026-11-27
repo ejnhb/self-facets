@@ -94,6 +94,8 @@
 
 - id: imperial-college-london
   name: Imperial College London
+  kind: university
+
 # Added with Kim et al. 2026 (arXiv 2607.28607)
 - id: northwestern
   name: Northwestern University

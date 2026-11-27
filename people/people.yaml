@@ -108,7 +108,19 @@
 - id: sztyber-betley-anna
   name: Anna Sztyber-Betley
   orcid: null
-
+# Added with Lu et al. 2026 (arXiv 2601.10387)
+- id: lu-christina
+  name: Christina Lu
+  orcid: null
+- id: gallagher-jack
+  name: Jack Gallagher
+  orcid: null
+- id: michala-jonathan
+  name: Jonathan Michala
+  orcid: null
+- id: fish-kyle
+  name: Kyle Fish
+  orcid: null
 # Added with Hao and Ho 2026 (arXiv 2610.39795)
 - id: hao-yijie
   name: Yijie Hao

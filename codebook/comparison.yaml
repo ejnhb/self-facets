@@ -1,0 +1,28 @@
+facet: comparison
+version: "0.10"
+applies_to: study
+cardinality: many
+required: true
+tier: core
+question: What comparisons does the study make?
+values:
+  within_lineage:
+    definition: Checkpoints of one model along its developer training pipeline.
+    rule: Use when the compared systems are stages of the same lineage as released or reconstructed.
+  training_ablation:
+    definition: Branches trained from a common starting point that differ in one training ingredient, built for the comparison.
+    rule: Use when the compared systems are neither released stages nor a reconstruction of them, but variants made to isolate an ingredient (a data mix with one part removed, an objective swapped).
+  within_model:
+    definition: One model under different conditions, including before and after training applied by the study.
+    rule: Use for prompt, intervention and study-training contrasts on a single starting model.
+  cross_model:
+    definition: Different models compared with each other.
+    rule: Use when the contrast is between models, including self against other. Two sizes of one family are different models, so a size contrast is cross_model; checkpoints along one size's run are within_lineage. Random networks set against a trained model are cross_model too.
+  single_condition:
+    definition: No comparison.
+    rule: Use with varies none.
+notes: >
+  Code every contrast the study draws conclusions from. A study that compares
+  an intervention with a control and also compares models is within_model and
+  cross_model. Do not split a study only because it has two contrasts. Use
+  not_applicable for conceptual work.

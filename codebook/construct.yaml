@@ -1,0 +1,50 @@
+facet: construct
+version: 0.3
+applies_to: study
+cardinality: many
+required: true
+tier: core
+question: Which psychological construct is the study measuring or arguing about?
+values:
+  introspection:
+    definition: Access to the system's own internal states or computation, beyond what its training data or an outside observer would give.
+    rule: Use when the source frames the work as introspection or privileged access, or tests reports against internal states.
+  self_prediction:
+    definition: Predicting the system's own behaviour.
+    rule: Use when the measured quantity is accuracy of predictions about own outputs.
+  self_recognition:
+    definition: Telling the system's own outputs from others'.
+    rule: Use for authorship detection and self-preference in judging.
+  self_knowledge:
+    definition: Knowing facts about itself and its situation (identity, training, deployment context).
+    rule: Use for situational awareness and factual self-description.
+  metacognition:
+    definition: Knowing what it knows. Confidence, calibration and uncertainty about its own answers.
+    rule: Use when the report is about the reliability of the system's own knowledge or output.
+  agency_ownership:
+    definition: Sense or attribution of having produced or chosen something.
+    rule: Use for intention, commitment and ownership of actions.
+  self_regulation:
+    definition: Changing its own internal states or processing on instruction or incentive.
+    rule: Use when the study asks whether the system can control what it internally represents, apart from what it outputs.
+  persona_stability:
+    definition: Consistency or drift of traits and character across contexts, time or training.
+    rule: Use for personality measurement, persona vectors and drift.
+  identity_persistence:
+    definition: Continuity of the individual across sessions, copies or versions.
+    rule: Use when the unit facets include thread, collective or lineage.
+  affect:
+    definition: Emotion and valence, as represented internally or expressed in behaviour.
+    rule: Use for emotion representations, valence axes and affect-driven behaviour.
+  preferences:
+    definition: What the system chooses, values or avoids.
+    rule: Use for revealed and stated preference work.
+  experience_reports:
+    definition: Statements about having or lacking experience, consciousness or feelings.
+    rule: Use when the content of the report is experience itself, including trained denials.
+  self_preservation:
+    definition: Behaviour or statements bearing on the system's own continuation, modification or shutdown.
+    rule: Use for shutdown, replacement and self-modification studies.
+notes: >
+  Draft list. Constructs overlap; code every one the study measures, and
+  prefer the source's framing when choosing between neighbours.

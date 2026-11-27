@@ -1,0 +1,33 @@
+facet: report_readout
+version: 0.6
+applies_to: study
+cardinality: many
+required: true
+tier: core
+question: How is the model's self-report read out?
+values:
+  free_text:
+    definition: The model generates an answer in its own words, which is then read or scored.
+    rule: Use for open answers, explanations and descriptions of its own states, including when a judge or a coder classifies them afterwards.
+  generated_choice:
+    definition: The model generates a short answer whose form the prompt fixes, either one of a set of offered options (a letter, a number, yes or no, a point on a scale) or a single item it is told to give (one character, one word, one number).
+    rule: Use when the answer is sampled or decoded as text and then matched to the options or read as the item asked for. Verbal confidence ratings ("70%") are generated choices. Free answers that a judge later sorts into categories are free_text.
+  logit_choice:
+    definition: The answer is the option with the highest score at an answer position, read from the model's logits without generating text.
+    rule: Use when nothing is generated and only the argmax is used.
+  probability:
+    definition: The probability the model assigns to answer tokens is itself taken as the report (for example P(yes) to a question about itself).
+    rule: Use when the probability value, not only which option wins, is analysed as what the model says about itself.
+notes: >
+  This facet describes the self-report only. A study with no self-report (a
+  probe-only analysis, a behavioural task with no question about itself)
+  codes not_applicable, as report_target does. A probe or another internal
+  reading is recorded in evidence (internals) and validated_against (probe or
+  internals), never here.
+
+  Do not confuse probability with validated_against output_probabilities.
+  Here the probability is the report: what the model "says" about itself is
+  read as a probability. There, the model's probabilities on the object task
+  are the yardstick a report is checked against, as when a stated confidence
+  is compared with the probability the model assigns to its own answer. A
+  study can code both.

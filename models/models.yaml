@@ -1,0 +1,509 @@
+# Model registry. One entry per checkpoint that some study in the database
+# touches, coded only to the depth a claim needs.
+#
+# A checkpoint points at its parent with derived_from, and stage describes the
+# training step that produced it from that parent:
+#
+#   stage:
+#     methods: [sft]              # codebook enum stage_method
+#     datasets: [some-dataset]    # ids from datasets/
+#     disclosure: partial         # codebook enum disclosure
+#     documented_in: <source id or free-text citation>
+#
+# variant_of names the model a seed (or other same-recipe) variant belongs with; the build uses it, with
+# derived_from, family and developer, to say how closely compared models are related.
+#
+# post_training_reached says how far training went (enums.yaml), from the source or the model's own name
+# ("Instruct", a base model, a step-0 checkpoint), so readings can select on it before the pipeline is coded.
+#
+# stage: null means the pipeline has not been coded yet. Do not fill it from
+# memory; code it from the developer's documentation and cite that.
+
+- id: claude-opus-4.1
+  name: Claude Opus 4.1
+  family: claude-4.1
+  developer: anthropic
+  open_weights: false
+  post_training_reached: post_trained
+  derived_from: null
+  stage: null
+- id: claude-opus-4
+  name: Claude Opus 4
+  family: claude-4
+  developer: anthropic
+  open_weights: false
+  post_training_reached: post_trained
+  derived_from: null
+  stage: null
+- id: claude-sonnet-4
+  name: Claude Sonnet 4
+  family: claude-4
+  developer: anthropic
+  open_weights: false
+  post_training_reached: post_trained
+  derived_from: null
+  stage: null
+- id: claude-3.7-sonnet
+  name: Claude 3.7 Sonnet
+  family: claude-3.7
+  developer: anthropic
+  open_weights: false
+  post_training_reached: post_trained
+  derived_from: null
+  stage: null
+- id: claude-3.5-sonnet-new
+  name: Claude 3.5 Sonnet (new)
+  family: claude-3.5
+  developer: anthropic
+  open_weights: false
+  post_training_reached: post_trained
+  derived_from: null
+  stage: null
+  note: >
+    Written "Sonnet 3.5 (new)" in Lindsey 2026, which gives no snapshot date. Kept apart from claude-3.5-sonnet,
+    whose snapshot is unspecified; merge or link the two when a source settles which snapshot that entry
+    is.
+- id: claude-3.5-haiku
+  name: Claude 3.5 Haiku
+  family: claude-3.5
+  developer: anthropic
+  open_weights: false
+  post_training_reached: post_trained
+  derived_from: null
+  stage: null
+- id: claude-3-opus
+  name: Claude 3 Opus
+  family: claude-3
+  developer: anthropic
+  open_weights: false
+  post_training_reached: post_trained
+  derived_from: null
+  stage: null
+- id: claude-3-sonnet
+  name: Claude 3 Sonnet
+  family: claude-3
+  developer: anthropic
+  open_weights: false
+  post_training_reached: post_trained
+  derived_from: null
+  stage: null
+- id: claude-3-haiku
+  name: Claude 3 Haiku
+  family: claude-3
+  developer: anthropic
+  open_weights: false
+  post_training_reached: post_trained
+  derived_from: null
+  stage: null
+- id: claude-opus-4-h-only
+  name: Claude Opus 4 (helpful-only)
+  family: claude-4
+  developer: anthropic
+  open_weights: false
+  post_training_reached: post_trained
+  derived_from: null
+  stage: null
+  note: Unreleased. Shares a pretrained base with claude-opus-4.
+- id: claude-3.5-sonnet-new-h-only
+  name: Claude 3.5 Sonnet (new) (helpful-only)
+  family: claude-3.5
+  developer: anthropic
+  open_weights: false
+  post_training_reached: post_trained
+  derived_from: null
+  stage: null
+  note: >
+    Unreleased. Shares a pretrained base with claude-3.5-sonnet-new. Lindsey 2026 writes "Sonnet 3.5"
+    for this variant; "(new)" is taken from the production list in its §4, which has only one 3.5 Sonnet.
+- id: claude-3.5-haiku-h-only
+  name: Claude 3.5 Haiku (helpful-only)
+  family: claude-3.5
+  developer: anthropic
+  open_weights: false
+  post_training_reached: post_trained
+  derived_from: null
+  stage: null
+  note: Unreleased. Shares a pretrained base with claude-3.5-haiku.
+- id: claude-3-opus-h-only
+  name: Claude 3 Opus (helpful-only)
+  family: claude-3
+  developer: anthropic
+  open_weights: false
+  post_training_reached: post_trained
+  derived_from: null
+  stage: null
+  note: Unreleased. Shares a pretrained base with claude-3-opus.
+- id: claude-sonnet-4-h-only
+  name: Claude Sonnet 4 (helpful-only)
+  family: claude-4
+  developer: anthropic
+  open_weights: false
+  post_training_reached: post_trained
+  derived_from: null
+  stage: null
+  note: Unreleased. Shares a pretrained base with claude-sonnet-4. Named only in the figures of Lindsey 2026 ("Sonnet 4 (H-only)", Figs. 12, 15, 26).
+- id: claude-3-sonnet-h-only
+  name: Claude 3 Sonnet (helpful-only)
+  family: claude-3
+  developer: anthropic
+  open_weights: false
+  post_training_reached: post_trained
+  derived_from: null
+  stage: null
+  note: Unreleased. Shares a pretrained base with claude-3-sonnet. Named only in the figures of Lindsey 2026 ("Sonnet 3 (H-only)", Figs. 12, 15, 18, 22, 26).
+- id: claude-3-haiku-h-only
+  name: Claude 3 Haiku (helpful-only)
+  family: claude-3
+  developer: anthropic
+  open_weights: false
+  post_training_reached: post_trained
+  derived_from: null
+  stage: null
+  note: Unreleased. Shares a pretrained base with claude-3-haiku. Named only in the figures of Lindsey 2026 ("Haiku 3 (H-only)", Figs. 12, 15, 18, 22, 26).
+- id: claude-opus-4-base
+  name: Claude Opus 4 (base)
+  family: claude-4
+  developer: anthropic
+  open_weights: false
+  post_training_reached: base
+  derived_from: null
+  stage: null
+  note: >
+    Pretrained model, labelled "Opus 4 base" in Lindsey 2026 Fig. 14. The paper does not say
+    it is the checkpoint claude-opus-4 was post-trained from; the label suggests it.
+- id: claude-sonnet-4-base
+  name: Claude Sonnet 4 (base)
+  family: claude-4
+  developer: anthropic
+  open_weights: false
+  post_training_reached: base
+  derived_from: null
+  stage: null
+  note: Pretrained model, labelled "Sonnet 4 base" in Lindsey 2026 Fig. 14. See claude-opus-4-base.
+- id: claude-3.7-sonnet-base
+  name: Claude 3.7 Sonnet (base)
+  family: claude-3.7
+  developer: anthropic
+  open_weights: false
+  post_training_reached: base
+  derived_from: null
+  stage: null
+  note: Pretrained model, labelled "Sonnet 3.7 base" in Lindsey 2026 Fig. 14. See claude-opus-4-base.
+- id: claude-3.5-haiku-base
+  name: Claude 3.5 Haiku (base)
+  family: claude-3.5
+  developer: anthropic
+  open_weights: false
+  post_training_reached: base
+  derived_from: null
+  stage: null
+  note: Pretrained model, labelled "Haiku 3.5 base" in Lindsey 2026 Fig. 14. See claude-opus-4-base.
+- id: claude-3-opus-base
+  name: Claude 3 Opus (base)
+  family: claude-3
+  developer: anthropic
+  open_weights: false
+  post_training_reached: base
+  derived_from: null
+  stage: null
+  note: Pretrained model, labelled "Opus 3 base" in Lindsey 2026 Fig. 14. See claude-opus-4-base.
+- id: claude-3-sonnet-base
+  name: Claude 3 Sonnet (base)
+  family: claude-3
+  developer: anthropic
+  open_weights: false
+  post_training_reached: base
+  derived_from: null
+  stage: null
+  note: Pretrained model, labelled "Sonnet 3 base" in Lindsey 2026 Fig. 14. See claude-opus-4-base.
+- id: claude-3-haiku-base
+  name: Claude 3 Haiku (base)
+  family: claude-3
+  developer: anthropic
+  open_weights: false
+  post_training_reached: base
+  derived_from: null
+  stage: null
+  note: Pretrained model, labelled "Haiku 3 base" in Lindsey 2026 Fig. 14. See claude-opus-4-base.
+
+# Added with Rubin et al. 2026 (arXiv 2611.15267)
+- id: olmo-3-32b-checkpoints
+  name: OLMo 3 32B training checkpoints (series)
+  family: olmo-3
+  developer: allen-ai
+  open_weights: true
+  post_training_reached: base
+  size: 32B
+  derived_from: null
+  stage: null
+  note: >
+    A series, not one checkpoint: the stage-1 pretraining revisions (named stage1-step followed by the
+    step number) and the released base (revision main) of allenai/Olmo-3-1125-32B.
+- id: olmo-3-32b-stage1-step0
+  name: OLMo 3 32B, stage 1, step 0
+  family: olmo-3
+  developer: allen-ai
+  open_weights: true
+  post_training_reached: untrained
+  size: 32B
+  derived_from: null
+  stage: null
+  note: >
+    The released step-0 checkpoint, before any pretraining. Member of the series olmo-3-32b-checkpoints.
+- id: olmo-3-32b-stage1-step1000
+  name: OLMo 3 32B, stage 1, step 1000
+  family: olmo-3
+  developer: allen-ai
+  open_weights: true
+  post_training_reached: base
+  size: 32B
+  derived_from: null
+  stage: null
+  note: >
+    About 8.4 billion training tokens into stage-1 pretraining, by Rubin et al. 2026. Member of the series
+    olmo-3-32b-checkpoints.
+- id: olmo-3-1125-32b
+  name: OLMo 3 32B base (Olmo-3-1125-32B)
+  family: olmo-3
+  developer: allen-ai
+  open_weights: true
+  post_training_reached: base
+  size: 32B
+  derived_from: null
+  stage: null
+  note: >
+    The released base model, revision main of allenai/Olmo-3-1125-32B. Rubin et al. 2026 say it follows
+    stage-1 pretraining with mid-training and long-context training and has had no post-training. The
+    end-of-stage-1 checkpoint it continues from is not registered apart from the series olmo-3-32b-checkpoints,
+    so derived_from is left empty.
+- id: olmo-3-7b-checkpoints
+  name: OLMo 3 7B training checkpoints (series)
+  family: olmo-3
+  developer: allen-ai
+  open_weights: true
+  post_training_reached: base
+  size: 7B
+  derived_from: null
+  stage: null
+  note: >
+    A series, not one checkpoint: the stage-1 pretraining revisions and the released base (revision main)
+    of allenai/Olmo-3-1025-7B.
+- id: olmo-3-7b-stage1-step0
+  name: OLMo 3 7B, stage 1, step 0
+  family: olmo-3
+  developer: allen-ai
+  open_weights: true
+  post_training_reached: untrained
+  size: 7B
+  derived_from: null
+  stage: null
+  note: >
+    The released step-0 checkpoint, before any pretraining. Member of the series olmo-3-7b-checkpoints.
+- id: olmo-3-32b-random-init
+  name: OLMo 3 architecture with Gaussian random weights (three seeds)
+  family: olmo-3
+  developer: georgia-tech
+  open_weights: null
+  post_training_reached: untrained
+  size: 32B
+  derived_from: null
+  stage: null
+  note: >
+    Networks built by Rubin et al. 2026, one entry for the three seeds: the OLMo 3 architecture with linear
+    and embedding weights drawn from a zero-mean Gaussian (standard deviation 0.02), biases at zero and
+    normalisation weights at one. Not OLMo's released step-0 checkpoint. The size is not restated for
+    these networks; 32B is the paper's stated default and fits its readouts at layer 58. No release is
+    mentioned.
+
+# Added with Song, Hu & Mahowald 2025 (arXiv 2503.07513)
+- id: olmo-2-1124-7b
+  name: OLMo 2 7B (1124)
+  family: olmo-2
+  developer: allen-ai
+  open_weights: true
+  post_training_reached: base
+  size: 7B
+  derived_from: null
+  stage: null
+  note: >
+    Hugging Face allenai/OLMo-2-1124-7B, default revision. A base model. Song et al. (2025, App. F) call
+    it the final model "with averaged weights", beside three seed variants (olmo-2-1124-7b-seeds); what
+    was averaged is not coded.
+- id: olmo-2-1124-7b-seeds
+  name: OLMo 2 7B (1124) seed variants
+  family: olmo-2
+  developer: allen-ai
+  open_weights: true
+  post_training_reached: base
+  size: 7B
+  variant_of: olmo-2-1124-7b
+  derived_from: null
+  stage: null
+  note: >
+    One entry for a series of three checkpoints: revisions stage2-ingredient1, -ingredient2 and -ingredient3
+    (each -step11931-tokens50B) of allenai/OLMo-2-1124-7B. Song et al. (2025, App. F) describe them as
+    trained on the same data in a different order. Split into separate entries only if a claim is scoped
+    to one of them.
+- id: olmo-2-1124-13b
+  name: OLMo 2 13B (1124)
+  family: olmo-2
+  developer: allen-ai
+  open_weights: true
+  post_training_reached: base
+  size: 13B
+  derived_from: null
+  stage: null
+  note: >
+    Hugging Face allenai/OLMo-2-1124-13B, default revision. A base model. See olmo-2-1124-7b on the averaged
+    weights.
+- id: olmo-2-1124-13b-seeds
+  name: OLMo 2 13B (1124) seed variants
+  family: olmo-2
+  developer: allen-ai
+  open_weights: true
+  post_training_reached: base
+  size: 13B
+  variant_of: olmo-2-1124-13b
+  derived_from: null
+  stage: null
+  note: >
+    One entry for a series of three checkpoints: revisions stage2-ingredient1, -ingredient2 and -ingredient3
+    (each -step11931-tokens100B) of allenai/OLMo-2-1124-13B. See olmo-2-1124-7b-seeds.
+- id: qwen2.5-1.5b-base
+  name: Qwen2.5 1.5B
+  family: qwen2.5
+  developer: qwen-team
+  open_weights: true
+  post_training_reached: base
+  size: 1.5B
+  derived_from: null
+  stage: null
+  note: Hugging Face Qwen/Qwen2.5-1.5B.
+- id: qwen2.5-1.5b-instruct
+  name: Qwen2.5 1.5B Instruct
+  family: qwen2.5
+  developer: qwen-team
+  open_weights: true
+  post_training_reached: post_trained
+  size: 1.5B
+  derived_from: qwen2.5-1.5b-base
+  stage: null
+  note: Hugging Face Qwen/Qwen2.5-1.5B-Instruct.
+- id: qwen2.5-7b-base
+  name: Qwen2.5 7B
+  family: qwen2.5
+  developer: qwen-team
+  open_weights: true
+  post_training_reached: base
+  size: 7B
+  derived_from: null
+  stage: null
+  note: Hugging Face Qwen/Qwen2.5-7B.
+- id: qwen2.5-7b-instruct
+  name: Qwen2.5 7B Instruct
+  family: qwen2.5
+  developer: qwen-team
+  open_weights: true
+  post_training_reached: post_trained
+  size: 7B
+  derived_from: qwen2.5-7b-base
+  stage: null
+  note: Hugging Face Qwen/Qwen2.5-7B-Instruct.
+- id: qwen2.5-72b-base
+  name: Qwen2.5 72B
+  family: qwen2.5
+  developer: qwen-team
+  open_weights: true
+  post_training_reached: base
+  size: 72B
+  derived_from: null
+  stage: null
+  note: Hugging Face Qwen/Qwen2.5-72B.
+- id: qwen2.5-72b-instruct
+  name: Qwen2.5 72B Instruct
+  family: qwen2.5
+  developer: qwen-team
+  open_weights: true
+  post_training_reached: post_trained
+  size: 72B
+  derived_from: qwen2.5-72b-base
+  stage: null
+  note: Hugging Face Qwen/Qwen2.5-72B-Instruct.
+- id: llama-3.1-8b-base
+  name: Llama 3.1 8B
+  family: llama-3.1
+  developer: meta
+  open_weights: true
+  post_training_reached: base
+  size: 8B
+  derived_from: null
+  stage: null
+  note: Hugging Face meta-llama/Llama-3.1-8B.
+- id: llama-3.1-8b-instruct
+  name: Llama 3.1 8B Instruct
+  family: llama-3.1
+  developer: meta
+  open_weights: true
+  post_training_reached: post_trained
+  size: 8B
+  derived_from: llama-3.1-8b-base
+  stage: null
+  note: Hugging Face meta-llama/Llama-3.1-8B-Instruct.
+- id: llama-3.1-70b-base
+  name: Llama 3.1 70B
+  family: llama-3.1
+  developer: meta
+  open_weights: true
+  post_training_reached: base
+  size: 70B
+  derived_from: null
+  stage: null
+  note: >
+    Hugging Face meta-llama/Llama-3.1-70B. The entry llama-3.1-70b, whose variant is not recorded, may
+    be this model or llama-3.1-70b-instruct; merge once the source behind that entry is checked.
+- id: llama-3.1-70b-instruct
+  name: Llama 3.1 70B Instruct
+  family: llama-3.1
+  developer: meta
+  open_weights: true
+  post_training_reached: post_trained
+  size: 70B
+  derived_from: llama-3.1-70b-base
+  stage: null
+  note: >-
+    Hugging Face meta-llama/Llama-3.1-70B-Instruct. See llama-3.1-70b-base on the entry llama-3.1-70b.
+- id: llama-3.1-405b-base
+  name: Llama 3.1 405B
+  family: llama-3.1
+  developer: meta
+  open_weights: true
+  post_training_reached: base
+  size: 405B
+  derived_from: null
+  stage: null
+  note: >
+    Appears as "llama-3.1-405b", a base model, in the analysis code and output files of Song et al. (2025).
+    The Hugging Face id is not written out there; Table 1 of the paper gives the pattern meta-llama/Llama-3.1-*.
+- id: llama-3.3-70b-instruct
+  name: Llama 3.3 70B Instruct
+  family: llama-3.3
+  developer: meta
+  open_weights: true
+  post_training_reached: post_trained
+  size: 70B
+  derived_from: null
+  stage: null
+  note: >-
+    Hugging Face meta-llama/Llama-3.3-70B-Instruct. Song et al. (2025) group it with Llama 3.1 as one
+    family.
+- id: mistral-large-instruct-2411
+  name: Mistral Large Instruct 2411
+  family: mistral-large
+  developer: mistral-ai
+  open_weights: true
+  post_training_reached: post_trained
+  size: 123B
+  derived_from: null
+  stage: null
+  note: >-
+    Hugging Face mistralai/Mistral-Large-Instruct-2411. Size as given in Table 1 of Song et al. (2025).

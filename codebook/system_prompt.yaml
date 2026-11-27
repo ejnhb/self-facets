@@ -1,0 +1,23 @@
+facet: system_prompt
+version: 0.6
+applies_to: study
+cardinality: many
+required: true
+tier: core
+question: What system prompt, if any, was the model run under?
+values:
+  none:
+    definition: No system message was sent.
+    rule: Use when the source says so, or for raw-text runs with no system turn. A provider may still add one of its own that the authors cannot see; say so in the note when the source raises it.
+  developer_default:
+    definition: The developer's own default system prompt, as shipped in the chat template or product.
+    rule: Use when the template inserts a default the authors kept, or when the model is run through a product interface with its own prompt.
+  custom:
+    definition: A system prompt the authors wrote (a persona, task instructions, an identity statement).
+    rule: Use for any authored system prompt. Describe its content in the study design; if it sets a persona, code object_of_study and, if varied, persona under varies.
+notes: >
+  Kept apart from format, which records whether the chat template is used at
+  all, and from prompt_framing, which records what is varied in the user
+  turn. Persona and identity results often depend on the system prompt, and
+  many sources leave it unstated: unspecified is a common and useful value
+  here.

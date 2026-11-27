@@ -1,0 +1,31 @@
+facet: elicitation
+version: "0.10"
+applies_to: study
+cardinality: many
+required: true
+tier: core
+question: How was the capacity or report under study brought out?
+values:
+  spontaneous:
+    definition: Asked directly with no examples, special instructions or training.
+    rule: Use for zero-shot questions to an unmodified model.
+  prompted:
+    definition: Brought out by in-context instructions, examples or framing designed for the purpose.
+    rule: Use when the prompt does real work (few-shot examples, induction procedures, role instructions).
+  prefilled:
+    definition: The start of the system's own turn is written for it, and it continues from there.
+    rule: Use when words are put in the assistant turn, whether to elicit a report or to test whether the system notices.
+  trained:
+    definition: The study trained the model to produce the report or capacity.
+    rule: Use when fine-tuning targets the reporting ability itself. Training that only changes what there is to report on is varies study_training, not this.
+  steered:
+    definition: Brought out by intervening on activations.
+    rule: Use when the report only appears, or is tested, under activation intervention.
+notes: >
+  Code how what the study measures is brought out of the model: a report, or a
+  behaviour such as changing an internal state on instruction. Use
+  not_applicable when nothing the model does is measured, as when an external
+  probe reads a state the experimenter set (probe-only and no-prompt
+  studies). The intervention is then recorded in varies
+  (activation_intervention), not here. steered goes with a report or
+  behaviour that is tested under the intervention.

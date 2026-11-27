@@ -1,0 +1,24 @@
+facet: stance
+version: 0.1
+applies_to: claim
+cardinality: one
+required: false
+tier: core
+question: How does this claim bear on the question it is linked to?
+values:
+  supports:
+    definition: Evidence or argument for a yes answer to the question as worded.
+    rule: Use when the claim, within its scope, favours yes.
+  against:
+    definition: Evidence or argument for a no answer.
+    rule: Use when the claim, within its scope, favours no. A failure to find an effect in an adequate test counts.
+  mixed:
+    definition: The claim itself reports both, across conditions it does not separate.
+    rule: Prefer splitting into two claims with scope overrides. Use mixed only when the source does not allow that.
+  inconclusive:
+    definition: Bears on the question but does not favour either answer.
+    rule: Use for effects too small or too uncertain to count either way.
+notes: >
+  Required when the claim has a question, and must be absent when it does not.
+  Stance is relative to the question's wording, so word questions so that yes
+  means the capacity or effect is present.

@@ -1,0 +1,23 @@
+facet: evidence_kind
+version: 0.1
+applies_to: claim
+cardinality: one
+required: true
+tier: core
+question: What kind of support does the source give this claim?
+values:
+  measured:
+    definition: A reported quantity from the authors' own data.
+    rule: Use when there is a number, table or figure behind the claim.
+  observed:
+    definition: Reported from the authors' data without quantification (examples, transcripts, qualitative patterns).
+    rule: Use for case examples and qualitative results.
+  argued:
+    definition: Supported by reasoning, or by interpreting others' results.
+    rule: Use for conceptual claims and for the authors' interpretation of what their measurements mean.
+  hypothesised:
+    definition: Offered as a possibility the source does not test.
+    rule: Use for proposed mechanisms and conjectures.
+notes: >
+  Code the support the source gives, not how convincing the coder finds it.
+  When a measured result and its interpretation come apart, make two claims.

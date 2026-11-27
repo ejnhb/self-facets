@@ -1,0 +1,11 @@
+build/
+__pycache__/
+*.pyc
+.DS_Store
+
+# Personal overlays live in a separate private repo. If you keep one alongside
+# this checkout, keep it out of this repo.
+overlay/
+
+# Downloads made by scripts/fetch_paper.py
+_paper/

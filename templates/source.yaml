@@ -1,0 +1,117 @@
+# Template for a source record: copy to sources/<id>.yaml and fill in.
+# (R) required (by validate.py or by the rules in CLAUDE.md), (O) optional, (C) required under the condition given.
+# Facet values come from codebook/; ids for people, orgs, models and datasets
+# must exist in their registries (add them, small, as CLAUDE.md says).
+# Delete the comments you don't need; keep the structure.
+
+id: familyYEAR-short-title          # (R) first author's family name, year, a few words; the file name must match
+title: "Exact title of the version read"   # (R)
+date: 2026-01-31                    # (R) date of the version read
+
+authors:                            # (R) in order
+  - {person: family-given, orgs: [org-slug]}   # person in people/, orgs in orgs/ (affiliations as printed)
+
+artefacts:                          # (R) at least one: the paper, its code, data, a post
+  - kind: paper                     # (R) enums.yaml artefact_kind
+    arxiv: "2601.00000"             # (O) quoted, so YAML keeps it as text
+    url: null                       # (O)
+    venue: null                     # (O)
+    note: null                      # (O)
+
+coding:                             # (R)
+  coded_by: claude                  # (R) or a person
+  coder_model: claude-model-id      # (C) when coded_by is a model
+  coded_on: 2026-01-31              # (R)
+  version_read: v1                  # (R)
+  read_depth: text_only             # (R) enums.yaml read_depth; full_text only if the figures were seen
+  read_parts: Which sections, appendices, figures and code were read.   # (C) required for partial; say it anyway
+  status: draft                     # (R) only a human sets reviewed
+  reviewed_by: null                 # (C) required when status is reviewed
+  passes:                           # (R) every coding or change to this record, in order; add one each time
+    - date: 2026-01-31              # (R)
+      pr: 0                         # (O) the pull request, or a list of them; tells apart instances of one model
+      coded_by: claude              # (R) or a person
+      coder_model: claude-model-id  # (C) when coded_by is a model
+      codebook: "0.10"              # (R) quoted; the codebook version the pass coded against
+      scope: What this pass coded or changed.   # (R)
+      read: What was read for this pass, or that nothing new was read.   # (R)
+
+studies:                            # one per set of results that share every facet value (CLAUDE.md)
+  - id: familyYEAR-short-title.s1   # (R) numbered in order added; never renumbered
+    label: Short name of the setup  # (R)
+    where: "§3, Fig. 2"             # (R) where in the source
+    design: >                       # (R) what was done, in our words: prompts, items, conditions, evaluation sets
+      ...
+    models:                         # (R) ids from models/; a bare id is a subject. Long form for other roles:
+      - model-slug
+      - {id: other-model-slug, roles: [comparison], note: "what it is compared on"}   # enums.yaml model_role:
+      # subject | comparison | judge | data_source; a model can hold several (a judge that is also a subject)
+    note: null                      # (O)
+    facets:
+      # Core facets: code every one (unspecified if the source does not say; not_applicable if it does not apply).
+      study_kind: experiment        # codebook/study_kind.yaml
+      format: chat_template         # codebook/format.yaml
+      system_prompt: unspecified    # codebook/system_prompt.yaml
+      reasoning: none               # codebook/reasoning.yaml
+      construct: [introspection]    # codebook/construct.yaml
+      report_target: [own_behaviour]     # codebook/report_target.yaml
+      report_readout: generated_choice   # codebook/report_readout.yaml
+      evidence: [self_report]       # codebook/evidence.yaml
+      validated_against: [behaviour]     # codebook/validated_against.yaml
+      varies:                       # codebook/varies.yaml; long form with levels for the conditions used
+        value: [task]
+        levels:
+          task: [first task, second task]
+      comparison: [within_model]    # codebook/comparison.yaml
+      output_route_control: by_construction   # codebook/output_route_control.yaml (internality: can the report come from its own earlier output?)
+      similarity_adjustment: not_applicable   # codebook/similarity_adjustment.yaml (self against other models)
+      elicitation: [spontaneous]    # codebook/elicitation.yaml
+      # Interpretive facets: code when the source states a position, a linked question needs them, or a
+      # conflict turns on them; otherwise leave them out (they read as not_yet_coded). Long form, with basis.
+      unit_state:                   # codebook/unit_state.yaml (values from units.yaml)
+        value: conversation
+        basis: operational          # stated | operational
+        author_term: "the model"    # the source's own word, when it has one
+        where: "§3"
+        confidence: medium          # enums.yaml confidence
+        note: Why this value and not a neighbouring one.
+      unit_disposition: weights     # codebook/unit_disposition.yaml
+      unit_reporter: speaker        # codebook/unit_reporter.yaml
+      unit_position: not_applicable # codebook/unit_position.yaml (the source's own view of what the self is)
+      self_sense: self_facts        # codebook/self_sense.yaml
+      object_of_study: default_persona   # codebook/object_of_study.yaml; nested_in for a layer inside another
+
+claims:
+  - id: familyYEAR-short-title.c1   # (R) numbered in order added; never renumbered
+    study: familyYEAR-short-title.s1     # (R) the study whose facets it inherits
+    statement: >                    # (R) one or two sentences in our words, with the numbers that matter
+      ...
+    where: "§4.1, Table 2"          # (R) say "read from Fig. N" for values off a plot
+    evidence_kind: measured         # (R) codebook/evidence_kind.yaml
+    # Links to questions are not part of the record: they go in links/<source id>.yaml (templates/links.yaml).
+    effect_of: [task]               # (O) the varied variable whose effect the claim reports (one of the study's varies)
+    effect_presence: present        # (C) with effect_of: present | absent | mixed | inconclusive
+    effect_direction: increases     # (O) with present, for an ordered variable: increases | decreases | non_monotonic
+    scope:                          # (O) when the claim holds for part of the study
+      models: [model-slug]
+      conditions: Which levels it holds for.
+    compares: [familyYEAR-short-title.s2]   # (O) another study of this source the claim compares with
+    about:                          # (O) models or datasets the claim is about, beyond the study's own
+      models: []
+      datasets: []
+    disposition: [denial_of_experience]     # (O) core claim facet, codebook/disposition.yaml
+    # Interpretive claim facets: the source's view only; unspecified when a linked question needs one and
+    # the source does not settle it.
+    report_source: canned_policy    # codebook/report_source.yaml
+    origin: post_training           # codebook/origin.yaml
+    integration: compliance         # codebook/integration.yaml
+    aspect: represented             # codebook/aspect.yaml
+    note: null                      # (O)
+
+relations:                          # (O) links to other work
+  - kind: critiques                 # (R) enums.yaml relation_kind
+    from: familyYEAR-short-title    # (R) the work doing the critiquing or extending: a source, study or claim id
+    to: otherYEAR-title             # (C) a coded record, or else:
+    # to_external: "Author et al. (2025), Title, arXiv 2501.00000"
+    where: "§1"                     # (R) where the source says it
+    note: null                      # (O)

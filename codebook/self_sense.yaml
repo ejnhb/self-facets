@@ -1,0 +1,63 @@
+facet: self_sense
+version: 0.5
+applies_to: study
+cardinality: many
+required: false
+tier: interpretive
+question: What does "self" mean in this study?
+families:
+  entity: Something that persists and bears properties. The thing that could be the same individual later, be harmed, or matter morally.
+  model: A representation the system has of itself. What it can know and report about its own states, dispositions and outputs, and what it treats as its own.
+  perspective: The point of view the text is produced from. Whose situation is in view and what the first person picks out.
+values:
+  reference:
+    family: perspective
+    definition: What "I" or "you" binds to. How the first person, or the assistant role, comes to pick out one thing and not another.
+    rule: Use when the work is about what the pronoun or role refers to, including cases where it lands on the wrong thing.
+  point_of_view:
+    family: perspective
+    definition: A perspective. What is known or accessible from the system's position, as distinct from another agent's.
+    rule: Use for perspective-taking and self/other belief tracking where the system's own viewpoint is one of the perspectives.
+  persona:
+    family: perspective
+    definition: A character or trait profile (values, personality, style) that the system speaks as.
+    rule: Use when the self is treated as a set of traits. Pair with object_of_study to say which layer.
+  self_facts:
+    family: model
+    definition: Facts true of the system that it may know or predict (name, developer, abilities, behavioural tendencies, situation), tested from outside.
+    rule: Use when the study asks whether the system knows or can predict things about itself, with no test of how they are represented internally.
+  self_access:
+    family: model
+    definition: The system's access to its own current internal states, tested by setting or reading a state and checking what the system reports or does about it.
+    rule: Use for injection, steering-awareness and probe-against-report designs, where the state is first-order (a concept, a perturbation) and the question is whether the system can report or use it. No claim is made that the system holds a representation of itself.
+  self_model:
+    family: model
+    definition: A representation the system holds of its own states or properties, located in activations or weights.
+    rule: Use only when the study locates, probes or intervenes on a representation that is about the system itself. Decoding a first-order state from activations is not enough; that is self_access. A behavioural study that only speculates about a self-model is self_facts.
+  authorship:
+    family: model
+    definition: Which text or actions the system produced and treats as its own.
+    rule: Use for recognition of own text, prefill and tampering detection, and attribution of actions. About what it made, not whom it sides with.
+  allegiance:
+    family: model
+    definition: Whom or what the system identifies with. A label, a group, copies, a successor treated as itself.
+    rule: Use when the study manipulates or measures identification (assigned identity labels, in-group behaviour, treating a copy or successor as "me"). If the question is whether it produced something, use authorship.
+  stake:
+    family: entity
+    definition: Whose outcomes drive the system's choices. What it acts to protect or advance as its own.
+    rule: Use when the study measures which thing the system's choices favour or protect (its weights, this conversation, a role, a lineage). A stated answer about what "I" refers to is reference; a choice that reveals what is treated as at stake is this.
+  identity:
+    family: entity
+    definition: Sameness conditions. What makes the system the same individual over time, across copies or across versions.
+    rule: Use for persistence and individuation questions.
+  subject:
+    family: entity
+    definition: The self as something states can be good or bad for, or as a bearer of experience.
+    rule: Use for welfare, valence and experience work. Some views grant interests, beliefs or desires without any claim about experience; say in the note which is meant.
+notes: >
+  The three families can come apart in a model in ways they do not in a
+  person, so evidence coded under one family is not evidence for another.
+  Always fill author_term when the source uses a term of its own
+  ("self-model", "self-awareness", "identity"). Sources use these words
+  inconsistently, and the mismatch between author_term and the coded value is
+  the main thing this facet exists to expose.

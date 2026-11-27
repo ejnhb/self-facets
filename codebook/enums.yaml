@@ -1,0 +1,88 @@
+# Bookkeeping vocabularies. See README.md for how these differ from facets.
+enums:
+  read_depth:
+    full_text: The whole document was read, including appendices and figures.
+    text_only: All of the text was read, including appendices, but figures were seen only as captions. The usual case for extracted text.
+    partial: Part of the full text was read. Say which parts in read_parts.
+    abstract_only: Only the abstract was read.
+    summary_only: Only a third-party or machine-generated summary was read.
+    secondary: Known only through another source's account of it.
+    metadata_only: Title, authors and identifiers only.
+
+  confidence:
+    high: The coder expects another careful coder to agree.
+    medium: Defensible, but a neighbouring value could be argued.
+    low: A best guess. Flag for review.
+
+  basis:
+    stated: The source says it.
+    operational: Inferred by the coder from what the study did.
+
+  record_status:
+    draft: Coded but not checked by a second coder.
+    reviewed: Checked against the source by someone other than the coder.
+
+  artefact_kind:
+    paper: A paper or preprint.
+    code: A code repository.
+    data: A dataset.
+    post: A blog post, forum post or web page.
+    weights: Released model weights.
+    other: Anything else. Describe in note.
+
+  org_kind:
+    company: A company, including industry labs.
+    university: A university or academic institute.
+    nonprofit: A nonprofit research organisation.
+    programme: A fellowship or training programme.
+    government: A government body or public institute.
+    independent: No institutional affiliation.
+
+  # Direction: `from` is the work doing the replicating, extending or
+  # criticising; `to` is the earlier work.
+  relation_kind:
+    replicates: Repeats the earlier work and finds the same.
+    fails_to_replicate: Repeats the earlier work and does not find the same.
+    extends: Builds on the earlier work's method or result.
+    responds_to: Written in explicit reply to the earlier work.
+    critiques: Argues against the earlier work's method or conclusion.
+    uses_method_of: Reuses the earlier work's method for a different question.
+
+  stage_method:
+    pretraining: Self-supervised pretraining.
+    midtraining: A further pretraining-style phase on a targeted mix.
+    sft: Supervised fine-tuning on demonstrations.
+    distillation: Training on a teacher model's outputs or logits.
+    self_training: Fine-tuning on the model's own filtered samples (rejection sampling, best-of-n).
+    preference_optimisation: Offline preference methods (DPO, KTO and relatives). Name the method in note.
+    rlhf: Reinforcement learning against a reward model trained on human labels.
+    rlaif: Reinforcement learning against a reward model trained on AI labels, including constitution-based methods.
+    rlvr: Reinforcement learning with verifiable or rule-based rewards.
+    other: A method not listed. Describe in note.
+    undisclosed: The developer has not said.
+    unspecified: Not yet coded from the documentation.
+
+  model_role:
+    subject: A model whose self-reports, states or behaviour the study is about.
+    comparison: A model used as a baseline for a subject (a cross-predictor, another model's measurements).
+    judge: A model that grades or classifies responses.
+    data_source: A model that supplies training data or samples (a teacher, the source of behaviour to imitate).
+
+  reading_status:
+    grounded: Follows from the matched studies' own design facts.
+    argued: There is a case for it that the design alone does not settle.
+    speculative: A lens worth trying, without a settled case.
+
+  post_training_reached:
+    untrained: Random weights; no training at all (a step-0 checkpoint, a network the authors initialised).
+    base: Pretraining only, including mid-training and long-context phases; no post-training.
+    post_trained: Post-trained, with the stages not yet coded (most chat and instruct models until their pipeline is).
+    sft: Supervised fine-tuning is the latest stage.
+    preference: Offline preference optimisation (DPO and relatives) is the latest stage.
+    rl: Reinforcement learning (from human or AI feedback, or verifiable rewards) is the latest stage.
+    unspecified: The source does not say which variant was used.
+
+  disclosure:
+    full: Methods and data are documented well enough to reproduce the stage in outline.
+    partial: Some of the methods or data are documented.
+    undisclosed: The developer has not documented the stage.

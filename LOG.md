@@ -58,6 +58,15 @@ below, and committed. Each record has a pass entry (PR 14) saying exactly what w
 - Whether a contrast whose other arm is another study counts as something a study `varies` (Lindsey s3, coded so
   in the pilot) or only as a `compares` between studies (Binder et al. s7, this pass). One rule for both.
 
+**Owner, 2026-11-27:** both deferred until after the freeze. On the second: ideally, when both studies are coded,
+the comparison should surface by itself at the question or framing layer, rather than being coded into either
+study.
+
+**Blind test 2** (set up the same day): branch `blind-binder`, one commit with no history, Binder et al.'s record,
+links, pilot notes, design notes and changelog removed, the relations to it turned into citations, and registry
+entries only it used dropped; `BRIEF.md` at its root. Coders from other model families code the paper from the
+PDF; the comparison is made against this pass's record.
+
 ## 2026-11-27: provenance per record, and a check on every pull request
 
 Coder: claude (claude-opus-5-5), working with the owner. Prompted by a review of the 0.5 to 0.10 changes.

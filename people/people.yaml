@@ -108,3 +108,11 @@
 - id: sztyber-betley-anna
   name: Anna Sztyber-Betley
   orcid: null
+
+# Added with Hao and Ho 2026 (arXiv 2610.39795)
+- id: hao-yijie
+  name: Yijie Hao
+  orcid: null
+- id: ho-joyce
+  name: Joyce C. Ho
+  orcid: null

@@ -147,3 +147,12 @@
 - id: warsaw-university-of-technology
   name: Warsaw University of Technology
   kind: university
+
+- id: emory
+  name: Emory University
+  kind: university
+  note: Printed as "Department of Computer Science, Emory University" on Hao and Ho (2026).
+- id: deepseek
+  name: DeepSeek
+  kind: company
+  note: Added as the developer of DeepSeek-V4-Flash (Hao and Ho 2026). Name and kind from general knowledge, not from the source.

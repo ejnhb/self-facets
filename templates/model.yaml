@@ -1,5 +1,5 @@
 # Template for a model: append to models/models.yaml. Register a model only when a record needs it, and only
-# to the depth needed (CLAUDE.md, "Registries stay small").
+# to the depth needed (AGENTS.md, "Registries stay small").
 
 - id: model-slug                    # (R) short lowercase slug; one entry per checkpoint a claim is scoped to
   name: Model Name (snapshot)       # (R)

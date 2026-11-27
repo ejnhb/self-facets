@@ -16,6 +16,12 @@ artefacts:
   - kind: post
     url: null
     note: The first page of v1 links an "HTML version". The link did not survive text extraction; add it. Not read.
+  - kind: code
+    status: unknown
+    note: The paper mentions none; not searched for.
+  - kind: data
+    status: unknown
+    note: The paper mentions none; not searched for.
 
 coding:
   coded_by: claude
@@ -44,7 +50,7 @@ coding:
     coded.
   status: draft
   reviewed_by: null
-  passes:                 # every coding or change, in order (CLAUDE.md, 'Mark your work')
+  passes:                 # every coding or change, in order (AGENTS.md, 'Mark your work')
     - date: 2026-11-26
       pr: [3, 4]
       coded_by: claude
@@ -1404,7 +1410,7 @@ claims:
       against the reading that injection flips answers to yes in general.
       Left without a question because it measures answer bias, not a
       report of an injected state. No effect_of: the whole study is a
-      control for s1, and a control result takes none (CLAUDE.md, "Say
+      control for s1, and a control result takes none (AGENTS.md, "Say
       which variable a claim is about"). Read from Fig. 10: affirmative answers stay at about
       0.02 at strengths 0, 1, 2, 4 and 8; negative answers are about 0.93
       to 0.97 up to strength 2, about 0.82 at 4 and about 0.33 at 8, the

@@ -1,7 +1,7 @@
 # Template for a source record: copy to sources/<id>.yaml and fill in.
-# (R) required (by validate.py or by the rules in CLAUDE.md), (O) optional, (C) required under the condition given.
+# (R) required (by validate.py or by the rules in AGENTS.md), (O) optional, (C) required under the condition given.
 # Facet values come from codebook/; ids for people, orgs, models and datasets
-# must exist in their registries (add them, small, as CLAUDE.md says).
+# must exist in their registries (add them, small, as AGENTS.md says).
 # Delete the comments you don't need; keep the structure.
 
 id: familyYEAR-short-title          # (R) first author's family name, year, a few words; the file name must match
@@ -17,6 +17,15 @@ artefacts:                          # (R) at least one: the paper, its code, dat
     url: null                       # (O)
     venue: null                     # (O)
     note: null                      # (O)
+  - kind: code                      # (R) one code and one data artefact on every record (AGENTS.md)
+    status: unknown                 # (R) enums.yaml availability_status: released, not_released, unknown
+    url: null                       # (C) when released
+    ref: null                       # (O) the commit or release read
+    read: false                     # (C) when released: true, false or partial
+    note: null                      # (O) what was read, or how availability was checked
+  - kind: data
+    status: unknown
+    note: null
 
 coding:                             # (R)
   coded_by: claude                  # (R) or a person
@@ -36,7 +45,7 @@ coding:                             # (R)
       scope: What this pass coded or changed.   # (R)
       read: What was read for this pass, or that nothing new was read.   # (R)
 
-studies:                            # one per set of results that share every facet value (CLAUDE.md)
+studies:                            # one per set of results that share every facet value (AGENTS.md)
   - id: familyYEAR-short-title.s1   # (R) numbered in order added; never renumbered
     label: Short name of the setup  # (R)
     where: "§3, Fig. 2"             # (R) where in the source

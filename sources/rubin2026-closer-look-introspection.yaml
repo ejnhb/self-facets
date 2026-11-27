@@ -19,6 +19,12 @@ artefacts:
       page of v2 prints 10 November 2026; the date of v1 was not checked. One
       affiliation line covers all six authors. The text mentions no code or
       data release. Venue not checked.
+  - kind: code
+    status: unknown
+    note: The paper mentions none; not searched for.
+  - kind: data
+    status: unknown
+    note: The paper mentions none; not searched for.
 
 coding:
   coded_by: claude
@@ -36,7 +42,7 @@ coding:
     cited work was read, the OLMo 3 report included.
   status: draft
   reviewed_by: null
-  passes:                 # every coding or change, in order (CLAUDE.md, 'Mark your work')
+  passes:                 # every coding or change, in order (AGENTS.md, 'Mark your work')
     - date: 2026-11-26
       pr: [3, 4]
       coded_by: claude

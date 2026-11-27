@@ -252,6 +252,17 @@ def validate():
             rep.err(sid, "a source needs at least one artefact")
         for i, art in enumerate(as_list(src.get("artefacts")), 1):
             check_enum(rep, sid, f"artefact {i} kind", art.get("kind"), enums, "artefact_kind")
+            if art.get("kind") in ("code", "data"):
+                check_enum(rep, sid, f"artefact {i} status", art.get("status"), enums, "availability_status")
+                if art.get("status") == "released":
+                    if not art.get("url"):
+                        rep.err(sid, f"artefact {i}: a released {art['kind']} artefact needs its url")
+                    if art.get("read") not in (True, False, "partial"):
+                        rep.err(sid, f"artefact {i}: read is true, false or partial (what this coding read of it)")
+        for kind in ("code", "data"):
+            if not any(a.get("kind") == kind for a in as_list(src.get("artefacts"))):
+                rep.err(sid, f"say whether {kind} is available: add an artefact of kind {kind} with a status "
+                             "(released, not_released or unknown)")
             if "arxiv" in art and not isinstance(art["arxiv"], str):
                 rep.err(sid, f"artefact {i}: quote the arXiv id so YAML keeps it as text")
 
@@ -267,7 +278,7 @@ def validate():
             rep.err(sid, "status reviewed needs reviewed_by")
         passes = as_list(coding.get("passes"))
         if not passes:
-            rep.err(sid, "coding.passes is missing: list every coding or change (CLAUDE.md, 'Mark your work')")
+            rep.err(sid, "coding.passes is missing: list every coding or change (AGENTS.md, 'Mark your work')")
         for i, ps in enumerate(passes, 1):
             if not isinstance(ps, dict):
                 rep.err(sid, f"coding.passes {i} must be a mapping")

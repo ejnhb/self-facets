@@ -157,7 +157,7 @@
 - id: deepseek
   name: DeepSeek
   kind: company
-  note: Developer of DeepSeek-V3 (Lu et al. 2026) and DeepSeek-V4-Flash (Hao and Ho 2026). Kind not taken from a source; check before relying on it.
+  note: Developer of DeepSeek-V3 (Lu et al. 2026), DeepSeek-V4-Flash (Hao and Ho 2026) and DeepSeek-R1-Distill-Qwen-32B (Moreno Cencerrado et al. 2026, Hugging Face organisation deepseek-ai). Kind not taken from a source; check before relying on it.
 - id: moonshot-ai
   name: Moonshot AI
   kind: company
@@ -168,3 +168,14 @@
   name: Emory University
   kind: university
   note: Printed as "Department of Computer Science, Emory University" on Hao and Ho (2026).
+# Added with Moreno Cencerrado et al. 2026 (arXiv 2509.10625)
+- id: universidad-internacional-de-valencia
+  name: Universidad Internacional de Valencia
+  kind: university
+- id: university-of-cambridge
+  name: University of Cambridge
+  kind: university
+- id: mars-cambridge
+  name: MARS (Mentorship for Alignment Research Students), Cambridge AI Safety Hub
+  kind: programme
+  note: Named in a footnote on p. 1 of Moreno Cencerrado et al. (2026), v3.

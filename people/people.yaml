@@ -65,4 +65,16 @@
   orcid: null
 - id: richardson-oliver
   name: Oliver Richardson
+# Added with Betley et al. 2025 (arXiv 2501.11120)
+- id: betley-jan
+  name: Jan Betley
+  orcid: null
+- id: bao-xuchan
+  name: Xuchan Bao
+  orcid: null
+- id: soto-martin
+  name: Martín Soto
+  orcid: null
+- id: sztyber-betley-anna
+  name: Anna Sztyber-Betley
   orcid: null

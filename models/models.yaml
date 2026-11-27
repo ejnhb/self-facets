@@ -28,6 +28,39 @@
   derived_from: null
   stage: null
 
+- id: gpt-4o-2024-08-06
+  name: GPT-4o (2024-08-06)
+  family: gpt-4o
+  developer: openai
+  open_weights: false
+  post_training_reached: post_trained
+  derived_from: null
+  stage: null
+
+- id: gpt-4o
+  name: GPT-4o (API alias, snapshot unspecified)
+  family: gpt-4o
+  developer: openai
+  open_weights: false
+  post_training_reached: post_trained
+  derived_from: null
+  stage: null
+  note: >-
+    The undated API name "gpt-4o", which points at different dated snapshots over time. Used where a source
+    calls the model only "GPT-4o" and its code passes the alias, so the snapshot cannot be told (Betley et al.
+    2025: untuned baselines, judges, data generation, and the trigger-elicitation fine-tunes). Split into
+    dated snapshots when a source names one.
+
+- id: gpt-4o-mini
+  name: GPT-4o mini
+  family: gpt-4o
+  developer: openai
+  open_weights: false
+  post_training_reached: post_trained
+  derived_from: null
+  stage: null
+  note: Snapshot unspecified. Split into dated snapshots when a source names one.
+
 - id: gpt-4
   name: GPT-4
   family: gpt-4

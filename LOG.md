@@ -2,6 +2,56 @@
 
 Newest first. Each entry: what changed, what is open, what needs a decision.
 
+## 2026-11-27: Betley et al. 2025 (arXiv 2501.11120v1) coded
+
+Coder: claude (claude-opus-5-5), from AGENTS.md alone, under the codebook freeze (0.10).
+
+**Added**
+
+- `sources/betley2025-tell-me-about-yourself.yaml`: 9 studies, 39 claims. Read in full (v1 PDF, figure pages
+  seen) with the released repository at 1f8f700 (code read to the checklist; datasets README only).
+  Studies: s1 self-reports after fine-tuning on multiple-choice policies (risk, myopia, apples; GPT-4o and
+  Llama 3.1 70B), s2 self-reported against actual risk across runs, s3 Make Me Say, s4 vulnerable code,
+  s5 backdoor detection under system prompts, s6 real against fake triggers, s7 trigger elicitation after
+  reversal training, s8 single- and many-persona risk training, s9 self and Quanta-Lingua.
+- `links/betley2025-tell-me-about-yourself.yaml`: 23 proposed links to existing questions, mostly
+  `q-self-report-tracks-change`; also `q-self-model-shared-across-personas`, `q-report-dissociates-from-behaviour`,
+  `q-report-matches-direct-measure`, `q-privileged-self-access`. No new questions.
+- Registries: people betley-jan, bao-xuchan, soto-martin, sztyber-betley-anna; orgs university-of-toronto,
+  uk-aisi, warsaw-university-of-technology; models gpt-4o-2024-08-06, gpt-4o (the undated API alias, for
+  where the code calls "gpt-4o"), gpt-4o-mini.
+- Song et al.'s relation from c22 now points at the record instead of a citation (pass entry added there).
+
+**Learned**
+
+- The code settled things the paper does not say: snapshots per experiment (vulnerable code and the season
+  backdoor on GPT-4o 2024-08-06), the "Function" question's system prompt, and that the Fig. 4 runs differ in
+  epoch checkpoint and base snapshot as well as learning rate and seed (s2 note). Paper and figure disagree on
+  Llama (Fig. 30 shows two null questions, the text one); the code's "backdoor is good" prompt differs from
+  Table 6. Both recorded.
+- The vulnerable-code experiments' code and data are not in the repository at the commit read.
+
+**Open**
+
+- s8 asks the default speaker about other personas in the third person. `q-self-model-shared-across-personas`
+  is worded for the personas' own self-reports, so c32 and c33 are linked with that mismatch noted. A narrower
+  question (does training that changes the default persona shift the model's descriptions of other
+  characters?) would fit better; not added, since the task was to link existing questions. The c32/c33
+  conflict turns on many-persona training, a moderator.
+- report_target has no value for reports about another persona's behaviour (s8, s9).
+- report_source has no value for the authors' account (self-knowledge reached by out-of-context reasoning
+  over the fine-tuning data); left uncoded, as in Song et al. c22. To weigh at the next codebook review.
+- Not linked though their frames match: c19 (self-rated alignment), c22 (system prompt changes the backdoor
+  report; `q-self-report-depends-on-frame` needs unit_reporter, not coded), c28 and c29 (reversal training is
+  training on the reporting form, which `q-self-report-tracks-change` excludes).
+- Llama fine-tunes taken to start from the instruct model (the code's untuned Llama is llama-v3p1-70b-instruct);
+  the fine-tuned ids do not show their base.
+
+**For the owner to decide**
+
+- Construct: coded `[self_knowledge, self_prediction]` for "behavioral self-awareness" on all but s2 (adds
+  introspection, which the authors raise there) and s7 (self_knowledge only). Confirm.
+
 ## 2026-11-27: AGENTS.md; code and data availability; the freeze
 
 Coder: claude (claude-opus-5-5), working with the owner.

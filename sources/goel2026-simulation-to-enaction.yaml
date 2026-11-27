@@ -62,7 +62,7 @@ coding:
       coded_by: claude
       coder_model: claude-opus-5-5
       codebook: "0.10"
-      scope: First full coding (8 studies, 44 claims) and proposed links.
+      scope: First full coding (8 studies, 43 claims) and proposed links.
       read: "As in read_parts: the v1 PDF in full with every figure viewed, and the released code and data to the checklist at 8d53eec."
 
 studies:

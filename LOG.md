@@ -1,6 +1,21 @@
-# Session log
+# Session log (closed 2026-11-27)
 
-Newest first. Each entry: what changed, what is open, what needs a decision.
+Kept for its history and because records point to it; no new entries. What is open now is in `OPEN.md`; what was
+done is in git history and the pull request descriptions. Newest first.
+
+## 2026-11-27: read_depth with partly viewed figures; two registry lines
+
+Coder: claude (claude-opus-5-5).
+
+- `read_depth: full_text` now means every figure a claim takes a result or value from was viewed, with unviewed
+  figures listed in `read_parts` (AGENTS.md, `codebook/enums.yaml`, the source template; codebook 0.10.2,
+  bookkeeping). Agreed with the owner. Checked against the records: four claims cite figures not viewed (Betley c16,
+  Fornasiere c6, c13, c37), each written from the text and saying so, so all eight records stay `full_text`.
+- `orcid: null` restored on richardson-oliver and waytz-adam, dropped when the step-1 PRs' registry conflicts were
+  resolved.
+- LOG.md closed (owner, 2026-11-27): open items move to `OPEN.md`, rewritten rather than appended to, and the pull
+  request description becomes the record of a session. Older open items were carried over and checked against the
+  repo; those already resolved were dropped.
 
 ## 2026-11-27: Comsa and Shanahan (2025) coded; definition d-introspection-causal
 

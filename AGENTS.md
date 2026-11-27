@@ -7,7 +7,8 @@ facets are coded.
 
 ## Start of session
 
-1. Read the last few entries of `LOG.md` to see what was done and what is open.
+1. Read `OPEN.md` to see what is open, and the last few merged pull requests
+   to see what was done.
 2. Run `python scripts/validate.py`. If it fails, fix that first.
 
 ## Coding a paper, in order
@@ -148,8 +149,12 @@ facets are coded.
     the values are in the figure, not read.
   - A value read off a plot is approximate. Say "read from Fig. N" in `where`
     and do not give more precision than the plot shows.
-  - `read_depth` is `full_text` only if the figures were seen. Otherwise it is
-    `text_only`.
+  - `read_depth` is `full_text` when the whole text was read, appendices
+    included, and every figure a claim takes a result or value from was
+    viewed. List the figures not viewed in `read_parts`, and say so in the
+    `where` of any claim that cites one (such a claim is written from the
+    text alone). If a claim takes a result or value from a figure that was
+    not viewed, `read_depth` is `text_only`.
 - **`date` is the date of the version read.**
 - **Questions.** Before adding a question, look for one that fits. If an
   existing question is close but its wording excludes this design, add a
@@ -196,12 +201,12 @@ facets are coded.
 
 Do not invent a value in a record. If the codebook lacks what you need, propose
 the change: edit the facet file, bump its version, add a `CHANGELOG.md` line,
-and flag it in `LOG.md` for the owner to confirm.
+and flag it in `OPEN.md` for the owner to confirm.
 
 **The codebook is frozen at 0.10** (owner, 2026-11-27) while papers it has not
 seen are coded and checked blind. Until the owner's next review, do not edit
 facet files: code with the nearest value, and put the proposed change in
-`LOG.md` (and `design/candidate-facets.md` for a new facet). Bookkeeping that
+`OPEN.md` (and `design/candidate-facets.md` for a new facet). Bookkeeping that
 is not a facet (enums for coding, artefacts, provenance) may still change, with
 a `CHANGELOG.md` line.
 
@@ -219,6 +224,9 @@ request, and write records and definitions from published sources.
 ## End of session
 
 1. Run `python scripts/validate.py` and `python scripts/build.py`.
-2. Add an entry to `LOG.md`: date, what was added or changed, what was left
-   open, anything the owner needs to decide.
-3. Commit on a branch and open a pull request unless told otherwise.
+2. Update `OPEN.md`: add what you left open and anything the owner needs to
+   decide; remove what you resolved. It is rewritten, not appended to.
+3. Commit on a branch and open a pull request unless told otherwise. The pull
+   request description is the record of the session: what was added or
+   changed, what was read, the calls you were unsure of, and what you added to
+   or removed from `OPEN.md`.

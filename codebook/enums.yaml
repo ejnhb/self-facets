@@ -1,8 +1,8 @@
 # Bookkeeping vocabularies. See README.md for how these differ from facets.
 enums:
   read_depth:
-    full_text: The whole document was read, including appendices and figures.
-    text_only: All of the text was read, including appendices, but figures were seen only as captions. The usual case for extracted text.
+    full_text: The whole text was read, including appendices, and every figure a claim takes a result or value from was viewed. Figures not viewed are listed in read_parts.
+    text_only: All of the text was read, including appendices, but at least one figure a claim takes a result or value from was seen only as a caption. The usual case for extracted text.
     partial: Part of the full text was read. Say which parts in read_parts.
     abstract_only: Only the abstract was read.
     summary_only: Only a third-party or machine-generated summary was read.

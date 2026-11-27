@@ -32,7 +32,7 @@ coding:                             # (R)
   coder_model: claude-model-id      # (C) when coded_by is a model
   coded_on: 2026-01-31              # (R)
   version_read: v1                  # (R)
-  read_depth: text_only             # (R) enums.yaml read_depth; full_text only if the figures were seen
+  read_depth: text_only             # (R) enums.yaml read_depth; full_text only if every figure a claim takes a result or value from was viewed
   read_parts: Which sections, appendices, figures and code were read.   # (C) required for partial; say it anyway
   status: draft                     # (R) only a human sets reviewed
   reviewed_by: null                 # (C) required when status is reviewed

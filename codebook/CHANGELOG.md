@@ -1,5 +1,11 @@
 # Codebook changelog
 
+## 0.10.2 (2026-11-27; bookkeeping only, facets unchanged and frozen at 0.10)
+
+- **`read_depth: full_text`** now needs every figure a claim takes a result or value from to have been viewed, not every figure in the
+  paper; figures not viewed are listed in `read_parts`. Two of the first four step-1 records (Betley, Fornasiere)
+  had read it this way already. Agreed with the owner.
+
 ## 0.10.1 (2026-11-27; bookkeeping only, facets unchanged and frozen at 0.10)
 
 - **`availability_status`** (enums): `released`, `not_released` or `unknown`, on the `code` and `data` artefacts

@@ -144,3 +144,8 @@
 - id: pacchiardi-lorenzo
   name: Lorenzo Pacchiardi
   orcid: null
+# Added with G. and Lindsey 2026 (arXiv 2605.25459)
+- id: goel-asvin
+  name: Asvin Goel
+  orcid: null
+  note: Printed "Asvin G." on arXiv 2605.25459v1; the family name Goel is from the README of the paper's code repository.

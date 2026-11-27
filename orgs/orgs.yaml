@@ -157,7 +157,7 @@
 - id: deepseek
   name: DeepSeek
   kind: company
-  note: Developer of DeepSeek-V3 (Lu et al. 2026), DeepSeek-V4-Flash (Hao and Ho 2026) and DeepSeek-R1-Distill-Qwen-32B (Moreno Cencerrado et al. 2026, Hugging Face organisation deepseek-ai). Kind not taken from a source; check before relying on it.
+  note: Developer of DeepSeek-V3 (Lu et al. 2026), DeepSeek-V4-Flash (Hao and Ho 2026), DeepSeek-R1-Distill-Qwen-32B (Moreno Cencerrado et al. 2026, Hugging Face organisation deepseek-ai) and DeepSeek LLM 67B Chat (G. and Lindsey 2026). Kind not taken from a source; check before relying on it.
 - id: moonshot-ai
   name: Moonshot AI
   kind: company
@@ -179,3 +179,12 @@
   name: MARS (Mentorship for Alignment Research Students), Cambridge AI Safety Hub
   kind: programme
   note: Named in a footnote on p. 1 of Moreno Cencerrado et al. (2026), v3.
+# Added with G. and Lindsey 2026 (arXiv 2605.25459)
+- id: ias-princeton
+  name: Institute for Advanced Study, Princeton
+  kind: university
+  note: Printed "Institute for Advanced Study, Princeton". An independent research institute; kind university is the nearest value (an academic institute).
+- id: 01-ai
+  name: 01.AI
+  kind: company
+  note: Developer of Yi, by the Hugging Face namespace 01-ai/ in the code of G. and Lindsey 2026. Kind not taken from a source.

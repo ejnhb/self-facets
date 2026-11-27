@@ -786,7 +786,7 @@
   size: 27B
   derived_from: gemma-2-27b-base
   stage: null
-  note: Hugging Face google/gemma-2-27b-it (Lu et al. 2026 code, assistant_axis/models.py).
+  note: Hugging Face google/gemma-2-27b-it (Lu et al. 2026 code, assistant_axis/models.py; also G. and Lindsey 2026, scripts/sec2_cross_model_5way.py).
 - id: claude-sonnet-4.5
   name: Claude Sonnet 4.5
   family: claude-4.5
@@ -937,3 +937,74 @@
   derived_from: null
   stage: null
   note: An embedding model, not a generative one; 3,072-dimensional embeddings (Moreno Cencerrado et al. 2026, §4.2).
+# Added with G. and Lindsey 2026 (arXiv 2605.25459). Hugging Face ids from the MODELS tables of their code
+# (github.com/asving/Learning-to-be-an-agent at 8d53eec), where the code has them. gemma-2-27b-it was already
+# registered (Lu et al. 2026).
+- id: deepseek-llm-67b-chat
+  name: DeepSeek LLM 67B Chat
+  family: deepseek-llm
+  developer: deepseek
+  open_weights: true
+  post_training_reached: post_trained
+  size: 67B
+  derived_from: null
+  stage: null
+  note: Hugging Face deepseek-ai/deepseek-llm-67b-chat (scripts/sec2_cross_model_5way.py). The paper writes DeepSeek-67B-Chat.
+- id: yi-1.5-34b-chat
+  name: Yi 1.5 34B Chat
+  family: yi-1.5
+  developer: 01-ai
+  open_weights: true
+  post_training_reached: post_trained
+  size: 34B
+  derived_from: null
+  stage: null
+  note: Hugging Face 01-ai/Yi-1.5-34B-Chat (scripts/sec2_cross_model_5way.py).
+- id: qwen2.5-32b-instruct
+  name: Qwen2.5 32B Instruct
+  family: qwen2.5
+  developer: qwen-team
+  open_weights: true
+  post_training_reached: post_trained
+  size: 32B
+  derived_from: null
+  stage: null
+  note: Named Qwen-2.5-32B-Instruct in G. and Lindsey 2026 §2.2; not in the released code, so the Hugging Face id (presumably Qwen/Qwen2.5-32B-Instruct) is inferred from the name.
+- id: qwen2.5-3b-instruct
+  name: Qwen2.5 3B Instruct
+  family: qwen2.5
+  developer: qwen-team
+  open_weights: true
+  post_training_reached: post_trained
+  size: 3B
+  derived_from: null
+  stage: null
+  note: Named Qwen-2.5-3B-Instruct in G. and Lindsey 2026 §2.4, as the source of swapped-in assistant turns; Hugging Face id inferred from the name.
+- id: olmo-3-7b-instruct
+  name: OLMo 3 7B Instruct
+  family: olmo-3
+  developer: allen-ai
+  open_weights: true
+  post_training_reached: post_trained
+  size: 7B
+  derived_from: null
+  stage: null
+  note: >
+    Named OLMo-3-7B-Instruct in G. and Lindsey 2026 §2.2 (the ~8B size class). Their released code has no script
+    for that figure; the scripts that use a 7B OLMo name allenai/OLMo-2-1124-7B-Instruct, so which model was run
+    is not settled. Registered as the paper names it.
+- id: olmo-3-32b-post-training-stages
+  name: OLMo 3 32B post-training checkpoints (series)
+  family: olmo-3
+  developer: allen-ai
+  open_weights: true
+  post_training_reached: rl
+  size: 32B
+  derived_from: null
+  stage: null
+  note: >
+    A series, not one checkpoint: the base, SFT, SFT+DPO and SFT+DPO+RLVR checkpoints of OLMo 3 32B used by G. and
+    Lindsey 2026 §2.2. The paper does not give Hugging Face ids, whether the Instruct or Think line was used, or
+    whether it is OLMo 3 or 3.1, and the released code has no script for that figure, so the entries already
+    registered for Olmo 3.1 32B Instruct and Olmo-3-1125-32B are not used. post_training_reached is that of the
+    last checkpoint.

@@ -23,16 +23,9 @@ not re-read in their sources.
 
 ## Implementing the 2026-11-28 review
 
-Codebook 0.11 (values, mechanics, rules) is in. Still to come, each in its own pull request:
+Codebook 0.11 (values, mechanics, rules) and the build changes are in. Still to come, each in its own pull
+request:
 
-- **Build:** a claim with `compares` counts for frames on either study and is marked as a direct comparison; frames
-  on a value include its narrower (`broader:`) values, shown in the view and excludable; a warning when a question
-  frames on a bare construct value with several definitions; relative depth for `layer` from layer counts in the
-  model registry; `better` used by automatic stances; facets added after a record's last pass read as
-  `not_yet_coded`, with a list of records awaiting backfill; conflicts within the question as posed by default
-  (the rollup on request), ranked by how alike the two sides are; a CI job summary of what a pull request changes
-  against main, per question it touches (new conflicts and candidates, the facets that differ, and what depends on
-  a changed question or value).
 - **Questions and links:** an optional `measure:` on questions ("how well" by which measure); a designed-or-post-hoc
   mark on links (`unspecified` allowed); automatic stances with each yes/no question saying which effect counts as
   support, and the automatic share of links tracked; `q-introspection-changes-in-training` as the parent of
@@ -42,7 +35,9 @@ Codebook 0.11 (values, mechanics, rules) is in. Still to come, each in its own p
   (`q-injected-state-decodable` and the `q-correctness-*` questions); the four loose links below dropped.
 - **Registries:** an instruments registry (lenses, released SAEs, named steering vectors and probes), for
   instruments that are named and released or used by more than one record; a `model_organism` model role;
-  layer counts on models a `layer` study uses.
+  `layers` on models a `layer` study uses (the build's `study_layer_depths` needs them).
+- **Automatic stances:** each yes/no question with `auto_stance` to say which effect counts as support
+  (`supports:`), and `better` on the claims those questions read.
 - **Recheck after 0.11** (studies coded with a nearest value or `unspecified` under the freeze):
   - `varies`: Ji-An/Li (PR #16), Lu s1 and s8, Moreno Cencerrado s1 (`layer`; c2 and c18 then take `effect_of`);
     Fornasiere s11 (`in_context_examples`); Comsa s2 and Goel s4 (`sampling_setting`); Moreno Cencerrado s1
@@ -52,7 +47,7 @@ Codebook 0.11 (values, mechanics, rules) is in. Still to come, each in its own p
     `report_source` codings, for implicit routes and routes ruled out.
   - `construct`: Kim s2, s6 (`mind_attribution`), s3, s4 (`beliefs_values`), s5, s7 (`general_capability`); Lu s1,
     s2, s5 (`persona_representation`); Hao s1 to s4 (`self_conception`); Goel s5 (`planning`).
-  - Units: Comsa s3 (`response`), and every `conversation` coding, which now starts at the next turn.
+  - Units: Comsa s3 (`response`). The one `conversation` coding, Lindsey s6, is across turns and stays.
   - `evidence`: Hao s1, s3, s4 (`self_regarding_behaviour`). `elicitation`: Goel s1 to s4 (`teacher_forced`).
     `validated_against`: Comsa s1 (`known_properties`). `comparison`: Binder's cross-prediction studies
     (`study_trained_control`).
@@ -135,6 +130,8 @@ Codebook 0.11 (values, mechanics, rules) is in. Still to come, each in its own p
 
 ## Build
 
+- **Construct frames:** nine questions frame on the bare `introspection` label, which has two definitions
+  (`question_warnings`); frame each on the definition meant, or say why the label is enough.
 - **Model scope:** the conflicts view does not show which models each side is scoped to, so two claims in one
   study that differ only by model show no difference. *(log)*
 - **Candidate lists** are long where a frame is one broad value. Frames need tightening, or a rule that a frame
@@ -147,7 +144,8 @@ Codebook 0.11 (values, mechanics, rules) is in. Still to come, each in its own p
   definition or reading uses it. One that fails all three after twenty or thirty papers is a candidate to merge or
   drop.
 - **Scale:** records are about 60 KB per paper. `conflict_facet_diff` grows roughly quadratically in claims per
-  question; around fifty papers, compute it per question on demand. At scale, take an outside model list rather
+  question (it now pairs claims within a question as posed; the rollup is a separate view); around fifty papers,
+  compute it per question on demand. At scale, take an outside model list rather
   than keeping our own registry. Merge pull requests a few at a time: the registries are single files, so
   parallel additions conflict.
 - **Sparsity:** whether similar designs coded by different coders land on shared questions and comparable facet

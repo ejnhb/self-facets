@@ -155,9 +155,22 @@ A question shaped "does X change Y?" can take stances without links:
 ```
 
 Every claim in a frame-matching study whose `effect_of` names one of these
-variables takes the stance its `effect_presence` gives (present supports,
-absent against, mixed and inconclusive as such). A hand-made link for the same
-claim and question wins. These rows carry `origin: auto` in `claim_questions`.
+variables takes a stance. By default (`supports: present`) it is the one its
+`effect_presence` gives (present supports, absent against, mixed and
+inconclusive as such). A question can say instead which effect counts as
+support: `increases` or `decreases` (a present effect in the other direction is
+against), or `improves` or `worsens`, which read `effect_direction` with the
+claim's `better` (a claim without `better` takes no automatic stance and stays
+a candidate). A hand-made link for the same claim and question wins. These rows
+carry `origin: auto` in `claim_questions`, and `link_origins` gives each
+question's share of automatic links.
+
+A claim that `compares` two studies of its paper fits a frame through either
+study (`via` in `question_candidates` names the other). A frame on a value
+also takes in its narrower values (`broader:` in the codebook), listed in
+`question_frame_expansions`; `exact_values: true` on a question turns that off.
+A frame on a construct label with several definitions is listed in
+`question_warnings`.
 
 ## Models in a study
 

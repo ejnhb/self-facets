@@ -1,5 +1,15 @@
 # Codebook changelog
 
+## 0.11.1 (2026-11-28; build and question fields, facets unchanged)
+
+- **Questions:** `auto_stance.supports` says which effect counts as support (`present`, `increases`, `decreases`,
+  `improves`, `worsens`); `exact_values: true` stops a frame taking in narrower values.
+- **Models:** `layers`, for relative depth.
+- **Build:** `conflicts` pairs claims within a question as posed (the tree-wide pairs are `conflicts_rollup`);
+  claims that `compare` two studies fit frames through either (`via`); frames take in narrower values
+  (`question_frame_expansions`); `question_warnings`, `backfill`, `study_layer_depths`, `question_evidence` (with
+  task levels) and `link_origins`. CI writes an evidence summary for each pull request (`scripts/pr_summary.py`).
+
 ## 0.11 (2026-11-28; the owner's review after the freeze)
 
 The changes the step-1 papers asked for, decided item by item with the owner. The freeze is lifted. Studies coded

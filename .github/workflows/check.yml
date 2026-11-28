@@ -10,9 +10,23 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0              # the base branch too, for the summary below
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
       - run: pip install -r requirements.txt
       - run: python scripts/validate.py
       - run: python scripts/build.py
+      # On a pull request: build the base branch too and write what the change does to the evidence (links,
+      # candidates, conflicts within each question it touches; what depends on edited questions and values) to the
+      # job summary. Informational: it never fails the check.
+      - name: Evidence summary
+        if: github.event_name == 'pull_request'
+        continue-on-error: true
+        run: |
+          git worktree add /tmp/base "origin/${{ github.base_ref }}"
+          (cd /tmp/base && python scripts/build.py /tmp/base.sqlite) || echo "The base branch did not build."
+          if [ -f /tmp/base.sqlite ]; then
+            python scripts/pr_summary.py /tmp/base.sqlite build/self-facets.sqlite /tmp/base . >> "$GITHUB_STEP_SUMMARY"
+          fi

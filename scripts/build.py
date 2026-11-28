@@ -24,7 +24,10 @@ from _load import (
     evaluate,
     load_list_dir,
     load_sources,
+    logic_atoms,
     model_ref,
+    narrower_map,
+    postdates,
     relation,
 )
 from validate import validate
@@ -38,7 +41,7 @@ CREATE TABLE dataset_components (dataset TEXT, component TEXT);
 CREATE TABLE models (
     id TEXT PRIMARY KEY, name TEXT, family TEXT, developer TEXT, size TEXT,
     open_weights INTEGER, derived_from TEXT, stage_coded INTEGER,
-    disclosure TEXT, documented_in TEXT, note TEXT
+    disclosure TEXT, documented_in TEXT, note TEXT, layers INTEGER
 );
 CREATE TABLE model_stage_methods (model TEXT, method TEXT);
 CREATE TABLE model_stage_datasets (model TEXT, dataset TEXT);
@@ -75,7 +78,18 @@ CREATE TABLE study_closest_comparison (study TEXT PRIMARY KEY, relation TEXT);
 -- Claims not yet linked to a question that fit its frame and meet its (and its ancestors') requires. missing_needs
 -- lists the interpretive facets the question's tree needs that the claim's study has not coded: candidates worth
 -- re-reading for them, for example when a question has few hits.
-CREATE TABLE question_candidates (question TEXT, claim TEXT, missing_needs TEXT);
+-- via: the other study of the claim's paper through which it fits the frame (the claim compares the two), or null.
+CREATE TABLE question_candidates (question TEXT, claim TEXT, missing_needs TEXT, via TEXT);
+-- A frame value that takes in narrower values (codebook broader:), shown so the poser sees what the frame reaches.
+CREATE TABLE question_frame_expansions (question TEXT, facet TEXT, value TEXT, includes TEXT);
+-- Things a question poser should look at: a frame on a construct label with several definitions, and the like.
+CREATE TABLE question_warnings (question TEXT, kind TEXT, detail TEXT);
+-- Facets added after a record's last pass (codebook since:), read as not_yet_coded until backfilled.
+CREATE TABLE backfill (facet TEXT, since TEXT, source TEXT, study TEXT);
+-- Layers a study varies, per subject model, on a common scale: fraction of depth. From layer_scale fraction as given,
+-- or from layer_scale index over the model's registered layer count (layer / layers; indexing conventions differ,
+-- so treat it as approximate).
+CREATE TABLE study_layer_depths (study TEXT, model TEXT, level TEXT, layer_scale TEXT, fraction REAL);
 CREATE TABLE study_facets (
     study TEXT, facet TEXT, value TEXT, basis TEXT, author_term TEXT,
     confidence TEXT, nested_in TEXT, where_ TEXT, note TEXT
@@ -87,7 +101,8 @@ CREATE TABLE claims (
 );
 -- Links (links/): every yes/no question a claim takes a stance on. `counted` is 0 when the claim fails a
 -- `requires` of the question or a question above it, so it is not evidence there even with no reading applied.
-CREATE TABLE claim_questions (claim TEXT, question TEXT, stance TEXT, counted INTEGER, note TEXT, origin TEXT);
+-- via: as in question_candidates, for links that rest on a compared study's facets (automatic stances only).
+CREATE TABLE claim_questions (claim TEXT, question TEXT, stance TEXT, counted INTEGER, note TEXT, origin TEXT, via TEXT);
 -- Readings (readings/) and views (views/): see design/readings.md.
 -- Definitions (definitions/): named logic over facets for what a design tests in one stated sense.
 CREATE TABLE definitions (id TEXT PRIMARY KEY, construct TEXT, statement TEXT, sources TEXT, not_expressible TEXT);
@@ -165,11 +180,23 @@ CREATE VIEW view_diff AS
 SELECT view, claim, linked_question, stance, excluded_by FROM view_evidence
 WHERE counted_without_readings != counted;
 
--- Pairs of claims that take opposite stances on the same question, or on questions in the same tree, after
--- turning each stance into one on the root (root_stances). `question` is the root.
--- `shared_facets` counts the facet values the two claims' studies have in
--- common; sort by it to see the most comparable pairs first.
+-- Pairs of counted claims that take opposite stances on the same question as posed (the default). Sort by
+-- shared_facets, the facet values the two claims' studies have in common, to see the most comparable pairs first.
 CREATE VIEW conflicts AS
+SELECT a.question, a.claim AS supports, b.claim AS against,
+       ca.scope_conditions AS supports_conditions, cb.scope_conditions AS against_conditions,
+       (SELECT COUNT(*) FROM study_facets f JOIN study_facets g
+          ON g.facet = f.facet AND g.value = f.value
+        WHERE f.study = ca.study AND g.study = cb.study AND f.value != 'not_yet_coded') AS shared_facets
+FROM claim_questions a
+JOIN claim_questions b ON b.question = a.question AND b.stance = 'against' AND b.counted = 1
+JOIN claims ca ON ca.id = a.claim
+JOIN claims cb ON cb.id = b.claim
+WHERE a.stance = 'supports' AND a.counted = 1;
+
+-- On request: the same across a question tree, after turning each stance into one on the root (root_stances).
+-- `question` is the root. This is most of the pairs; query it when a tree's overall picture is wanted.
+CREATE VIEW conflicts_rollup AS
 SELECT a.root AS question, a.claim AS supports, b.claim AS against,
        a.question AS supports_question, b.question AS against_question,
        ca.scope_conditions AS supports_conditions, cb.scope_conditions AS against_conditions,
@@ -181,6 +208,19 @@ JOIN root_stances b ON b.root = a.root AND b.stance = 'against'
 JOIN claims ca ON ca.id = a.claim
 JOIN claims cb ON cb.id = b.claim
 WHERE a.stance = 'supports';
+
+-- A question's evidence with what the poser needs beside it: the study, its task levels (if it varies task), and
+-- whether the link was made by hand or automatically.
+CREATE VIEW question_evidence AS
+SELECT cq.question, cq.claim, cq.stance, cq.counted, cq.origin, cq.via, c.study, st.label AS study_label,
+       (SELECT group_concat(level, '; ') FROM study_facet_levels l
+        WHERE l.study = c.study AND l.facet = 'varies' AND l.value = 'task') AS tasks
+FROM claim_questions cq JOIN claims c ON c.id = cq.claim JOIN studies st ON st.id = c.study;
+
+-- Links per question by origin: the automatic share is the gauge of how much linking costs by hand.
+CREATE VIEW link_origins AS
+SELECT question, SUM(origin = 'link') AS by_hand, SUM(origin = 'auto') AS automatic, COUNT(*) AS total
+FROM claim_questions GROUP BY question;
 
 -- For each conflicting pair, the facet values one side has and the other lacks.
 CREATE VIEW conflict_facet_diff AS
@@ -240,12 +280,13 @@ def build(out_path):
     for _, m in load_list_dir("models"):
         stage = m.get("stage") or {}
         db.execute(
-            "INSERT INTO models VALUES (?,?,?,?,?,?,?,?,?,?,?)",
+            "INSERT INTO models VALUES (?,?,?,?,?,?,?,?,?,?,?,?)",
             (
                 m["id"], m.get("name"), m.get("family"), m.get("developer"), text(m.get("size")),
                 None if m.get("open_weights") is None else int(m["open_weights"]),
                 ", ".join(as_list(m.get("derived_from"))) or None, int(m.get("stage") is not None),
                 stage.get("disclosure"), text(stage.get("documented_in")), text(m.get("note")),
+                m.get("layers"),
             ),
         )
         for method in as_list(stage.get("methods")):
@@ -275,6 +316,8 @@ def build(out_path):
         db.execute("INSERT INTO question_roots VALUES (?,?,?)", (qid, root, sign))
 
     claims_mem, closest_by_study = {}, {}
+    all_study_facets, all_study_subjects = {}, {}
+    narrower = narrower_map(facets)
     registry = {m["id"]: m for _, m in load_list_dir("models")}
     for _, src in load_sources():
         sid = src["id"]
@@ -367,6 +410,30 @@ def build(out_path):
                         (stid, name, "not_applicable" if light and name not in LIGHT_REQUIRED else NOT_YET_CODED,
                          None, None, None, None, None, None),
                     )
+                elif facet["applies_to"] == "study" and name not in (study.get("facets") or {}) and postdates(facet, src):
+                    # A core facet added after this record's last pass: not_yet_coded until backfilled.
+                    db.execute("INSERT INTO study_facets VALUES (?,?,?,?,?,?,?,?,?)",
+                               (stid, name, NOT_YET_CODED, None, None, None, None, None, None))
+                    db.execute("INSERT INTO backfill VALUES (?,?,?,?)", (name, text(facet.get("since")), sid, stid))
+            all_study_facets[stid] = study.get("facets") or {}
+            all_study_subjects[stid] = subjects
+            varies = facet_entry((study.get("facets") or {}).get("varies"))
+            if "layer" in varies["value"]:
+                scale = varies.get("layer_scale")
+                for level in as_list((varies.get("levels") or {}).get("layer")):
+                    num = None
+                    for tok in str(level).replace("%", " % ").replace(",", " ").split():
+                        try:
+                            num = float(tok.lstrip("Ll")); break
+                        except ValueError:
+                            continue
+                    for mid in subjects or [None]:
+                        frac = None
+                        if num is not None and scale == "fraction":
+                            frac = num / 100 if num > 1 else num
+                        elif num is not None and scale == "index" and mid and registry.get(mid, {}).get("layers"):
+                            frac = num / registry[mid]["layers"]
+                        db.execute("INSERT INTO study_layer_depths VALUES (?,?,?,?,?)", (stid, mid, str(level), scale, frac))
 
         for claim in as_list(src.get("claims")):
             cid = claim["id"]
@@ -406,8 +473,11 @@ def build(out_path):
     model_reach = {m["id"]: m.get("post_training_reached") for _, m in load_list_dir("models")}
     readings = {r["id"]: r for _, r in load_list_dir("readings")}
 
-    def record_values(cid):
+    def record_values(cid, study=None):
+        """The claim's facet values: its study's (or, for a claim that compares, another study's) and its own."""
         claim, sfacets, _ = claims_mem[cid]
+        if study and study != claim["study"]:
+            sfacets = all_study_facets.get(study, {})
         out = {}
         for name, facet in facets.items():
             if facet["applies_to"] == "study":
@@ -423,18 +493,28 @@ def build(out_path):
 
     definitions = {d["id"]: d for _, d in load_list_dir("definitions")}
 
-    def matcher(values, study_id, models):
+    def widen(key, allowed):
+        """The allowed values and every narrower value (codebook broader:) of each."""
+        out = set(allowed)
+        for a in allowed:
+            out |= narrower.get(key, {}).get(a, set())
+        return out
+
+    def matcher(values, study_id, models, exact=False):
         def match(key, allowed):
             if key == "comparison.closest":
                 return closest_by_study.get(study_id) in allowed
             if key.startswith("model."):
                 return bool(models) and all(model_reach.get(m) in allowed for m in models)
-            return bool(values.get(key, set()) & allowed)
+            return bool(values.get(key, set()) & (allowed if exact else widen(key, allowed)))
         return match
 
-    def holds(expr, cid, values, substitute=None):
+    def holds(expr, cid, values, substitute=None, study=None, exact=False):
         claim, _, models = claims_mem[cid]
-        return evaluate(expr, matcher(values, claim["study"], models), definitions, substitute)
+        st = study or claim["study"]
+        if study and study != claim["study"]:
+            models = all_study_subjects.get(study, [])
+        return evaluate(expr, matcher(values, st, models, exact), definitions, substitute)
 
     def matches(reading, cid):
         applies = reading.get("applies_to") or {}
@@ -491,8 +571,19 @@ def build(out_path):
                 db.execute("INSERT INTO reading_matches VALUES (?,?)", (rid, cid))
 
     def in_frame(cid, qid):
+        """False, or (True, via): via is None when the claim's own study fits the frame, else the compared study that
+        does. A claim that compares two studies of its paper counts for frames on either."""
         frame = qs[qid].get("frame")
-        return bool(frame) and holds(frame, cid, record_values(cid))
+        if not frame:
+            return False
+        exact = bool(qs[qid].get("exact_values"))
+        claim = claims_mem[cid][0]
+        if holds(frame, cid, record_values(cid), exact=exact):
+            return (True, None)
+        for other in as_list(claim.get("compares")):
+            if holds(frame, cid, record_values(cid, other), study=other, exact=exact):
+                return (True, other)
+        return False
 
     for did, d in definitions.items():
         db.execute("INSERT INTO definitions VALUES (?,?,?,?,?)",
@@ -526,16 +617,41 @@ def build(out_path):
     # studies whose effect_of names X. A hand-made link for the same pair wins.
     linked_pairs = {(l["claim"], l["question"]) for l in links}
     to_stance = {"present": "supports", "absent": "against", "mixed": "mixed", "inconclusive": "inconclusive"}
+
+    def auto_stance_of(claim, mode):
+        """The stance an effect takes on a question whose auto_stance says which effect counts as support:
+        present (any effect), increases or decreases (that direction), improves or worsens (direction turned into an
+        advantage with the claim's better). None when the claim lacks what the mode needs."""
+        pres = claim.get("effect_presence")
+        if mode == "present" or pres != "present":
+            return to_stance.get(pres)
+        d = claim.get("effect_direction")
+        if d is None:
+            return None
+        if d == "non_monotonic":
+            return "mixed"
+        if mode in ("improves", "worsens"):
+            if claim.get("better") not in ("higher", "lower"):
+                return None
+            better_now = (d == "increases") == (claim["better"] == "higher")
+            good = better_now if mode == "improves" else not better_now
+        else:
+            good = d == mode
+        return "supports" if good else "against"
+
     for qid, q in qs.items():
         auto = q.get("auto_stance")
         if not auto:
             continue
+        mode = auto.get("supports", "present")
         for cid, (claim, _, _) in claims_mem.items():
             if (cid, qid) in linked_pairs or not (set(as_list(claim.get("effect_of"))) & set(as_list(auto.get("effect_of")))):
                 continue
-            if claim.get("effect_presence") and in_frame(cid, qid):
-                links.append({"claim": cid, "question": qid, "stance": to_stance[claim["effect_presence"]],
-                              "note": "from effect_presence (auto_stance)", "origin": "auto"})
+            fit = in_frame(cid, qid) if claim.get("effect_presence") else False
+            stance = auto_stance_of(claim, mode) if fit else None
+            if stance:
+                links.append({"claim": cid, "question": qid, "stance": stance, "via": fit[1],
+                              "note": f"from the claim's effect (auto_stance, supports: {mode})", "origin": "auto"})
     for link in links:
         cid, qid = link["claim"], link["question"]
         q = qs[qid]
@@ -545,16 +661,35 @@ def build(out_path):
                 db.execute("INSERT INTO claim_answers VALUES (?,?,?)", (cid, qid, value))
         else:
             ok, _ = counts(cid, qid, [])
-            db.execute("INSERT INTO claim_questions VALUES (?,?,?,?,?,?)",
-                       (cid, qid, link.get("stance"), int(ok), text(link.get("note")), link["origin"]))
+            db.execute("INSERT INTO claim_questions VALUES (?,?,?,?,?,?,?)",
+                       (cid, qid, link.get("stance"), int(ok), text(link.get("note")), link["origin"], link.get("via")))
     tied = {(l["claim"], l["question"]) for l in links}
     for qid in qs:
         tree_needs = sorted({n for anc in chain(qid) for n in as_list(qs[anc].get("needs"))})
         for cid in claims_mem:
-            if (cid, qid) not in tied and in_frame(cid, qid) and counts(cid, qid, [])[0]:
-                vals = record_values(cid)
+            if (cid, qid) in tied:
+                continue
+            fit = in_frame(cid, qid)
+            if fit and counts(cid, qid, [])[0]:
+                vals = record_values(cid, fit[1])
                 missing = [n for n in tree_needs if vals.get(n, set()) <= {NOT_YET_CODED}]
-                db.execute("INSERT INTO question_candidates VALUES (?,?,?)", (qid, cid, ", ".join(missing) or None))
+                db.execute("INSERT INTO question_candidates VALUES (?,?,?,?)", (qid, cid, ", ".join(missing) or None, fit[1]))
+
+    # What each frame reaches through narrower values, and frames on a construct label with several definitions.
+    for qid, q in qs.items():
+        atoms, _ = logic_atoms(q.get("frame"))
+        for key, vals in atoms:
+            if not q.get("exact_values"):
+                for v in vals:
+                    extra = sorted(narrower.get(key, {}).get(v, set()) - {v})
+                    if extra:
+                        db.execute("INSERT INTO question_frame_expansions VALUES (?,?,?,?)", (qid, key, v, ", ".join(extra)))
+            if key == "construct":
+                for v in vals:
+                    if len(by_construct.get(v, [])) > 1:
+                        db.execute("INSERT INTO question_warnings VALUES (?,?,?)", (qid, "construct_several_definitions",
+                                   f"frames on construct '{v}', which has definitions {', '.join(by_construct[v])}: "
+                                   "frame on the definition meant, or say why the label is enough"))
 
     for _, v in load_list_dir("views"):
         vid, vq, rids = v["id"], v["question"], as_list(v.get("readings"))

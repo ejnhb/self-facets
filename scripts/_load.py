@@ -194,6 +194,32 @@ def evaluate(expr, match, definitions, substitute=None, _seen=()):
     return True
 
 
+def narrower_map(facets):
+    """facet -> value -> that value and every value that declares it (transitively) as broader."""
+    out = {}
+    for name, facet in facets.items():
+        vals = facet.get("values") or {}
+        children = {}
+        for v, body in vals.items():
+            b = body.get("broader") if isinstance(body, dict) else None
+            if b:
+                children.setdefault(b, set()).add(v)
+        if not children:
+            continue
+        m = {}
+        for v in vals:
+            seen, stack = {v}, [v]
+            while stack:
+                for c in children.get(stack.pop(), ()):
+                    if c not in seen:
+                        seen.add(c); stack.append(c)
+            if len(seen) > 1:
+                m[v] = seen
+        if m:
+            out[name] = m
+    return out
+
+
 def logic_atoms(expr):
     """Every (key, values) test and every definition id an expression uses, for validation."""
     atoms, defs = [], []

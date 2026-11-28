@@ -179,6 +179,11 @@ def validate():
                     rep.err(f"question {qid}", f"auto_stance effect_of '{var}' is not a varies value")
             if not q.get("frame"):
                 rep.err(f"question {qid}", "auto_stance needs a frame, to say which studies' effects count")
+            mode = (auto or {}).get("supports", "present")
+            if mode not in ("present", "increases", "decreases", "improves", "worsens"):
+                rep.err(f"question {qid}", f"auto_stance supports '{mode}' must be present, increases, decreases, improves or worsens")
+        if "exact_values" in q and not isinstance(q["exact_values"], bool):
+            rep.err(f"question {qid}", "exact_values is true or false (true: the frame does not take in narrower values)")
         check_logic(q.get("frame"), f"question {qid} frame")
         requires = q.get("requires") or {}
         if not isinstance(requires, dict):
@@ -220,6 +225,8 @@ def validate():
             if parent not in models:
                 rep.err(where, f"derived_from '{parent}' is not a model")
         check_enum(rep, where, "post_training_reached", model.get("post_training_reached"), enums, "post_training_reached", required=False)
+        if model.get("layers") is not None and not (isinstance(model["layers"], int) and model["layers"] > 0):
+            rep.err(where, "layers is the model's number of layers, a positive whole number")
         if model.get("variant_of") is not None and model.get("variant_of") not in models:
             rep.err(where, f"variant_of '{model.get('variant_of')}' is not a model")
         stage = model.get("stage")

@@ -83,12 +83,17 @@ JOIN study_facets f ON f.study = c.study
 WHERE f.facet = 'construct' AND f.value = 'introspection';
 ```
 
-See where conflicting claims differ:
+See where conflicting claims differ, within each question as posed (`conflicts_rollup` has the same across a
+question tree):
 
 ```sql
 SELECT * FROM conflicts ORDER BY shared_facets DESC;
 SELECT * FROM conflict_facet_diff;
 ```
+
+On a pull request, CI builds the base branch too and writes to the job summary what the change does to each
+question it touches: links, candidates and conflicts added or gone, and what depends on any question or codebook
+value it edits (`scripts/pr_summary.py`).
 
 Plain text search over `sources/` works too, with no build.
 

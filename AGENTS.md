@@ -29,7 +29,9 @@ facets are coded.
    template in `templates/links.yaml`). Linking is the question poser's
    judgement, so a coder adding a paper may stop at the claims. When linking,
    reuse a question where one fits; otherwise add a narrower one under the
-   closest, with its `polarity`.
+   closest, with its `polarity`. Say whether the study was built to test the
+   question (`designed: true`), bears on it post hoc (`false`), or the paper
+   does not say (`unspecified`).
 6. **Code the interpretive facets** that the linked questions `need` or
    `require`, and any the source takes a position on. Leave the rest out.
 7. **Register** only the people, orgs, models and datasets the record uses.
@@ -127,8 +129,9 @@ facets are coded.
   each with its own evidence kind.
 - **Say what each model is for.** A bare id in a study is a subject. A model
   used as a baseline is `comparison`, a grader is `judge`, a model that
-  supplies training data or samples is `data_source` (long form `{id, roles,
-  note}`). For seed or same-recipe variants, set `variant_of` in the registry,
+  supplies training data or samples is `data_source`, and a model the study
+  trained to have a property so it can be studied is `model_organism` (long
+  form `{id, roles, note}`). For seed or same-recipe variants, set `variant_of` in the registry,
   so the build can tell how closely compared models are related.
 - **Registries stay small.** Add a model, dataset, person or org only when a
   record needs it, and only to the depth needed. Leave `stage: null` on a model
@@ -141,6 +144,11 @@ facets are coded.
   - Do not register a model the source does not name. Say so in the study note.
   - The datasets registry is for training data. Evaluation datasets go in the
     study's `design` text.
+  - Instruments (probes, lenses, SAEs, steering vectors) go in `instruments/`
+    only when named and released, or used by more than one record; a study
+    lists them in `instruments`. A probe trained inside one study stays in its
+    `design` text. A model whose study varies `layer` needs `layers` in the
+    registry, so the build can compare depths.
 - **Say whether code and data are available.** Every record lists one
   artefact of kind `code` and one of kind `data`, each with a `status`:
   `released` (with `url`, the commit or revision read in `ref`, and `read`:

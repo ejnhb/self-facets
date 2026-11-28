@@ -31,25 +31,10 @@ links:
   question: q-correctness-direction-transfers-to-reasoning
   stance: against
   note: TriviaQA direction on GSM8K, AUROC 0.50 to 0.60 at any training size.
-- claim: morenocencerrado2026-no-answer-needed.c6
-  question: q-privileged-self-access
-  stance: inconclusive
-  note: >
-    The activations predict the model's correctness out of distribution better than classifiers on the question's
-    embedding (trained on the same model's correctness labels, so an outside observer of its behaviour), though not
-    in distribution. This bears on whether the internals hold information about the model beyond what the question
-    text and its record of answers give, but a probe is the experimenters' access, not the model's. Frame mismatch: the question frames on construct introspection; this study codes metacognition.
 - claim: morenocencerrado2026-no-answer-needed.c14
   question: q-stated-confidence-matches-probe
   stance: against
   note: The probe beats stated confidence in 33 of 36 model-dataset cells; the exceptions are three Llama cells.
-- claim: morenocencerrado2026-no-answer-needed.c13
-  question: q-report-matches-direct-measure
-  stance: mixed
-  note: >
-    Stated confidence against the model's own correctness: near chance for most models, up to 0.91 for Llama 3.3
-    70B on Math operations. Frame mismatch: the question frames on construct introspection; this study codes
-    metacognition.
 - claim: morenocencerrado2026-no-answer-needed.c16
   question: q-what-self-reports-draw-on
   note: >

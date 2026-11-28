@@ -1,0 +1,4 @@
+# Instruments: probes, lenses, sparse autoencoders and steering vectors that results rest on (codebook 0.11).
+# Register one only when it is named and released, or used by more than one record; a probe trained inside one study
+# stays in that study's design text. Studies point here with instruments: [id]. Template: templates/instrument.yaml.
+[]

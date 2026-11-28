@@ -23,19 +23,9 @@ not re-read in their sources.
 
 ## Implementing the 2026-11-28 review
 
-Codebook 0.11 (values, mechanics, rules) and the build changes are in. Still to come, each in its own pull
-request:
+Codebook 0.11, the build changes, and the question, link and registry changes are in. What remains is the
+recoding pass:
 
-- **Questions and links:** an optional `measure:` on questions ("how well" by which measure); a designed-or-post-hoc
-  mark on links (`unspecified` allowed); automatic stances with each yes/no question saying which effect counts as
-  support, and the automatic share of links tracked; `q-introspection-changes-in-training` as the parent of
-  `q-introspection-differs-by-post-training` and a new pretraining question; an inference-time child of
-  `q-stabilisation-reduces-drift`, with the family's parent reworded to "training or intervention"; unprompted
-  drift by topic at the top level; `q-self-information-in-internals` as the parent of the probe-only questions
-  (`q-injected-state-decodable` and the `q-correctness-*` questions); the four loose links below dropped.
-- **Registries:** an instruments registry (lenses, released SAEs, named steering vectors and probes), for
-  instruments that are named and released or used by more than one record; a `model_organism` model role;
-  `layers` on models a `layer` study uses (the build's `study_layer_depths` needs them).
 - **Automatic stances:** each yes/no question with `auto_stance` to say which effect counts as support
   (`supports:`), and `better` on the claims those questions read.
 - **Recheck after 0.11** (studies coded with a nearest value or `unspecified` under the freeze):
@@ -48,6 +38,8 @@ request:
   - `construct`: Kim s2, s6 (`mind_attribution`), s3, s4 (`beliefs_values`), s5, s7 (`general_capability`); Lu s1,
     s2, s5 (`persona_representation`); Hao s1 to s4 (`self_conception`); Goel s5 (`planning`).
   - Units: Comsa s3 (`response`). The one `conversation` coding, Lindsey s6, is across turns and stays.
+  - Registries: `layers` on the models of the `layer` studies; instruments that are named and released (the
+    Assistant Axis, if its vectors are released with Lu et al.'s data), and `model_organism` roles (Betley, Hao).
   - `evidence`: Hao s1, s3, s4 (`self_regarding_behaviour`). `elicitation`: Goel s1 to s4 (`teacher_forced`).
     `validated_against`: Comsa s1 (`known_properties`). `comparison`: Binder's cross-prediction studies
     (`study_trained_control`).
@@ -67,20 +59,18 @@ request:
 
 ## Questions, links and stances
 
-- **Narrower questions for when questions are posed in earnest** (the three that leave claims with no question,
-  Fornasiere c14 and c17, Lu c19 to c22 and c28 to c30, go in with the questions pull request):
+- **Narrower questions for when questions are posed in earnest:**
   - Does training that changes the default persona shift its descriptions of other characters? (Betley s8; c32 and
     c33 are linked to `q-self-model-shared-across-personas` with the mismatch noted.)
   - Does training a model on what it is (its referent and persistence conditions), with no preferences in the
     data, change which modifications it resists? Do self-conceptions that admit copies lead it to favour
     replication or a successor? (Hao c1 to c3, c9 to c16, now linked loosely to
     `q-self-model-stabilisation-effects`.)
-- **Loose links to drop** (with the questions pull request): Moreno Cencerrado c6 and c13 (reached through
-  `compares` and the metacognition definitions instead); Goel c9, c10 on
-  `q-self-representation-changes-in-post-training` (the "self" there is the model's own text).
-- **A worked example for posers:** the first conflict between two papers on a question as posed, Fornasiere c28
-  against Lindsey c11, c14 and c20 on `q-introspection-differs-by-post-training`, turns on the measure: on a
-  sensitivity reading DPO changes nothing; on a report-rate reading it lowers it.
+- **Which measure** for `q-introspection-changes-in-training` and its children (`measure:` asks the linker to say;
+  the question does not choose one yet). Fornasiere c28 against Lindsey c11, c14 and c20 turns on it.
+- **Designed or post hoc:** the 104 links made before `designed:` existed have none; fill it when a view needs it.
+- **Lu c21 and c22** (what drives drift: the latest user message, and which kinds of message) are left unlinked to
+  `q-persona-drifts-unprompted`; they bear on why it drifts more than whether.
 - **Conflicts to look at** when the questions are posed: Kim c22 against Lu c7 on `q-self-representation-changes-in-post-training` (one
   direction against the whole persona space; perhaps a sign the question is too coarse). Goel c34 (`current_state`)
   against Comsa c10 (`context`) on `q-what-self-reports-draw-on`.

@@ -7,4 +7,6 @@ links:
   - claim: familyYEAR-short-title.c1     # (R) a claim of this source
     question: q-short-description        # (R) from questions/
     stance: supports                     # (C) codebook/stance.yaml, for a yes/no question; none for a which-question
+    designed: true                       # (O) true: the study was built to test this question; false: post hoc;
+                                         #     unspecified when the paper does not say
     note: Why the claim bears on the question, when it is not obvious.   # (O)

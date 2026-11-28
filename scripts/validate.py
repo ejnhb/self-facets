@@ -94,6 +94,7 @@ def validate():
     models = index(rep, load_list_dir("models"), "model")
     questions = index(rep, load_list_dir("questions"), "question")
     definitions = index(rep, load_list_dir("definitions"), "definition")
+    instruments = index(rep, load_list_dir("instruments"), "instrument")
 
     def check_logic(expr, where):
         atoms, defs = logic_atoms(expr)
@@ -141,6 +142,17 @@ def validate():
                 if ref in definitions and ref not in seen:
                     seen.add(ref); stack.append(ref)
 
+    for iid, ins in instruments.items():
+        where = f"instrument {iid}"
+        for key in set(ins) - {"id", "name", "kind", "models", "trained_on", "artefact", "documented_in", "note"}:
+            rep.err(where, f"unknown key '{key}'")
+        check_enum(rep, where, "kind", ins.get("kind"), enums, "instrument_kind")
+        if not ins.get("name"):
+            rep.err(where, "missing name")
+        for mid in as_list(ins.get("models")):
+            if mid not in models:
+                rep.err(where, f"model '{mid}' is not in models/")
+
     for oid, org in orgs.items():
         check_enum(rep, f"org {oid}", "kind", org.get("kind"), enums, "org_kind")
 
@@ -182,6 +194,8 @@ def validate():
             mode = (auto or {}).get("supports", "present")
             if mode not in ("present", "increases", "decreases", "improves", "worsens"):
                 rep.err(f"question {qid}", f"auto_stance supports '{mode}' must be present, increases, decreases, improves or worsens")
+        if "measure" in q and not isinstance(q["measure"], str):
+            rep.err(f"question {qid}", "measure is text: which measure 'how well' means")
         if "exact_values" in q and not isinstance(q["exact_values"], bool):
             rep.err(f"question {qid}", "exact_values is true or false (true: the frame does not take in narrower values)")
         check_logic(q.get("frame"), f"question {qid} frame")
@@ -339,6 +353,9 @@ def validate():
                 for role in roles:
                     check_enum(rep, stid, f"model '{mid}' role", role, enums, "model_role")
             study["_models"] = study_models
+            for iid in as_list(study.get("instruments")):
+                if iid not in instruments:
+                    rep.err(stid, f"instrument '{iid}' is not in instruments/")
 
             coded = study.get("facets") or {}
             for name in coded:
@@ -529,8 +546,11 @@ def validate():
             here = f"{where} link {i}"
             if not isinstance(link, dict):
                 rep.err(here, "not a mapping"); continue
-            for key in set(link) - {"claim", "question", "stance", "note"}:
+            for key in set(link) - {"claim", "question", "stance", "note", "designed"}:
                 rep.err(here, f"unknown key '{key}'")
+            if "designed" in link and link["designed"] not in (True, False, "unspecified"):
+                rep.err(here, "designed is true (the study was built to test this question), false (its result bears on it "
+                              "post hoc) or unspecified")
             cid, qid = link.get("claim"), link.get("question")
             if cid not in all_claims:
                 rep.err(here, f"claim '{cid}' is not a coded claim"); continue
@@ -549,7 +569,7 @@ def validate():
                 name = q.get("answer_facet")
                 f = facets.get(name)
                 if f is not None:
-                    values = as_list(claim.get(name)) if f["applies_to"] == "claim" else study_values(study, name)
+                    values = facet_entry(claim.get(name))["value"] if f["applies_to"] == "claim" else study_values(study, name)
                     if not values or NOT_YET_CODED in values:
                         rep.err(here, f"which-question '{qid}' is answered by '{name}', which {cid} does not code")
             elif link.get("stance") not in claim_facets["stance"]["values"]:

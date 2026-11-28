@@ -10,6 +10,8 @@ import sys
 from _load import (
     LIGHT_REQUIRED,
     LONG_FORM_KEYS,
+    PER_VALUE_KEYS,
+    postdates,
     NOT_YET_CODED,
     RELATIONS,
     SPECIAL,
@@ -76,6 +78,15 @@ def validate():
             families = facet.get("families")
             if families and isinstance(body, dict) and body.get("family") not in families:
                 rep.err(where, f"value '{value}' needs a family from {sorted(families)}")
+            broader = body.get("broader") if isinstance(body, dict) else None
+            if broader is not None and broader not in (facet.get("values") or {}):
+                rep.err(where, f"value '{value}': broader '{broader}' is not a value of this facet")
+        for value, body in (facet.get("values") or {}).items():  # broader must not loop
+            cur, hops = value, 0
+            while isinstance(facet["values"].get(cur), dict) and facet["values"][cur].get("broader") and hops < 50:
+                cur = facet["values"][cur]["broader"]; hops += 1
+                if cur == value:
+                    rep.err(where, f"value '{value}': broader loops back to itself"); break
 
     orgs = index(rep, load_list_dir("orgs"), "org")
     people = index(rep, load_list_dir("people"), "person")
@@ -274,6 +285,9 @@ def validate():
         check_enum(rep, sid, "coding.status", coding.get("status"), enums, "record_status")
         if coding.get("read_depth") == "partial" and not coding.get("read_parts"):
             rep.err(sid, "read_depth partial needs read_parts")
+        for i, nc in enumerate(as_list(coding.get("not_coded")), 1):
+            if not isinstance(nc, dict) or not nc.get("where") or not nc.get("reason"):
+                rep.err(sid, f"coding.not_coded {i}: needs where and reason")
         if coding.get("status") == "reviewed" and not coding.get("reviewed_by"):
             rep.err(sid, "status reviewed needs reviewed_by")
         passes = as_list(coding.get("passes"))
@@ -328,12 +342,14 @@ def validate():
             for name, facet in study_facets.items():
                 if name not in coded:
                     needed = name in LIGHT_REQUIRED if light else facet.get("required")
+                    if needed and postdates(facet, src):
+                        continue  # added after this record's last pass: reads as not_yet_coded until backfilled
                     if needed:
                         rep.err(stid, f"facet '{name}' is not coded (use unspecified if the source does not say)")
                     continue
                 entry = facet_entry(coded[name])
                 values = entry["value"]
-                for key in set(entry) - LONG_FORM_KEYS:
+                for key in set(entry) - LONG_FORM_KEYS - {"per_value"}:
                     rep.err(stid, f"facet '{name}': unknown key '{key}'")
                 for outer in as_list(entry.get("nested_in")):
                     if outer not in facet["values"]:
@@ -360,6 +376,26 @@ def validate():
                         rep.err(stid, f"facet '{name}': '{value}' is not in the codebook")
                 check_enum(rep, stid, f"{name}.basis", entry.get("basis"), enums, "basis", required=False)
                 check_enum(rep, stid, f"{name}.confidence", entry.get("confidence"), enums, "confidence", required=False)
+                for v, item in (entry.get("per_value") or {}).items():
+                    for key in set(item) - PER_VALUE_KEYS:
+                        rep.err(stid, f"facet '{name}': value '{v}': unknown key '{key}'")
+                    check_enum(rep, stid, f"{name}.{v}.basis", item.get("basis"), enums, "basis", required=False)
+                    check_enum(rep, stid, f"{name}.{v}.confidence", item.get("confidence"), enums, "confidence", required=False)
+                if "excluded" in entry:
+                    if facet.get("tier") != "interpretive":
+                        rep.err(stid, f"facet '{name}': excluded is for interpretive facets (routes a source rules out)")
+                    for v in as_list(entry.get("excluded")):
+                        if v not in facet["values"]:
+                            rep.err(stid, f"facet '{name}': excluded '{v}' is not in the codebook")
+                        if v in values:
+                            rep.err(stid, f"facet '{name}': '{v}' is both coded and excluded")
+                if "layer_scale" in entry:
+                    if name != "varies" or "layer" not in values:
+                        rep.err(stid, f"facet '{name}': layer_scale goes on varies with layer")
+                    elif entry["layer_scale"] not in ("index", "fraction"):
+                        rep.err(stid, "varies: layer_scale must be index or fraction")
+                elif name == "varies" and "layer" in values:
+                    rep.err(stid, "varies: layer needs layer_scale (index or fraction)")
 
         for claim in as_list(src.get("claims")):
             cid = claim.get("id")
@@ -379,8 +415,25 @@ def validate():
                 rep.err(cid, "missing where (section, page or figure)")
 
             for name, facet in claim_facets.items():
-                values = as_list(claim.get(name))
-                if facet.get("required") and not values:
+                entry = facet_entry(claim.get(name)) if name in claim else {"value": []}
+                values = entry["value"]
+                if isinstance(claim.get(name), dict):
+                    for key in set(entry) - (LONG_FORM_KEYS - {"levels", "nested_in", "layer_scale"}) - {"per_value"}:
+                        rep.err(cid, f"{name}: unknown key '{key}'")
+                    check_enum(rep, cid, f"{name}.basis", entry.get("basis"), enums, "basis", required=False)
+                for v, item in (entry.get("per_value") or {}).items():
+                    for key in set(item) - PER_VALUE_KEYS:
+                        rep.err(cid, f"{name}: value '{v}': unknown key '{key}'")
+                    check_enum(rep, cid, f"{name}.{v}.basis", item.get("basis"), enums, "basis", required=False)
+                if "excluded" in entry:
+                    if facet.get("tier") != "interpretive":
+                        rep.err(cid, f"{name}: excluded is for interpretive facets (routes a source rules out)")
+                    for v in as_list(entry.get("excluded")):
+                        if v not in facet["values"]:
+                            rep.err(cid, f"{name}: excluded '{v}' is not in the codebook")
+                        if v in values:
+                            rep.err(cid, f"{name}: '{v}' is both coded and excluded")
+                if facet.get("required") and not values and not postdates(facet, src):
                     rep.err(cid, f"missing {name}")
                 if facet["cardinality"] == "one" and len(values) > 1:
                     rep.err(cid, f"{name} takes one value")
@@ -407,6 +460,8 @@ def validate():
                 for var in as_list(claim.get("effect_of")):
                     if var not in varied:
                         rep.err(cid, f"effect_of '{var}' is not one of the study's varies values")
+            if "better" in claim and claim["better"] not in ("higher", "lower"):
+                rep.err(cid, "better must be higher or lower (which way the reported quantity is better)")
             for other in as_list(claim.get("compares")):
                 if other not in local_studies:
                     rep.err(cid, f"compares '{other}' is not a study in this source")

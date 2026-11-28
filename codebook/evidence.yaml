@@ -1,5 +1,5 @@
 facet: evidence
-version: 0.6
+version: "0.11"
 applies_to: study
 cardinality: many
 required: true
@@ -21,6 +21,9 @@ values:
   internals:
     definition: Activations, weights, attention patterns, or interventions on them.
     rule: Use when the study reads or writes internal state.
+  self_regarding_behaviour:
+    definition: "What the system does or chooses on tasks about itself: its own shutdown, modification, replacement or deployment."
+    rule: Use for stated or enacted choices about the system's own situation. Behaviour on tasks not about itself is behaviour; descriptions of itself are self_report.
 notes: >
   This facet says what was collected. validated_against says what the
   self-report was checked against.

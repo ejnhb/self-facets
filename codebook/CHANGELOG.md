@@ -1,5 +1,38 @@
 # Codebook changelog
 
+## 0.11 (2026-11-28; the owner's review after the freeze)
+
+The changes the step-1 papers asked for, decided item by item with the owner. The freeze is lifted. Studies coded
+with a nearest value under the freeze are listed in `OPEN.md` for recheck.
+
+- **`varies`:** new `layer` (with `layer_scale: index | fraction` on the entry; layer counts in the model registry let
+  the build compare depths), `midtraining`, `in_context_examples`, `sampling_setting` (was coded
+  `activation_intervention`, which pulled temperature results into intervention frames), `training_data_amount`.
+  `context` now covers what the context contains; `self_vs_other` covers a copy of itself against an unrelated
+  system, and is ordered other, then self. Contrasts between studies of one paper are `compares`; between papers,
+  relations, readings or the question layer. A variable varied only to show generality is not coded.
+- **`report_target`:** new `other_behaviour`, `inference_setting`.
+- **`report_source`:** new `training_generalisation` (narrower than `self_model`), `human_mimicry`. A long form may
+  list routes the source rules out under `excluded`.
+- **`construct`:** the authors' label, with senses left to definitions. New `mind_attribution`, `beliefs_values`,
+  `general_capability`, `persona_representation`, `self_conception`, `planning`.
+- **`units`:** new `response` (several forward passes within one turn); `conversation` now starts at the next turn.
+  The individuation literature's terms are noted beside each unit (Beckmann and Butlin 2026). Dispositions are
+  behavioural: a representation with no behaviour takes `unit_disposition: not_applicable` and
+  `aspect: represented`.
+- **`evidence`:** new `self_regarding_behaviour`. **`elicitation`:** new `teacher_forced`. **`validated_against`:**
+  new `known_properties`. **`comparison`:** new `study_trained_control`.
+- **`output_route_control`:** earlier output includes earlier turns, so a follow-up about an answer still in context
+  is `none`.
+- **Mechanics:** a value may declare `broader:` another value of its facet, and frames on the broader one include
+  it; a new facet declares `since:`, and records whose passes predate it read as `not_yet_coded` (validation passes
+  them; the build lists them for backfill); interpretive facets take a per-value long form
+  (`[{value, basis, where}]`), on claims as on studies; claims take `better: higher | lower`; `coding.not_coded`
+  lists results left out as outside the scope.
+- **Rules (AGENTS.md):** with no fitting value, `unspecified` for facets a question frames on, the nearest value
+  otherwise, and a proposal in `OPEN.md`; the task-only conflict rule is the question poser's call; a worked example
+  of the study split; never infer `model_size`; a section on scope.
+
 ## 0.10.2 (2026-11-27; bookkeeping only, facets unchanged and frozen at 0.10)
 
 - **`read_depth: full_text`** now needs every figure a claim takes a result or value from to have been viewed, not every figure in the

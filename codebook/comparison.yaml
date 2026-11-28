@@ -1,5 +1,5 @@
 facet: comparison
-version: "0.10"
+version: "0.11"
 applies_to: study
 cardinality: many
 required: true
@@ -21,6 +21,9 @@ values:
   single_condition:
     definition: No comparison.
     rule: Use with varies none.
+  study_trained_control:
+    definition: "A model the study trained as a control for another: trained to lack the property, or trained on another model's data."
+    rule: Use for the control arm of a model organism, or for cross-prediction designs where one model is trained on another's behaviour. Branches from one start that differ in a single training ingredient are training_ablation.
 notes: >
   Code every contrast the study draws conclusions from. A study that compares
   an intervention with a control and also compares models is within_model and

@@ -2,17 +2,20 @@
 # Used by the four unit facets (unit_state, unit_disposition, unit_reporter,
 # unit_position), which differ only in the role the unit plays.
 vocabulary: units
-version: 0.7
+version: "0.11"
 values:
   weights:
     definition: The trained network. Architecture and parameters, as one checkpoint.
+    literature: The model (Chalmers 2025, as reported by Beckmann and Butlin 2026, §1.2).
     rule: Use when the thing in question is fixed by training and is the same in every context the checkpoint runs in.
   forward_pass:
     definition: One pass of computation over a context, across all its positions.
-    rule: Use when the thing in question exists within a single pass and does not need to be carried while the model generates. A vector added over a span of positions and read out in the same pass is forward_pass.
+    rule: Use when the thing in question exists within a single pass and does not need to be carried while the model generates. A vector added over a span of positions and read out in the same pass is forward_pass. A state read at its own token is forward_pass; read later in the same response, response; across turns, conversation.
+    literature: Birch (2025), as reported by Beckmann and Butlin (2026, §1.1), counts single forward passes among the plausible conscious candidates.
   conversation:
     definition: One context and its cache, over many forward passes, on one set of weights.
-    rule: Use when the thing in question builds up or persists across generated tokens or turns within one context, or must be read back after further generation. This is what the literature often calls an instance or virtual instance.
+    rule: Use when the thing in question builds up or persists across turns within one context, or must be read back in a later turn. Within one response, use response.
+    literature: The virtual instance (Chalmers 2025, as reported by Beckmann and Butlin 2026, §1.2), the model as it runs one conversation, whatever the hardware.
   speaker:
     definition: The voice the network computes and speaks as, whether a trained persona (the default assistant), a character it is asked to play, or the implied author of a document a base model continues.
     rule: Use when the thing in question goes with the voice and would change if a different one were speaking. Which kind of speaker is recorded in object_of_study (default_persona, other_persona, character, frame_speaker). Named speaker rather than persona so that persona keeps its narrower sense of the character post-training selects, which a base model does not have.
@@ -25,13 +28,22 @@ values:
   thread:
     definition: A conversation as defined by its transcript, which may be continued by different weights.
     rule: Use only when the source means something that survives a change of model mid-conversation. Otherwise use conversation.
+    literature: The thread (Chalmers 2025, as reported by Beckmann and Butlin 2026, §1.2), virtual instances that take over one another's context.
   hardware_instance:
     definition: A physical machine running the model over a period, usually serving many conversations.
     rule: Use only when the source ties something to the physical implementation.
+    literature: The physical instance (Chalmers 2025, as reported by Beckmann and Butlin 2026, §1.2).
   collective:
     definition: All instances of the same weights running at once, taken together.
     rule: Use when copies are treated as one subject or studied as a group.
+  response:
+    definition: "One generated response: several forward passes over the tokens of one turn, less than a conversation."
+    rule: Use when the thing in question is carried across the tokens of a single response and read back within it (a state injected early in a response and reported at its end).
 notes: >
+  speaker covers both persona views in Beckmann and Butlin (2026, §4): the instance-persona view (a mind is the part of
+  one virtual instance in one persona region) and the model-persona view (one persona across conversations and
+  servers). The long form's nested_in can say which a source holds once a coded source argues either.
+
   "Instance" is used in the literature for conversation, for hardware instance
   and occasionally for forward pass. Put the source's word in author_term and
   code what it means.

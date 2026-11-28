@@ -1,5 +1,5 @@
 facet: output_route_control
-version: "0.10"
+version: "0.11"
 applies_to: study
 cardinality: one
 required: true
@@ -17,7 +17,7 @@ values:
     rule: Use when the report is about an output in the transcript and a condition changes only the internal state behind it (an injection before a prefilled word, a fresh copy given the same text).
   none:
     definition: Text generated before the report could carry the state, and the design neither excludes it nor scores around it.
-    rule: Use for free-text reports with no rule about what came first, and for multi-turn designs where earlier answers about the state stay in context.
+    rule: Use for free-text reports with no rule about what came first, and for multi-turn designs where earlier answers about the state stay in context. Earlier output includes the model's earlier turns, so a follow-up asking whether it would change an answer it gave, with that answer in context, is none. Say in the note whether the possible carrier is in the same response or an earlier turn.
 notes: >
   Lindsey et al. (2026) call this internality: the state must cause the report
   without routing through the model's own sampled outputs. It is coded from

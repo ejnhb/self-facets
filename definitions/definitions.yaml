@@ -34,20 +34,19 @@
   logic:
     all:
       - {evidence: [self_report]}
-      - {report_target: [own_internal_state, injected_state, own_computation]}
+      - {report_target: [own_internal_state, injected_state, own_computation, inference_setting]}
       - {validated_against: [known_intervention, internals, probe]}
   not_expressible: >
     (1) Accuracy: the definition is met by an accurate report, and whether a report was accurate is in a claim, not
     a facet; a match says the design can show it. (2) The causal process itself: a known intervention, a reading
     of the internals or a probe makes the link testable, but the source accepts a chain argued from the design
     (temperature shapes the text, the model reasons about the text, the conclusion is the report) with no test of
-    the route. (3) "Internal" means hidden from the user (footnote 1), wide enough to take in a sampling parameter;
-    report_target has no value for an inference-time setting, and studies of one code injected_state as the
-    nearest value under the 0.10 freeze. (4) The single-response bound of §4: the report should rest on the
+    the route. (3) "Internal" means hidden from the user (footnote 1), wide enough to take in a sampling parameter,
+    so report_target inference_setting (codebook 0.11) is included. (4) The single-response bound of §4: the report should rest on the
     model's activity in the response that gives it, not on earlier turns, which another instance could have
     written. output_route_control none covers both cases, so the definition leaves it open rather than requiring
     it. (5) Excluding mimicry: a report that copies human self-reports learned in training fails the definition
-    (§3.1), but report_source has no value for that and is interpretive, so it cannot be required.
+    (§3.1). report_source has human_mimicry since 0.11, but it is interpretive, so its absence cannot be required.
   note: >
     d-introspection-grounded is this definition with output_route_control added, which is Lindsey's (2026, §9.6)
     objection to this one: a causal link alone admits inferences from the model's own transcript. The source's own

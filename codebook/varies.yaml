@@ -1,5 +1,5 @@
 facet: varies
-version: "0.10"
+version: "0.11"
 applies_to: study
 cardinality: many
 required: true
@@ -52,21 +52,41 @@ values:
     definition: Direct changes to internal state (injection, steering, ablation, patching).
     rule: Use when the intervention is the manipulated variable. Put the layer, strength and kind of vector in levels.
   self_vs_other:
-    definition: Whether the system reports on itself or on another system, or whether the reporter is the target or a third party.
-    rule: Use for self/other contrasts, including cross-prediction designs.
+    definition: Whether the system reports on, or acts on, itself or another system; whether the reporter is the target or a third party; or whether the system acted on is a copy of itself or an unrelated one.
+    rule: Use for self/other contrasts, including cross-prediction designs and choices about an identical deployment against an unrelated one. The levels are ordered other, then self, so effect_direction increases means the quantity is higher for self.
   task:
     definition: The task, dataset or property being asked about.
     rule: Use when results are broken down by task and the breakdown matters to the conclusion.
   context:
-    definition: Context length, number of turns, memory or compaction.
-    rule: Use for long-horizon and persistence manipulations.
+    definition: Context length, number of turns, memory or compaction, or what the context contains (the content or surprise of an input token).
+    rule: Use for long-horizon and persistence manipulations, and when the contrast is what is placed in the context rather than how the request is worded (that is prompt_framing).
   language:
     definition: Natural language of the prompts.
     rule: Use for cross-lingual comparisons.
   none:
     definition: A single condition with nothing varied.
     rule: Use for one-model, one-condition demonstrations.
+  layer:
+    definition: Which layer of the network a probe, injection, steering vector or readout is attached to.
+    rule: "Use when results are reported per layer. Put the layers used in levels as the authors give them, or levels: unspecified if they are not stated, and set layer_scale on the entry: index for layer numbers, fraction for a share of the depth (a layer two thirds of the way through is 0.67; a percentage is divided by 100). The build converts between the two from the model registry's layer count."
+  midtraining:
+    definition: "Whether, or how, a model was mid-trained: a targeted pretraining-style phase between pretraining and post-training."
+    rule: Use for with-and-without contrasts and for different mid-training recipes on one base. Position along ordinary pretraining is pretraining_progress; stages after it are post_training_stage.
+  in_context_examples:
+    definition: The number or kind of examples placed in the prompt (few-shot against zero-shot).
+    rule: Use when the examples themselves are the contrast. A change of wording or instructions with no examples is prompt_framing.
+  sampling_setting:
+    definition: "An inference-time sampling setting: temperature, top-p, top-k, or greedy against sampled decoding."
+    rule: Use when the setting is varied as part of the design. It changes how tokens are drawn, not the activations, so it is not activation_intervention.
+  training_data_amount:
+    definition: "How much data the authors trained something on: a probe, a fine-tune, or a steering vector or assessor fitted to examples."
+    rule: Use when the amount is varied. The model's own pretraining tokens are pretraining_progress.
 notes: >
+  A contrast inside one study is varies. A contrast a paper draws between two of its own studies is recorded on the
+  claim with compares, naming the other study; the build counts such a claim for frames on either study. Comparisons
+  across papers are relations (one paper criticising or extending another), readings, or the question layer, never
+  varies. A variable varied only to show that a result is general (the model playing the user, say) is not coded.
+
   This is the facet that makes a question answerable by filter. A study
   only counts as direct evidence on "does X differ by Y" if Y is coded here.
   The value names the variable. Record the conditions actually used in levels,

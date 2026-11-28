@@ -1,5 +1,5 @@
 facet: report_target
-version: 0.1
+version: "0.11"
 applies_to: study
 cardinality: many
 required: true
@@ -30,5 +30,11 @@ values:
   own_experience:
     definition: Feelings, valence, consciousness or their absence.
     rule: Use when the report asserts or denies experience.
+  other_behaviour:
+    definition: What another system, or another persona of the same system, does or would do.
+    rule: Use for reports about a different persona's or model's behaviour, often a control for reports about the system's own.
+  inference_setting:
+    definition: A setting of the inference process the experimenter chose, such as the sampling temperature.
+    rule: Use when the system is asked to report how it is being run. A state placed in the activations is injected_state.
 notes: >
   Use not_applicable when the study involves no self-report.

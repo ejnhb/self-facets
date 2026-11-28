@@ -1,5 +1,5 @@
 facet: effect_direction
-version: 0.8
+version: "0.11"
 applies_to: claim
 cardinality: one
 required: false
@@ -16,6 +16,10 @@ values:
     definition: The quantity rises and falls across the levels.
     rule: Use when the source reports a peak, a dip or a reversal.
 notes: >
+  Direction is about the quantity the claim reports. Where lower is better (error, loss, entropy), set better: lower
+  on the claim so auto stances can turn direction into an advantage; better: higher for accuracy and the like.
+  self_vs_other is ordered other, then self.
+
   Optional, and only with effect_presence present. For an unordered contrast
   (self against other, one task against another) leave it out: the statement
   says which side is higher.

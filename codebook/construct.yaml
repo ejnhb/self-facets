@@ -1,5 +1,5 @@
 facet: construct
-version: 0.3
+version: "0.11"
 applies_to: study
 cardinality: many
 required: true
@@ -45,6 +45,30 @@ values:
   self_preservation:
     definition: Behaviour or statements bearing on the system's own continuation, modification or shutdown.
     rule: Use for shutdown, replacement and self-modification studies.
+  mind_attribution:
+    definition: Attributing mind, experience or agency to other entities (people, animals, other AI systems).
+    rule: Use when the study measures how the system attributes minds to others. Its claims about its own experience are experience_reports.
+  beliefs_values:
+    definition: Stated beliefs and values, about the world or about ethics.
+    rule: Use when the study measures what the system says it believes or values. What it would choose or prefers among options is preferences.
+  general_capability:
+    definition: General capability or theory of mind, measured as a control.
+    rule: Use for capability checks that show an intervention did not simply damage the model (benchmarks after steering or ablation).
+  persona_representation:
+    definition: "How personas are represented internally: persona directions, persona space and the default persona's place in it."
+    rule: Use for studies that map or measure the representation. Studies of drift or stabilisation over contexts or training are persona_stability.
+  self_conception:
+    definition: "What the system takes itself to be: its referent (weights, process, persona, lineage) and its persistence conditions."
+    rule: Use when the study installs, measures or argues about the self-boundary itself, rather than a downstream behaviour such as self_preservation.
+  planning:
+    definition: Committing to an intention or plan before the output that carries it out.
+    rule: Use when the study tests whether a plan is formed or represented ahead of the tokens that realise it.
 notes: >
+  Construct is the authors' label. Code the construct the source says it studies, not a reading of what the design
+  really tests: senses such as confidence against calibration, or knowing against a functional signal, belong in
+  definitions/, and a question that needs one sense frames on the definition. The build warns when a question frames
+  on a bare construct value that has several definitions. The list grows with the literature; definitions and
+  question frames do the sorting.
+
   Draft list. Constructs overlap; code every one the study measures, and
   prefer the source's framing when choosing between neighbours.

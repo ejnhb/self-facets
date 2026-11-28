@@ -388,7 +388,7 @@ def build(out_path):
             for mid in scoped or study_models.get(claim["study"], []):
                 db.execute("INSERT INTO claim_models VALUES (?,?,?)", (cid, mid, int(bool(scoped))))
             for name in claim_code_facets:
-                for value in as_list(claim.get(name)):
+                for value in facet_entry(claim.get(name))["value"]:
                     db.execute("INSERT INTO claim_codes VALUES (?,?,?)", (cid, name, value))
             about = claim.get("about") or {}
             for kind in ("models", "datasets"):
@@ -418,7 +418,7 @@ def build(out_path):
                 else:
                     out[name] = set()
             else:
-                out[name] = set(as_list(claim.get(name)))
+                out[name] = set(facet_entry(claim.get(name))["value"])
         return out
 
     definitions = {d["id"]: d for _, d in load_list_dir("definitions")}

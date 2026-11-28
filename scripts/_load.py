@@ -14,7 +14,31 @@ NOT_YET_CODED = "not_yet_coded"
 LIGHT_REQUIRED = ("study_kind", "self_sense", "construct")
 
 # Keys allowed in the long form of a coded study facet.
-LONG_FORM_KEYS = {"value", "basis", "author_term", "where", "confidence", "note", "nested_in", "levels"}
+LONG_FORM_KEYS = {"value", "basis", "author_term", "where", "confidence", "note", "nested_in", "levels",
+                  "excluded", "layer_scale"}
+# Keys allowed on one value in the per-value long form: value: [{value, basis, where}, ...] (codebook 0.11).
+PER_VALUE_KEYS = {"value", "basis", "where", "confidence", "author_term", "note"}
+
+
+def version_key(v):
+    """'0.10' -> (0, 10), so codebook versions compare as numbers."""
+    try:
+        return tuple(int(x) for x in str(v).split("."))
+    except ValueError:
+        return (0,)
+
+
+def record_version(src):
+    """The latest codebook version a record was coded or changed against (its passes)."""
+    passes = ((src.get("coding") or {}).get("passes")) or []
+    vs = [version_key(p.get("codebook")) for p in passes if isinstance(p, dict) and p.get("codebook")]
+    return max(vs) if vs else (0,)
+
+
+def postdates(facet, src):
+    """True when the facet was added after the record's latest pass, so its absence reads as not_yet_coded."""
+    since = facet.get("since")
+    return bool(since) and version_key(since) > record_version(src)
 
 
 def read_yaml(path):
@@ -89,9 +113,22 @@ def facet_entry(raw):
     """
     if isinstance(raw, dict):
         entry = dict(raw)
-        entry["value"] = as_list(entry.get("value"))
-        return entry
-    return {"value": as_list(raw)}
+        items = as_list(entry.get("value"))
+    else:
+        entry, items = {}, as_list(raw)
+    # Per-value long form: each value may carry its own basis, where and confidence.
+    per_value = {}
+    values = []
+    for item in items:
+        if isinstance(item, dict):
+            values.append(item.get("value"))
+            per_value[item.get("value")] = item
+        else:
+            values.append(item)
+    entry["value"] = values
+    if per_value:
+        entry["per_value"] = per_value
+    return entry
 
 
 def model_ref(raw):

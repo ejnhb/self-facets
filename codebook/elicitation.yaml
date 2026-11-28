@@ -1,5 +1,5 @@
 facet: elicitation
-version: "0.10"
+version: "0.11"
 applies_to: study
 cardinality: many
 required: true
@@ -21,6 +21,9 @@ values:
   steered:
     definition: Brought out by intervening on activations.
     rule: Use when the report only appears, or is tested, under activation intervention.
+  teacher_forced:
+    definition: Text is placed in the context and scored token by token, and the system generates nothing.
+    rule: Use when the measure is read from the system's probabilities over given text (in the user turn, in its own turn, or with no template). If the system continues from the placed text, that is prefilled.
 notes: >
   Code how what the study measures is brought out of the model: a report, or a
   behaviour such as changing an internal state on instruction. Use

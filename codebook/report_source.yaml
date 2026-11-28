@@ -1,5 +1,5 @@
 facet: report_source
-version: 0.2
+version: "0.11"
 applies_to: claim
 cardinality: many
 required: false
@@ -21,7 +21,17 @@ values:
   context:
     definition: The prompt or earlier turns supply the content.
     rule: Use when the report echoes framing, instructions or the interlocutor's words.
+  training_generalisation:
+    definition: Content learned only implicitly, by training on examples of a behaviour, and generalised into a description of itself (out-of-context reasoning).
+    rule: Use when the source argues the system was never shown the self-description it gives. This is a narrower kind of self_model, so frames on self_model include it.
+    broader: self_model
+  human_mimicry:
+    definition: Human self-reports learned in pretraining, reproduced because people talk that way, not because of anything about the system.
+    rule: Use when the source argues the report imitates how humans describe themselves. A general account of language models applied to itself is llm_theory.
 notes: >
+  A source can rule a route out as well as argue for one. Record that in the long form with excluded: a list of
+  values, with basis and where (a control showing the report does not come from the context is excluded: [context]).
+
   Optional. Code only what the source argues or tests, not the coder's guess;
   leave it out when the source does not address where the report comes from.
   Two reports with the same wording can have different sources, and much

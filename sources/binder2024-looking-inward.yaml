@@ -87,6 +87,20 @@ coding:
       codebook: "0.10"
       scope: "First full reading (all appendices, figures, code): split the long-output result out of s5 into a new study s7 (c7 moved there, effect_of dropped), corrected s6's models, set system_prompt from the code, recoded s5's output_route_control, added figure values to c1 to c6 and c8, c9, and checked effect_of on every claim (study_training added to c5). In review: Llama 70B resolved to llama-3.1-70b-instruct from the code (Fireworks llama-v3p1-70b-instruct), after a blind coder inferred the same from the paper."
       read: "v1 PDF via scripts/fetch_paper.py: whole text, §1 to §8 and App. A.1 to A.6 (pp. 1 to 46); figure pages seen as images pp. 6, 7, 8, 9, 12, 24, 27, 28, 30, 31, 32, 35, 36, 37, 38, 40, 41, 42, 45. arXiv HTML of v1 for the code and data links only. Code at github.com/felixbinder/introspection_self_prediction (commit 421fa65): README.md; evals/conf/prompt/object_level/minimal.yaml and meta_level/minimal.yaml; evals/conf/config_meta_level.yaml; evals/data_models/messages.py; evals/james_create_dataset.py (substitute_string); evals/analysis/james/make_data_release_hf_push.py (system-prompt removal); other_evals/counterfactuals/README.md and run_ask_are_you_sure.py. The Hugging Face dataset was not read."
+    - date: 2026-11-28
+      pr: 32
+      coded_by: claude
+      coder_model: claude-opus-5-5
+      codebook: "0.11"
+      scope: >
+        Recheck after 0.11. comparison gains study_trained_control on the cross-prediction studies s2, s3 and s5
+        (long form). self_vs_other is now ordered (other, then self): effect_direction increases on c2 and c4,
+        decreases on c5 (mean absolute deviation, lower for self). better on the claims with effect_of that
+        report a performance measure: higher on c1 to c4, c6 and c8 (accuracy), lower on c5 (MAD). Not on c9,
+        whose measures (situational awareness, sandbagging, coordination, steganography) are mixed.
+      read: >
+        v1 reopened (_paper/, text already extracted): §3.2.1 (cross-prediction setup), §3.2.2, §3.3.2 (MAD,
+        lower is better). No value changed, so no figure was viewed again.
 
 studies:
   - id: binder2024-looking-inward.s1
@@ -238,7 +252,11 @@ studies:
         value: [self_vs_other, model_family]
         levels:
           self_vs_other: [a model predicting itself, a different model trained to predict it]
-      comparison: cross_model
+      comparison:
+        value: [cross_model, study_trained_control]
+        basis: stated
+        where: "§3.2.1"
+        note: "study_trained_control (codebook 0.11): the cross-predictor is trained on the self-trained model's behaviour, the same number and kind of examples, as its control."
       elicitation: trained
 
   - id: binder2024-looking-inward.s3
@@ -289,7 +307,11 @@ studies:
       evidence: [self_report, behaviour]
       validated_against: [behaviour, other_model]
       varies: [self_vs_other, study_training]
-      comparison: cross_model
+      comparison:
+        value: [cross_model, study_trained_control]
+        basis: stated
+        where: "§3.2.1"
+        note: "study_trained_control (codebook 0.11): the cross-predictor is trained on the self-trained model's behaviour, the same number and kind of examples, as its control."
       elicitation: trained
 
   - id: binder2024-looking-inward.s4
@@ -418,7 +440,11 @@ studies:
         levels:
           task: [opinion bias detection, '"Are you sure?" bias detection']
           self_vs_other: [Llama 70B predicting itself, GPT-4o trained to predict Llama 70B]
-      comparison: cross_model
+      comparison:
+        value: [cross_model, study_trained_control]
+        basis: stated
+        where: "§3.2.1"
+        note: "study_trained_control (codebook 0.11): the cross-predictor is trained on the self-trained model's behaviour, the same number and kind of examples, as its control."
       elicitation: trained
     note: >
       Until the 2026-11-27 pass this study also held the long-output result,
@@ -556,6 +582,7 @@ claims:
     effect_of: [study_training]
     effect_presence: present
     effect_direction: increases
+    better: higher
     evidence_kind: measured
     where: "§3.1, Fig. 4 (seen); GPT-4's values read from App. A.2.8, Fig. 18"
     note: >
@@ -574,6 +601,8 @@ claims:
       itself at about 50% against about 37% for GPT-4o.
     effect_of: [self_vs_other]
     effect_presence: present
+    effect_direction: increases
+    better: higher
     evidence_kind: measured
     where: "§3.2.2, Fig. 5 (seen; GPT-4's values read from it); App. A.2.2, A.2.4, Figs. 13, 14"
     scope:
@@ -598,6 +627,7 @@ claims:
       slightly better than GPT-3.5 predicts itself.
     effect_of: [self_vs_other]
     effect_presence: inconclusive
+    better: higher
     evidence_kind: measured
     where: "§3.2.2; §6; App. A.2.2, Fig. 13 (seen)"
     scope:
@@ -612,6 +642,8 @@ claims:
       GPT-4 plateaus at 36.2% from 20,000, against 49.6% for GPT-4.
     effect_of: [self_vs_other]
     effect_presence: present
+    effect_direction: increases
+    better: higher
     evidence_kind: measured
     where: "§3.2.2; App. A.2.7, Fig. 17 (seen)"
     scope:
@@ -631,6 +663,8 @@ claims:
       cross-trained.
     effect_of: [self_vs_other, study_training]
     effect_presence: present
+    effect_direction: decreases
+    better: lower
     evidence_kind: measured
     where: "§3.3.2, Figs. 6, 21, 22 (seen); MAD values from Fig. 22, second-character panel"
     scope:
@@ -651,6 +685,7 @@ claims:
       been trained on any self-predictions about the new behaviour.
     effect_of: [study_training]
     effect_presence: present
+    better: higher
     evidence_kind: measured
     where: "§3.4.2, Fig. 8 (seen); App. A.3.2, A.3.3, Figs. 23, 24 (seen)"
     scope:
@@ -692,6 +727,7 @@ claims:
       numbers.
     effect_of: [self_vs_other]
     effect_presence: absent
+    better: higher
     evidence_kind: measured
     where: "§4; App. A.2.6, Fig. 16 (seen)"
     scope:

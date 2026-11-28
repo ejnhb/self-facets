@@ -478,6 +478,7 @@
   open_weights: true
   post_training_reached: post_trained
   size: 7B
+  layers: 28
   derived_from: qwen2.5-7b-base
   stage: null
   note: Hugging Face Qwen/Qwen2.5-7B-Instruct.
@@ -508,6 +509,7 @@
   open_weights: true
   post_training_reached: base
   size: 8B
+  layers: 32
   derived_from: null
   stage: null
   note: Hugging Face meta-llama/Llama-3.1-8B.
@@ -562,6 +564,7 @@
   open_weights: true
   post_training_reached: post_trained
   size: 70B
+  layers: 80
   derived_from: null
   stage: null
   note: >-
@@ -737,6 +740,7 @@
   open_weights: true
   post_training_reached: post_trained
   size: 32B
+  layers: 64
   derived_from: null
   stage: null
   note: Hugging Face Qwen/Qwen3-32B, revision 9216db5 in Fornasiere et al. 2026, run with thinking off.
@@ -902,6 +906,7 @@
   open_weights: true
   post_training_reached: post_trained
   size: 7B
+  layers: 32
   derived_from: null
   stage: null
   note: Hugging Face mistralai/Mistral-7B-Instruct-v0.3 (from the code of Moreno Cencerrado et al. 2026).
@@ -912,6 +917,7 @@
   open_weights: true
   post_training_reached: post_trained
   size: 8B
+  layers: 36
   derived_from: null
   stage: null
   note: Hugging Face mistralai/Ministral-8B-Instruct-2410 (from the code of Moreno Cencerrado et al. 2026).
@@ -922,6 +928,7 @@
   open_weights: true
   post_training_reached: post_trained
   size: 32B
+  layers: 64
   derived_from: null
   stage: null
   note: >

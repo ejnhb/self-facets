@@ -23,28 +23,64 @@ not re-read in their sources.
 
 ## Implementing the 2026-11-28 review
 
-Codebook 0.11, the build changes, and the question, link and registry changes are in. What remains is the
-recoding pass:
+The recoding pass for 0.11 is done for the records on the "Recheck after 0.11" list, except:
 
-- **Automatic stances:** each yes/no question with `auto_stance` to say which effect counts as support
-  (`supports:`), and `better` on the claims those questions read.
-- **Recheck after 0.11** (studies coded with a nearest value or `unspecified` under the freeze):
-  - `varies`: Ji-An/Li (PR #16), Lu s1 and s8, Moreno Cencerrado s1 (`layer`; c2 and c18 then take `effect_of`);
-    Fornasiere s11 (`in_context_examples`); Comsa s2 and Goel s4 (`sampling_setting`); Moreno Cencerrado s1
-    (`training_data_amount`).
-  - `report_target`: Betley s8, s9 (`other_behaviour`); Comsa s2 (`inference_setting`).
-  - `report_source`: Betley, Song c22 (`training_generalisation`); Comsa c3 (`human_mimicry`); the other
-    `report_source` codings, for implicit routes and routes ruled out.
-  - `construct`: Kim s2, s6 (`mind_attribution`), s3, s4 (`beliefs_values`), s5, s7 (`general_capability`); Lu s1,
-    s2, s5 (`persona_representation`); Hao s1 to s4 (`self_conception`); Goel s5 (`planning`).
-  - Units: Comsa s3 (`response`). The one `conversation` coding, Lindsey s6, is across turns and stays.
-  - Registries: `layers` on the models of the `layer` studies; instruments that are named and released (the
-    Assistant Axis, if its vectors are released with Lu et al.'s data), and `model_organism` roles (Betley, Hao).
-  - `evidence`: Hao s1, s3, s4 (`self_regarding_behaviour`). `elicitation`: Goel s1 to s4 (`teacher_forced`).
-    `validated_against`: Comsa s1 (`known_properties`). `comparison`: Binder's cross-prediction studies
-    (`study_trained_control`).
-  - Effects: Song c8 to c10 (now `effect_direction` on an ordered `self_vs_other`); `better` on claims that report a
-    performance measure, starting with those linked to yes/no questions.
+- **Ji-An/Li (PR #16)** is unmerged and was not touched: its `layer` recheck waits for the merge.
+- **Not on the list, but may now take `varies: layer`** (results reported per layer): Lindsey s1 and the other
+  studies that sweep injection layer (now under `activation_intervention` levels); Rubin's sweep (injection layer
+  and probe readout layer; c4 compares layers 6 and 0 under `effect_of: activation_intervention`); Kim s6 (cosine
+  per layer, Figs. 4, S2); Goel s3 (CKA across all 80 layers); Fornasiere's layer ablation. Each needs the paper
+  reopened, and `layers` on its models.
+- **`better` on the remaining claims with `effect_of`:** done for Binder, Song, Moreno Cencerrado, the linked
+  Fornasiere, Lindsey and Rubin claims that report accuracy, AUROC, net performance or error. Left: claims whose
+  measure is a report's score or a choice rate rather than a performance (most of Betley, Hao, Kim, Lu, Goel, and
+  Fornasiere's detection Yes rates, which are hits under perturbation and false alarms without), and the unlinked
+  effect claims of Lindsey and Fornasiere. Only `improves` or `worsens` questions read it, and only one question
+  uses `auto_stance`.
+
+Calls from the pass for the owner to confirm:
+
+- **Lu s1 `layer`:** left uncoded. Fig. 27 reports the axis against role PC1 per layer, but only to show the
+  similarity holds at every layer; the `varies` notes say a variable varied to show generality is not coded, while
+  the `layer` rule says "use when results are reported per layer". Which wins?
+- **Kim s7:** left `construct: not_applicable` though the list proposed `general_capability`: it checks that the
+  ablation removes refusal (a manipulation check), not that the model is undamaged. Kim s6 took
+  `general_capability` beside `mind_attribution`, for the ToM direction the authors use as a control.
+- **Kim s4:** `beliefs_values` alone, dropping `affect` for the Feelings and Hope items, because construct is the
+  authors' label and they call all five domains beliefs and values.
+- **Fornasiere s11:** the label arms (correct, inverted, alias labels) moved to `in_context_examples` with the
+  number of examples, and `prompt_framing` was dropped; s10's label pairs, with no examples, stay `prompt_framing`.
+- **`model_organism`** (Betley s1 to s9, Hao s1 to s4) is set on the registry ids, which are the starting models;
+  the fine-tuned organisms are not registered apart. Hao's DeepSeek holds subject, model_organism and judge, the
+  judge being the untrained release.
+- **Comsa s3 `unit_position`:** `speaker` (the conversational agent) kept beside `response` (its bound, stated).
+- **Song c8 to c10:** now `present` with `effect_direction: decreases` (other pairs above self) instead of
+  `absent`; seed-variant and base/instruct pairs still do not differ from self. The auto stance on
+  `q-self-prediction-advantage` is `against` either way.
+- **Routes ruled out (`excluded`):** `context` on Goel c34, c35, Lindsey c2, c29 and Rubin c2, and `human_mimicry`
+  and `llm_theory` on Comsa c10; in Goel and Lindsey c29 the exclusion is by the design rather than in the
+  authors' words (said in each note).
+- **Routes ruled out with no value to name them:** Binder c2 (cross-trained predictors rule out the behaviour data
+  as the source of the advantage) and Song c15 (no access to its own probabilities beyond what similar models
+  share; not `current_state`, since a fresh copy would share it) stay uncoded, with notes. A value for "what an
+  observer with the same data could infer" would code both.
+- **`training_generalisation`** now holds Betley's reading (behavioural self-awareness, 18 claims) and Song c22's
+  deflationary one (pretraining associations between behaviour and descriptions); the value cannot tell them
+  apart.
+
+Gaps in the repo found in the pass:
+
+- **Build, `study_layer_depths`:** it reads the first number in each `layers` level and applies it to every subject
+  model, so a sweep whose layers differ by model (Moreno Cencerrado s1, Lu s8) cannot be given in numbers without
+  wrong depths (Lu s8's selected range read 46 of 80 for Llama). Both are written in words for now and give no
+  depths. A per-model form for levels, or a range syntax, is needed.
+- **Codebook, `report_source.yaml`:** its notes say both to list a ruled-out route under `excluded` and that "a
+  source that only rules a route out is not coded here"; and they ask for `excluded` "with basis and where", which
+  the validator does not allow (a plain list; basis and where are the entry's).
+- **`self_regarding_behaviour`** has no `broader: behaviour`, so frames on `evidence: behaviour` no longer reach
+  Hao s1 (`q-valence-drives-choice-despite-denial` lost six spurious candidates). Decide whether it should.
+- **`d-introspection-causal`**, `not_expressible` (4): the single-response bound could now partly be said with the
+  `response` unit.
 
 ## After 0.11 (decided to wait)
 
@@ -109,8 +145,7 @@ recoding pass:
     `kv_full_experiment.json`; the paper names OLMo 3 7B Instruct where the scripts use OLMo 2.
   - Lu: Fig. 10's bars show about a 50% cut where the text says nearly 60% (c25); s7 reports r as a range but names
     only Qwen.
-- **Code and data to recheck:** Hao (promised on publication; pin it when it appears); Lu's data on Hugging Face is
-  read at `main`, updated after v1, not pinned.
+- **Code and data to recheck:** Hao (promised on publication; pin it when it appears).
 - **From the code only:** Moreno Cencerrado's TriviaQA LLM judge; Muse-Glimmer-30B's developer (Hao) from Hugging
   Face.
 - **Relations:** Hao's `to_external` citations of Chua et al. 2026 and Douglas et al. 2026 could point at records

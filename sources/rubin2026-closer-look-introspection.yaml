@@ -85,6 +85,17 @@ coding:
       codebook: "0.10"
       scope: "Figure values filled in from Figs. 2 to 4 (c3, c10, study notes), two figure-only results added (c16, c17), and effect_of with effect_presence and effect_direction coded on the claims that report an effect of a varied variable."
       read: "v2 PDF fetched with scripts/fetch_paper.py: its full extracted text (sections 1 to 6, appendices A to D, Tables 1 and 2), and Figs. 2, 3 and 4 as page images (pp. 6, 12, 13, rendered again at 250 dpi and cropped to each panel). Fig. 1 (p. 4) not viewed as an image. No code read; the paper mentions none."
+    - date: 2026-11-28
+      pr: 32
+      coded_by: claude
+      coder_model: claude-opus-5-5
+      codebook: "0.11"
+      scope: >
+        Recheck of report_source after 0.11 (routes ruled out): c2 takes the long form with context excluded.
+        better: higher on c4 (answer accuracy).
+        Nothing else rechecked; injection and readout layer, now possible as varies layer, are left for a later
+        pass (OPEN.md).
+      read: "v2 reopened (_paper/, fetched earlier with scripts/fetch_paper.py): §3.3, §3.4 and §5.3. No figure viewed."
 
 studies:
   - id: rubin2026-closer-look-introspection.s1
@@ -626,7 +637,14 @@ claims:
         injection layer and strength were the ones selected for the released
         base's highest answer accuracy in all three held-out-seed folds, and
         the fixed setting was chosen after examining the sweep.
-    report_source: [current_state]
+    report_source:
+      value: [current_state]
+      basis: stated
+      where: "§4.1; §5.3"
+      excluded: [context]
+      note: >
+        context excluded (codebook 0.11): the authors say the input text is held fixed while the injection
+        changes (§5.3); each passage is injected at all nine positions.
     note: >
       report_source is coded because the source says the input text is held
       fixed while activations change (each passage is injected at all nine
@@ -681,6 +699,7 @@ claims:
     where: "§1.2; §5.1; App. C.2"
     effect_of: [activation_intervention]
     effect_presence: present
+    better: higher
     scope:
       models: [olmo-3-1125-32b]
       conditions: Strength 4, injection at layers 0 and 6. The text gives no answer accuracies for this model at the sweep's other layers and strengths.

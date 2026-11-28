@@ -39,6 +39,7 @@
     varies: [self_vs_other]
   auto_stance:
     effect_of: [self_vs_other]
+    supports: improves
   added: 2026-11-26
   status: open
 

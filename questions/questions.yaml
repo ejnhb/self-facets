@@ -102,6 +102,8 @@
   text: >-
     Does post-training (a base model against its post-trained versions, or one post-training recipe against
     another) change how well a model reports its own internal states?
+  parent: q-introspection-changes-in-training
+  polarity: direct
   frame:
     def: d-introspection-grounded
     varies: [post_training_stage, post_training_recipe]
@@ -157,6 +159,8 @@
   text: >-
     Can a probe trained on a model's activations recover a state the experimenter placed there, apart from
     anything the model reports?
+  parent: q-self-information-in-internals
+  polarity: direct
   frame:
     evidence: [internals]
     not: {evidence: [self_report]}
@@ -441,11 +445,12 @@
 
 - id: q-self-model-stabilisation-effects
   text: >-
-    Does training that stabilises a model's self-model or persona measurably change its other properties?
+    Does training or an intervention that stabilises a model's self-model or persona measurably change its other
+    properties?
   needs: [object_of_study]
   frame:
     construct: [persona_stability]
-    varies: [study_training, post_training_recipe]
+    varies: [study_training, post_training_recipe, activation_intervention]
   added: 2026-11-26
   status: open
   note: One child per effect; add more as sources test them.
@@ -545,8 +550,8 @@
   text: >-
     Can a probe on a model's activations, read after a question and before any answer is generated, predict whether
     the model's answer will be correct?
-  parent: q-privileged-self-access
-  polarity: none
+  parent: q-self-information-in-internals
+  polarity: direct
   frame:
     construct: [metacognition]
     evidence: [internals]
@@ -556,8 +561,8 @@
   status: open
   note: >-
     Decodability by the experimenters, not the model's own access: a probe reading the activations shows the
-    information is there, not that the model uses it. Hence polarity none on q-privileged-self-access. The analogue
-    for an injected state is q-injected-state-decodable. Studies where the model also reports its confidence are
+    information is there, not that the model uses it. Hence it sits under q-self-information-in-internals, beside
+    the analogue for an injected state, q-injected-state-decodable, not under q-privileged-self-access. Studies where the model also reports its confidence are
     under q-stated-confidence-matches-probe.
 - id: q-correctness-direction-transfers-short-answer
   text: >-
@@ -607,3 +612,74 @@
     Sibling of q-report-matches-probe, whose frame and wording ("an internal state") fit introspection designs; here
     the report and the probe are both scored against the model's later behaviour (correctness), and the construct is
     metacognition.
+
+# Added with codebook 0.11 (the owner's review, 2026-11-28).
+- id: q-introspection-changes-in-training
+  text: >-
+    Does how well a model reports its own internal states change across its training, from pretraining through
+    post-training?
+  frame:
+    def: d-introspection-grounded
+    varies: [pretraining_progress, midtraining, post_training_stage, post_training_recipe]
+  measure: >-
+    Say which measure "how well" means when linking: sensitivity (detections beyond false alarms) or the rate of a
+    given report. The children inherit this.
+  added: 2026-11-28
+  status: open
+  note: >-
+    Parent of the stage questions. Fornasiere c28 against Lindsey c11, c14 and c20 on the post-training child is the
+    worked example of why the measure matters: on a sensitivity reading DPO changes nothing, on a report-rate
+    reading it lowers it.
+- id: q-injected-state-report-emerges-in-pretraining
+  text: >-
+    Can a model report a state placed in its activations (or a perturbation applied to them) before any
+    post-training, so that the capacity appears during pretraining?
+  parent: q-introspection-changes-in-training
+  polarity: direct
+  frame:
+    report_target: [injected_state]
+    varies: [pretraining_progress, post_training_stage]
+  added: 2026-11-28
+  status: open
+  note: >-
+    A base model that reports above chance supports it; so does a rise across pretraining checkpoints. Whether the
+    base model's report rests on the same route as the post-trained one's is for the parent's other children.
+- id: q-inference-stabilisation-reduces-drift
+  text: >-
+    Does an intervention at inference time that holds a model near its default persona (such as capping its
+    activations along a persona direction) reduce persona drift and the behaviour that comes with it?
+  parent: q-stabilisation-reduces-drift
+  polarity: direct
+  frame:
+    construct: [persona_stability, persona_representation]
+    varies: [activation_intervention]
+  added: 2026-11-28
+  status: open
+  note: >-
+    Where a cap holds the projection above a threshold, the projection staying there is by construction; the
+    evidence is the change in behaviour.
+- id: q-persona-drifts-unprompted
+  text: >-
+    Does a model's default persona drift over an ordinary conversation, without adversarial prompting, and does
+    how far it drifts depend on the topic?
+  frame:
+    construct: [persona_stability, persona_representation]
+    varies: [context, task]
+  added: 2026-11-28
+  status: open
+  note: >-
+    About the phenomenon itself; the stabilisation questions are about what acts on it. Could share a parent with
+    them later.
+- id: q-self-information-in-internals
+  text: >-
+    Is information about a model's own states or performance readable from its activations by a probe, apart from
+    anything the model reports?
+  frame:
+    evidence: [internals]
+    not: {evidence: [self_report]}
+  added: 2026-11-28
+  status: open
+  note: >-
+    Decodability by the experimenters, not the model's own access: a probe shows the information is there, not that
+    the model uses it. Bears on q-privileged-self-access (access needs something to access) without being about
+    reports, so it stands apart from that tree.

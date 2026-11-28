@@ -45,7 +45,11 @@ CREATE TABLE models (
 );
 CREATE TABLE model_stage_methods (model TEXT, method TEXT);
 CREATE TABLE model_stage_datasets (model TEXT, dataset TEXT);
-CREATE TABLE questions (id TEXT PRIMARY KEY, text TEXT, parent TEXT, kind TEXT, polarity TEXT, answer_facet TEXT, status TEXT, added TEXT);
+CREATE TABLE questions (id TEXT PRIMARY KEY, text TEXT, parent TEXT, kind TEXT, polarity TEXT, answer_facet TEXT, status TEXT, added TEXT, measure TEXT);
+-- Instruments results rest on (instruments/), and which studies use them.
+CREATE TABLE instruments (id TEXT PRIMARY KEY, name TEXT, kind TEXT, trained_on TEXT, artefact TEXT, documented_in TEXT, note TEXT);
+CREATE TABLE instrument_models (instrument TEXT, model TEXT);
+CREATE TABLE study_instruments (study TEXT, instrument TEXT);
 -- Each question with the top of its parent chain (itself if it has no parent).
 -- For yes/no questions: the question whose tree a stance counts in, and the sign that turns the stance into one
 -- on that root (-1 under an inverse question). A polarity none question is its own root.
@@ -102,7 +106,8 @@ CREATE TABLE claims (
 -- Links (links/): every yes/no question a claim takes a stance on. `counted` is 0 when the claim fails a
 -- `requires` of the question or a question above it, so it is not evidence there even with no reading applied.
 -- via: as in question_candidates, for links that rest on a compared study's facets (automatic stances only).
-CREATE TABLE claim_questions (claim TEXT, question TEXT, stance TEXT, counted INTEGER, note TEXT, origin TEXT, via TEXT);
+-- designed: 1 when the study was built to test the question, 0 when its result bears on it post hoc, null when unsaid.
+CREATE TABLE claim_questions (claim TEXT, question TEXT, stance TEXT, counted INTEGER, note TEXT, origin TEXT, via TEXT, designed INTEGER);
 -- Readings (readings/) and views (views/): see design/readings.md.
 -- Definitions (definitions/): named logic over facets for what a design tests in one stated sense.
 CREATE TABLE definitions (id TEXT PRIMARY KEY, construct TEXT, statement TEXT, sources TEXT, not_expressible TEXT);
@@ -294,14 +299,21 @@ def build(out_path):
         for ds in as_list(stage.get("datasets")):
             db.execute("INSERT INTO model_stage_datasets VALUES (?,?)", (m["id"], ds))
 
+    for _, ins in load_list_dir("instruments"):
+        db.execute("INSERT INTO instruments VALUES (?,?,?,?,?,?,?)",
+                   (ins["id"], ins.get("name"), ins.get("kind"), text(ins.get("trained_on")), text(ins.get("artefact")),
+                    ins.get("documented_in"), text(ins.get("note"))))
+        for mid in as_list(ins.get("models")):
+            db.execute("INSERT INTO instrument_models VALUES (?,?)", (ins["id"], mid))
+
     qs = {}
     for _, q in load_list_dir("questions"):
         qs[q["id"]] = q
         db.execute(
-            "INSERT INTO questions VALUES (?,?,?,?,?,?,?,?)",
+            "INSERT INTO questions VALUES (?,?,?,?,?,?,?,?,?)",
             (q["id"], text(q.get("text")), q.get("parent"), q.get("kind", "yesno"),
              q.get("polarity", "direct") if q.get("parent") and q.get("kind", "yesno") == "yesno" else None,
-             q.get("answer_facet"), q.get("status"), text(q.get("added"))),
+             q.get("answer_facet"), q.get("status"), text(q.get("added")), text(q.get("measure"))),
         )
         for name in as_list(q.get("needs")):
             db.execute("INSERT INTO question_needs VALUES (?,?)", (q["id"], name))
@@ -365,6 +377,8 @@ def build(out_path):
                 (stid, sid, study.get("label"), text(study.get("design")), text(study.get("where")), text(study.get("note"))),
             )
             study_models[stid] = []
+            for iid in as_list(study.get("instruments")):
+                db.execute("INSERT INTO study_instruments VALUES (?,?)", (stid, iid))
             for raw in as_list(study.get("models")):
                 mid, roles, mnote = model_ref(raw)
                 if "subject" in roles:
@@ -661,9 +675,13 @@ def build(out_path):
                 db.execute("INSERT INTO claim_answers VALUES (?,?,?)", (cid, qid, value))
         else:
             ok, _ = counts(cid, qid, [])
-            db.execute("INSERT INTO claim_questions VALUES (?,?,?,?,?,?,?)",
-                       (cid, qid, link.get("stance"), int(ok), text(link.get("note")), link["origin"], link.get("via")))
-    tied = {(l["claim"], l["question"]) for l in links}
+            designed = link.get("designed")
+            db.execute("INSERT INTO claim_questions VALUES (?,?,?,?,?,?,?,?)",
+                       (cid, qid, link.get("stance"), int(ok), text(link.get("note")), link["origin"], link.get("via"),
+                        int(designed) if isinstance(designed, bool) else None))
+    # A claim linked to a question is not a candidate for it, nor for the questions above it: the poser of the tree
+    # has seen it.
+    tied = {(l["claim"], anc) for l in links for anc in chain(l["question"])}
     for qid in qs:
         tree_needs = sorted({n for anc in chain(qid) for n in as_list(qs[anc].get("needs"))})
         for cid in claims_mem:

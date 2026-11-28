@@ -1,0 +1,9 @@
+# Template for an instrument: append to instruments/instruments.yaml. (R) required, (O) optional.
+- id: short-slug                    # (R)
+  name: The name its authors give it   # (R)
+  kind: steering_vector             # (R) enums.yaml instrument_kind: probe | lens | sae | steering_vector | other
+  models: [model-slug]              # (O) the models it was built for (models/)
+  trained_on: What it was fitted or derived from.   # (O)
+  artefact: https://...             # (O) where it is released, with the revision read
+  documented_in: familyYEAR-short-title   # (O) the source that introduces it
+  note: null                        # (O)

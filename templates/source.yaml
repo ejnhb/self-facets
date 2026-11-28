@@ -57,7 +57,8 @@ studies:                            # one per set of results that share every fa
     models:                         # (R) ids from models/; a bare id is a subject. Long form for other roles:
       - model-slug
       - {id: other-model-slug, roles: [comparison], note: "what it is compared on"}   # enums.yaml model_role:
-      # subject | comparison | judge | data_source; a model can hold several (a judge that is also a subject)
+      # subject | comparison | judge | data_source | model_organism; a model can hold several (a judge that is also a subject)
+    instruments: [instrument-slug]   # (O) registered probes, lenses, SAEs or vectors the results rest on (instruments/)
     note: null                      # (O)
     facets:
       # Core facets: code every one (unspecified if the source does not say; not_applicable if it does not apply).

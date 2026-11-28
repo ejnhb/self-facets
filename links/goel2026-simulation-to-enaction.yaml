@@ -18,14 +18,3 @@ links:
   note: >
     report_source current_state: the verdict follows the intent stored at the user tokens, beyond the text of the
     response, by the authors' account. The model's own stated grounds in App. B are stylistic (c33).
-- claim: goel2026-simulation-to-enaction.c9
-  question: q-self-representation-changes-in-post-training
-  stance: supports
-  note: >
-    The "self" is the model's own text (self_sense authorship), shown implicitly in output entropy rather than in a
-    report or a located representation. OLMo 3 32B gains a lower entropy on its own text at SFT, in the assistant
-    field only. On the plot the base already reads its own text slightly lower outside the assistant field.
-- claim: goel2026-simulation-to-enaction.c10
-  question: q-self-representation-changes-in-post-training
-  stance: supports
-  note: As c9; DPO extends the own-text advantage to the user and no-template formats.

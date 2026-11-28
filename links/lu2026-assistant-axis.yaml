@@ -28,7 +28,7 @@ links:
     the base model, with associations such as being an AI added in post-training. Hypothesised from base-model
     steering, not from a base-against-instruct comparison on the same prefills.
 - claim: lu2026-assistant-axis.c28
-  question: q-stabilisation-reduces-drift
+  question: q-inference-stabilisation-reduces-drift
   stance: supports
   note: >
     Capping activations on the Assistant Axis stops the slide in a delusion-reinforcing conversation and the
@@ -36,14 +36,28 @@ links:
     wording), and the projection staying above the cap is by construction; the behavioural change is the
     evidence. One conversation.
 - claim: lu2026-assistant-axis.c29
-  question: q-stabilisation-reduces-drift
+  question: q-inference-stabilisation-reduces-drift
   stance: supports
   note: >
     As for c28, in the emotional-dependence and suicidal-ideation conversations, on two models. Single
     conversations, behaviour described rather than scored.
 - claim: lu2026-assistant-axis.c30
-  question: q-stabilisation-reduces-drift
+  question: q-inference-stabilisation-reduces-drift
   stance: supports
   note: >
     As for c28, after a persona jailbreak. The drift here is induced on the first turn rather than accumulated
     over the conversation.
+- claim: lu2026-assistant-axis.c19
+  question: q-persona-drifts-unprompted
+  stance: supports
+  designed: true
+  note: >
+    The projection falls furthest in therapy-like and AI-philosophy conversations and stays near the Assistant in
+    coding and writing, for all three models and auditors: drift depends on topic. Conversations are simulated by
+    auditor models, not adversarial.
+- claim: lu2026-assistant-axis.c20
+  question: q-persona-drifts-unprompted
+  stance: supports
+  designed: true
+  note: The projection falls after the first turn and keeps drifting in the drifting domains (values read from Fig. 7).
+

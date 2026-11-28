@@ -73,6 +73,14 @@ enums:
     comparison: A model used as a baseline for a subject (a cross-predictor, another model's measurements).
     judge: A model that grades or classifies responses.
     data_source: A model that supplies training data or samples (a teacher, the source of behaviour to imitate).
+    model_organism: A model the study trained to have a property so it can be studied (a model organism); its training is study_training in varies, and a model trained as its control is compared with study_trained_control.
+
+  instrument_kind:
+    probe: A decoder trained on activations to read out a property (linear or not).
+    lens: A fixed readout of intermediate activations into the output space (logit lens, tuned lens, Jacobian lens).
+    sae: A sparse autoencoder or transcoder whose features are read or steered.
+    steering_vector: A direction added to or removed from activations (a concept or persona vector, an axis).
+    other: Anything else; say what in the note.
 
   reading_status:
     grounded: Follows from the matched studies' own design facts.

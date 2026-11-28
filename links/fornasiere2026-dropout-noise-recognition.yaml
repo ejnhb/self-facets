@@ -66,3 +66,15 @@ links:
     question: q-introspection-success-generalises
     stance: against
     note: Models that localize both perturbations perfectly mostly cannot name which one was applied.
+  - claim: fornasiere2026-dropout-noise-recognition.c14
+    question: q-injected-state-report-emerges-in-pretraining
+    stance: supports
+    designed: true
+    note: The Olmo 3.1 32B base model already localizes dropout and noise well above chance, before any post-training.
+  - claim: fornasiere2026-dropout-noise-recognition.c17
+    question: q-injected-state-report-emerges-in-pretraining
+    stance: supports
+    designed: true
+    note: >
+      Across stage-1 pretraining checkpoints localization stays near chance and rises only in the last ones, to
+      about 75 to 85% at step 656k: the capacity appears late in pretraining.

@@ -15,6 +15,8 @@
   frame:                            # (O) what a relevant study looks like, as logic (as in definitions): keys are ANDed,
     def: d-introspection-grounded   #     each FACET shares a value; all / any / not / def nest. The build lists matching
     varies: [post_training_stage]   #     claims not yet linked as candidates (question_candidates)
+  measure: >-                       # (O) for "how well" questions: which measure counts (sensitivity, a report's rate)
+    ...
   exact_values: false               # (O) true: the frame matches only the values named, not their narrower values
   auto_stance:                      # (O) for "does X change Y?": claims in frame-matching studies whose effect_of is
     effect_of: [post_training_stage]  #     one of these take a stance automatically

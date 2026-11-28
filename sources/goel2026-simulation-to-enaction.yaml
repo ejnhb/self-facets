@@ -64,6 +64,22 @@ coding:
       codebook: "0.10"
       scope: First full coding (8 studies, 43 claims) and proposed links.
       read: "As in read_parts: the v1 PDF in full with every figure viewed, and the released code and data to the checklist at 8d53eec."
+    - date: 2026-11-28
+      pr: 32
+      coded_by: claude
+      coder_model: claude-opus-5-5
+      codebook: "0.11"
+      scope: >
+        Recheck after 0.11. elicitation prefilled to teacher_forced on s1, s2 and s3; s4 takes teacher_forced
+        beside prefilled (Fig. 9 is generation) and steered. s4: the sampling temperature moves from
+        activation_intervention to sampling_setting in varies, and c22 takes effect_of sampling_setting; the
+        varies note on context updated. s5: construct unspecified to planning. c34 and c35: report_source in long
+        form, with context excluded by the design.
+      read: >
+        v1 reopened (scripts/fetch_paper.py): §2 opening, §2.5 with Fig. 9 and the token-appending passage,
+        §3 and §3.1 with Table 1, §3.3 with the Fig. 15 diagram, App. C.4's description of the teacher-forced
+        contexts. No value changed, so no
+        figure was viewed again. Code not reopened (the temperature values are as the record gives them from it).
 
 studies:
   - id: goel2026-simulation-to-enaction.s1
@@ -155,13 +171,14 @@ studies:
           Own text is compared with other models' text without adjusting for how alike the models are; the
           reciprocal 5 by 5 design (Fig. 4) is the authors' control for generator effects.
       elicitation:
-        value: [prefilled]
+        value: [teacher_forced]
         basis: operational
-        confidence: low
+        where: "§2, §2.1"
+        confidence: high
         note: >
-          The texts are placed in the model's context and read teacher-forced, in the assistant turn (as a prefill
-          would be), in the user turn, or as plain text. No value fits the user-turn and plain-text conditions
-          better.
+          The texts are placed in the model's context and read teacher-forced, in the assistant turn, in the user
+          turn, or as plain text; nothing is generated at measurement. Codebook 0.11 (was prefilled, the nearest
+          value).
       self_sense:
         value: [authorship]
         basis: operational
@@ -232,10 +249,12 @@ studies:
       output_route_control: not_applicable
       similarity_adjustment: none
       elicitation:
-        value: [prefilled, prompted]
+        value: [teacher_forced, prompted]
         basis: operational
-        confidence: low
-        note: The persona is set by system prompt; the text is read teacher-forced in the assistant turn.
+        confidence: medium
+        note: >
+          The persona is set by system prompt; the text is read teacher-forced in the assistant turn. Codebook 0.11
+          (teacher_forced was prefilled, the nearest value).
       object_of_study:
         value: [default_persona, other_persona]
         basis: stated
@@ -295,10 +314,10 @@ studies:
       output_route_control: not_applicable
       similarity_adjustment: none
       elicitation:
-        value: [prefilled]
+        value: [teacher_forced]
         basis: operational
-        confidence: low
-        note: Text is read teacher-forced; no value fits better.
+        confidence: high
+        note: Text is read teacher-forced and the hidden states are taken; nothing is generated. Codebook 0.11 (was prefilled).
 
   - id: goel2026-simulation-to-enaction.s4
     label: Input surprise drives output entropy, by token substitution and steering
@@ -342,25 +361,31 @@ studies:
       evidence: [output_probabilities, internals]
       validated_against: not_applicable
       varies:
-        value: [context, activation_intervention, format, post_training_stage]
+        value: [context, activation_intervention, sampling_setting, format, post_training_stage]
         levels:
           context: [appended token at each of 20 ranks of the output distribution, from argmax to low probability]
-          activation_intervention: [steering toward each surprise-centroid bin (on-policy or base centroids), steering toward each on-policy entropy-centroid bin, sampling temperature 0 to 1.5 (Fig. 9)]
+          activation_intervention: [steering toward each surprise-centroid bin (on-policy or base centroids), steering toward each on-policy entropy-centroid bin]
+          sampling_setting: ["sampling temperature 0, 0.5, 0.7, 1.0 and 1.5 (Fig. 9; values from the code)"]
           format: [chat template, plain web text]
           post_training_stage: [base, instruct]
         note: >
-          No varies value fits the surprise of an appended input token; context is the nearest. Sampling temperature
-          is coded under activation_intervention as in Comsa s2, pending the proposed sampling_setting value.
+          Codebook 0.11: context now covers the content or surprise of an input token, so the appended token fits
+          it (it was the nearest value under 0.10), and the sampling temperature is sampling_setting (it was coded
+          under activation_intervention).
       comparison:
         value: [within_model, within_lineage]
         basis: operational
       output_route_control: not_applicable
       similarity_adjustment: not_applicable
       elicitation:
-        value: [prefilled, steered]
+        value: [teacher_forced, prefilled, steered]
         basis: operational
-        confidence: low
-        note: The appended token is placed for the model, at the start of the assistant turn in the chat condition.
+        confidence: medium
+        note: >
+          teacher_forced (codebook 0.11): the appended token is placed for the model (at the start of the assistant
+          turn in the chat condition) and the next distribution is read, with nothing generated (Figs. 10, 11), and
+          the steering contexts of App. C.4 are read teacher-forced (Fig. 21). prefilled: in Fig. 9 the base model
+          generates, continuing web-text passages placed for it. steered: Figs. 12 and 21.
 
   - id: goel2026-simulation-to-enaction.s5
     label: Topic commitment on underspecified prompts, base against instruct
@@ -387,12 +412,13 @@ studies:
       system_prompt: unspecified
       reasoning: none
       construct:
-        value: unspecified
-        author_term: "implicit commitment; cached intention; semantic entropy"
-        where: "§3.1"
+        value: [planning]
+        basis: stated
+        author_term: "pre-response planning; implicit commitment; cached intention; semantic entropy"
+        where: "§3, §3.1"
         note: >
-          Planning or commitment to a topic before the first token has no construct value (OPEN proposal in the PR).
-          Left unspecified rather than take a near value such as preferences.
+          Codebook 0.11 (left unspecified under 0.10). The section is titled "Pre-response Planning and Intent
+          Continuity"; the study tests whether the model commits to a topic before its first output token.
       report_target: not_applicable
       report_readout: not_applicable
       evidence: [behaviour]
@@ -847,12 +873,12 @@ claims:
       stays roughly flat at 1, and rises (to about 8 nats) at 1.5.
     where: "§2.5; Fig. 9"
     evidence_kind: measured
-    effect_of: [activation_intervention]
+    effect_of: [sampling_setting]
     effect_presence: present
     scope:
       models: [llama-3.1-70b-base]
       conditions: Sampling temperature 0 to 1.5.
-    note: Temperature is coded under activation_intervention for want of a sampling-setting value (see the study's varies note).
+    note: effect_of sampling_setting since codebook 0.11 (was activation_intervention).
 
   - id: goel2026-simulation-to-enaction.c23
     study: goel2026-simulation-to-enaction.s4
@@ -1005,10 +1031,16 @@ claims:
     effect_of: [activation_intervention]
     effect_presence: present
     effect_direction: increases
-    report_source: [current_state]
-    note: >
-      report_source current_state because the verdict changes with the stored intent while the transcript stays
-      the same; the authors argue it compares the intent stored at the user tokens with the response.
+    report_source:
+      value: [current_state]
+      basis: stated
+      where: "§3.3"
+      excluded: [context]
+      note: >
+        current_state because the verdict changes with the stored intent while the transcript stays the same; the
+        authors argue it compares the intent stored at the user tokens with the response. context is excluded by
+        the design (codebook 0.11): only the user-token cache is patched, after the answer being judged, so the
+        text in context is identical between conditions; the authors do not put it in those words.
 
   - id: goel2026-simulation-to-enaction.c35
     study: goel2026-simulation-to-enaction.s7
@@ -1022,7 +1054,12 @@ claims:
     effect_direction: decreases
     scope:
       conditions: Food, sport, element, art form, technology.
-    report_source: [current_state]
+    report_source:
+      value: [current_state]
+      basis: stated
+      where: "§3.3"
+      excluded: [context]
+      note: As c34; context excluded by the design (codebook 0.11).
 
   - id: goel2026-simulation-to-enaction.c36
     study: goel2026-simulation-to-enaction.s7

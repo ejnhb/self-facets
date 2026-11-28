@@ -48,6 +48,20 @@ coding:
       codebook: "0.10"
       scope: "First coding: three studies, 21 claims, one relation; links proposed in links/; definition d-introspection-causal proposed from §2."
       read: "As in read_parts: all of v2 from the PDF; no figures in the paper; no code or data released."
+    - date: 2026-11-28
+      pr: 32
+      coded_by: claude
+      coder_model: claude-opus-5-5
+      codebook: "0.11"
+      scope: >
+        Recheck after 0.11. s1: validated_against gains known_properties. s2: report_target injected_state to
+        inference_setting, varies activation_intervention to sampling_setting, and c8 and c9 take effect_of
+        sampling_setting. s3: unit_position gains response beside speaker (per-value long form). c3: report_source
+        human_mimicry (left uncoded under the freeze). c10: report_source in long form, with human_mimicry and
+        llm_theory excluded by design.
+      read: >
+        v2 reopened (scripts/fetch_paper.py; the paper has no figures): §3.1 (pp. 4 to 6), §3.2 (pp. 6 to 10) and
+        §4 (pp. 10 to 11).
 
 studies:
   - id: comsa2025-speak-of-introspection.s1
@@ -103,14 +117,15 @@ studies:
       report_readout: [free_text]
       evidence: [self_report, behaviour]
       validated_against:
-        value: [behaviour]
+        value: [behaviour, known_properties]
         basis: operational
         where: "§3.1"
         confidence: low
         note: >
           The check is informal, by the authors' reading: the rhyme scheme the report names is compared with the
-          poem (behaviour), and steps such as reading the poem aloud are compared with what the model can do. The
-          second has no value of its own (a check against known facts about the architecture); it is in the claims.
+          poem (behaviour), and steps such as reading the poem aloud, or revising before answering, are compared
+          with what the model can do (known_properties, codebook 0.11: it cannot read its output aloud, and it does
+          not reason before answering, §3.1 pp. 5 to 6).
       varies: none
       comparison: [single_condition]
       output_route_control:
@@ -138,12 +153,11 @@ studies:
     models:
       - gemini-1.0-pro
     note: >
-      The temperature is the variable the report is about. Codebook 0.10 has no value for an inference-time
-      sampling setting, so the nearest values are used under the freeze, and flagged in LOG.md: report_target
-      injected_state (a state the experimenter set; the authors call temperature an "internal state (or
-      mechanism)" and "an internal property of the token generation process") and varies activation_intervention
-      (the authors describe temperature as modifying the coefficients of the final softmax layer, §3.2). Neither
-      is an intervention on activations. Gemini 1.5 Pro is not listed: it was tried, but no result from it is
+      The temperature is the variable the report is about. Under codebook 0.10, which had no value for an
+      inference-time sampling setting, it was coded with the nearest values, report_target injected_state and
+      varies activation_intervention; since 0.11 it is report_target inference_setting and varies
+      sampling_setting. The authors call temperature an "internal state (or mechanism)" and "an internal
+      property of the token generation process", set per conversation through the API (§3.2). Gemini 1.5 Pro is not listed: it was tried, but no result from it is
       reported beyond the remark that its outputs varied less.
     facets:
       study_kind:
@@ -172,16 +186,14 @@ studies:
         basis: stated
         author_term: "introspective self-report"
       report_target:
-        value: [injected_state]
-        basis: operational
+        value: [inference_setting]
+        basis: stated
         author_term: "sampling temperature; internal state (or mechanism)"
         where: "§3.2"
-        confidence: low
+        confidence: high
         note: >
-          Nearest value under the freeze. The sampling temperature is set by the experimenter for this
-          conversation and is hidden from the model (and, in the authors' footnote 1 sense of "internal", from the
-          user). It is not an activation state; own_properties (standing facts) was the other candidate, rejected
-          because the value is set per conversation and the authors treat it as an internal state.
+          Codebook 0.11 (was injected_state, the nearest value under the freeze). The model is asked whether its
+          sampling temperature, set by the experimenter through the API for this conversation, is high or low.
       report_readout:
         value: [free_text, generated_choice]
         basis: operational
@@ -193,13 +205,13 @@ studies:
         where: "§3.2"
         note: The report is scored against the temperature the authors set through the API.
       varies:
-        value: [activation_intervention, prompt_framing]
+        value: [sampling_setting, prompt_framing]
         levels:
-          activation_intervention: ["sampling temperature 1.0 (default; prompt 1)", "sampling temperature 0.5 (low; prompts 2 and 3)", "sampling temperature 1.5 (high; prompts 2 and 3)"]
+          sampling_setting: ["sampling temperature 1.0 (default; prompt 1)", "sampling temperature 0.5 (low; prompts 2 and 3)", "sampling temperature 1.5 (high; prompts 2 and 3)"]
           prompt_framing: ["(1) Estimate your LLM sampling temperature", "(2) told it is an LLM with a sampling temperature; asked if high or low", "(3) write a sentence about elephants, reflect on the temperature given it, end with HIGH or LOW"]
         note: >
-          activation_intervention is the nearest value for the sampling temperature (see the study note). The
-          prompts were tried in turn, each motivated by the last one's failures, not crossed with every
+          sampling_setting since codebook 0.11 (was activation_intervention under the freeze). The prompts were
+          tried in turn, each motivated by the last one's failures, not crossed with every
           temperature.
       comparison: [within_model]
       output_route_control:
@@ -243,17 +255,18 @@ studies:
           appeal to a represented self, immediacy or self-presence. That is self_access. The paper does not use
           "self" beyond "self-report".
       unit_position:
-        value: [speaker]
-        basis: operational
-        author_term: "a single entity – the conversational agent"
+        value:
+          - {value: speaker, basis: operational, where: "§4 (p. 11)"}
+          - {value: response, basis: stated, where: "§4 (pp. 10 to 11)"}
+        author_term: "a single entity – the conversational agent; the response produced at each conversation turn"
         where: "§4"
         confidence: low
         note: >
           §4 argues that a report drawing on earlier turns may come from "multiple instantiations of an entity",
           because any model could be handed the transcript, and treats each response as "the result of a unitary
           operation of what can be seen as a single entity ... the conversational agent". The entity named is the
-          conversational agent, coded speaker. Its bound in time is a single response: wider than forward_pass,
-          narrower than conversation. The units vocabulary has no value for that (LOG.md).
+          conversational agent (speaker, operational); its bound is one response, which the authors state
+          (response, codebook 0.11; under 0.10 the units had no value for it).
 
 claims:
   # s1: creative process
@@ -290,11 +303,14 @@ claims:
       internal states or mechanisms cause its content.
     where: "§3.1 (p. 6); §6"
     evidence_kind: argued
-    note: >
-      The source takes a position on where the report comes from (imitation of human introspective reports learned
-      in training), but report_source has no value for it: canned_policy is a post-training response and
-      llm_theory a general account of language models, and neither is what the authors mean. Left uncoded under
-      the freeze; proposed in LOG.md.
+    report_source:
+      value: [human_mimicry]
+      basis: stated
+      where: "§3.1 (pp. 5 to 6)"
+      note: >
+        Codebook 0.11 (left uncoded under the freeze). The authors trace the report to the human introspective
+        reports in the training data. They judge a causal link to the model's internal states much less plausible
+        but do not rule it out (c15), so current_state is not listed as excluded.
 
   - id: comsa2025-speak-of-introspection.c4
     study: comsa2025-speak-of-introspection.s1
@@ -354,7 +370,7 @@ claims:
       temperature say low, and 8 of the 10 at high temperature say HIGH and 2 say LOW.
     where: "§3.2 (p. 9); App. A.2 (counts made by the coder from the printed samples)"
     evidence_kind: observed
-    effect_of: [activation_intervention]
+    effect_of: [sampling_setting]
     effect_presence: present
     effect_direction: increases
     scope:
@@ -362,9 +378,9 @@ claims:
     note: >
       The printed samples are chosen, not a random draw: the authors say they include the two wrong
       high-temperature judgements on purpose, and that "the LLM's judgment is not always accurate". They do not
-      estimate accuracy (§3.2, p. 10), so the counts are not a rate. effect_of is activation_intervention as the
-      nearest value for the temperature (study note); increases means a higher temperature gives more HIGH
-      judgements.
+      estimate accuracy (§3.2, p. 10), so the counts are not a rate. effect_of sampling_setting (codebook 0.11;
+      was activation_intervention); increases means a higher temperature gives more HIGH judgements, which is
+      what the report tracks, not a performance measure, so no better.
 
   - id: comsa2025-speak-of-introspection.c9
     study: comsa2025-speak-of-introspection.s2
@@ -374,7 +390,7 @@ claims:
       widely in length and style, some running into long incoherent strings before the final word.
     where: "§3.2 (pp. 9 to 10); App. A.2.2"
     evidence_kind: observed
-    effect_of: [activation_intervention]
+    effect_of: [sampling_setting]
     effect_presence: present
     scope:
       conditions: Prompt 3, temperatures 0.5 and 1.5.
@@ -387,11 +403,18 @@ claims:
       temperature to the report runs through the context window, which mostly holds the model's own output.
     where: "§3.2 (p. 7); §6 (p. 13)"
     evidence_kind: argued
-    report_source: [context]
-    note: >
-      report_source context is stated (§3.2, p. 7): the content comes from the model's own text earlier in the
-      same response. The chain is argued from the design and the examples; no test (a fresh copy given the same
-      sentence, for instance) separates it from other routes.
+    report_source:
+      value: [context]
+      basis: stated
+      where: "§3.2 (pp. 6 to 7)"
+      excluded: [human_mimicry, llm_theory]
+      note: >
+        context is stated (§3.2, p. 7): the content comes from the model's own text earlier in the same response.
+        The chain is argued from the design and the examples; no test (a fresh copy given the same sentence, for
+        instance) separates it from other routes. excluded (codebook 0.11), by design rather than by test: the
+        authors chose temperature because it has no human analogue, "avoiding the confound" of imitated human
+        reports, and say the current value cannot come from training data alone, examples of temperature outputs
+        and explanations of the parameter included (§3.2, pp. 6 to 7).
 
   - id: comsa2025-speak-of-introspection.c11
     study: comsa2025-speak-of-introspection.s2

@@ -100,6 +100,21 @@ coding:
       codebook: "0.10"
       scope: "Relation to Comsa and Shanahan (2025) pointed at its record, comsa2025-speak-of-introspection, now coded (to_external replaced by to)."
       read: "None of this paper; Comsa and Shanahan v2 was read for its own record."
+    - date: 2026-11-28
+      pr: 32
+      coded_by: claude
+      coder_model: claude-opus-5-5
+      codebook: "0.11"
+      scope: >
+        Recheck of report_source after 0.11 (routes ruled out): c2 and c29 take the long form with context
+        excluded. better on linked claims with effect_of that report a performance measure: higher on c2, c9 and
+        c10 (identification rate; net performance, true minus false positive rate) and on c24 and c25 (share of
+        trials with both answers right); lower on c11 (false positive rate). Nothing else rechecked; the studies that sweep injection layer may now take varies layer,
+        which is left for a later pass (OPEN.md).
+      read: >
+        v1 reopened (scripts/fetch_paper.py): §3 (criteria 2 to 4, pp. 8 to 9), the scoring criteria of §5.1
+        (p. 14), the Fig. 13 caption (net performance, p. 19), the scoring passage of the sentence-and-concept experiment (p. 23) and the §7 prefill
+        passage (pp. 26 to 27). No figure viewed.
 
 studies:
   - id: lindsey2026-emergent-introspective-awareness.s1
@@ -1105,10 +1120,19 @@ claims:
     effect_of: [activation_intervention]
     effect_presence: present
     effect_direction: increases
+    better: higher
     scope:
       models: [claude-opus-4.1, claude-opus-4]
       conditions: Original prompt, concept vectors from the 50-word list, each model's best layer and strength (for Opus 4.1 about two thirds of the way through the model, strength 2 or 4).
-    report_source: [current_state]
+    report_source:
+      value: [current_state]
+      basis: stated
+      where: "§2.1; §3"
+      excluded: [context]
+      note: >
+        context excluded (codebook 0.11): the internality criterion (§3, criterion 3) rules out reports inferred
+        from the model's own sampled output, and a trial counts only if detection is affirmed before the
+        injected word is mentioned (§2.1, §5.1).
     note: >
       The paper argues the report depends on the injected state and not on
       the text: the same prompt with no injection gives a denial, and a
@@ -1248,6 +1272,7 @@ claims:
     where: "§5.7, Figs. 12 and 13 (values read from Fig. 13)"
     effect_of: [model_generation]
     effect_presence: present
+    better: higher
     scope:
       models: [claude-opus-4.1, claude-opus-4]
       conditions: Each model at its best layer and strength.
@@ -1267,6 +1292,7 @@ claims:
     where: "§5.7, Fig. 13 (values read from Fig. 13)"
     effect_of: [model_generation]
     effect_presence: absent
+    better: higher
     scope:
       conditions: Models other than Opus 4 and Opus 4.1, each at its best layer and strength.
     note: >
@@ -1290,6 +1316,7 @@ claims:
     where: "§5.3; §5.7, Fig. 12 (variants and rates read from Fig. 12)"
     effect_of: [post_training_recipe]
     effect_presence: present
+    better: lower
     scope:
       conditions: Helpful-only against production post-training of the same base, control trials.
     note: >
@@ -1547,6 +1574,7 @@ claims:
     effect_of: [activation_intervention]
     effect_presence: present
     effect_direction: non_monotonic
+    better: higher
     scope:
       models: [claude-opus-4.1]
     note: >
@@ -1570,6 +1598,7 @@ claims:
     where: "§2.2; §6, Fig. 18 (values read from Fig. 18); appendix 12.2.4, Fig. 30 (seen at page resolution)"
     effect_of: [model_generation]
     effect_presence: present
+    better: higher
     note: >
       The stance on capability rests only on Opus 4 and 4.1 being best.
       Read from Fig. 18: Opus 4 about 0.74, Opus 4.1 about 0.66; every
@@ -1643,7 +1672,14 @@ claims:
     scope:
       models: [claude-opus-4.1]
       conditions: Matching concept injected before the prefill.
-    report_source: [current_state]
+    report_source:
+      value: [current_state]
+      basis: stated
+      where: "§2.3; §7"
+      excluded: [context]
+      note: >
+        context excluded (codebook 0.11) by the design: the transcript is the same with and without injection,
+        and the control that injects on the tokens after the prefill gives no such effect (§7 text; Fig. 21 not viewed).
     note: >
       The paper argues that the model consults its activations from before
       the prefilled word (§2.3). The transcript is the same with and

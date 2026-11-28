@@ -76,6 +76,20 @@ coding:
       codebook: "0.10"
       scope: "First coding: 11 studies, 44 claims, core facets throughout; origin on two claims the source tests; question links proposed in links/."
       read: "As in read_parts: v3 in full with the figure pages listed there, and the released code at ad7ce52 to the checklist. arXiv v2 skimmed only to see what changed."
+    - date: 2026-11-28
+      pr: 32
+      coded_by: claude
+      coder_model: claude-opus-5-5
+      codebook: "0.11"
+      scope: >
+        Recheck after 0.11. s11: the number of teaching pairs and their labels move from prompt_framing to
+        in_context_examples (prompt_framing dropped from varies); c38 to c41 take effect_of in_context_examples.
+        better: higher (accuracy) on c37 to c41 and on c1, c15, c17, c31 and c32. Not on the detection claims
+        (c19 to c21, c25 to c27), whose measure is the rate of answering Yes, a hit rate under perturbation and
+        a false-alarm rate without it.
+      read: >
+        v3 reopened (scripts/fetch_paper.py): §7, §7.1, §7.2 and the prompt diagram on p. 9. No value changed, so
+        the figures were not viewed again. Code not reopened.
 
 studies:
   - id: fornasiere2026-dropout-noise-recognition.s1
@@ -603,16 +617,19 @@ studies:
       evidence: [self_report, internals]
       validated_against: [known_intervention]
       varies:
-        value: [prompt_framing, activation_intervention, model_family]
+        value: [in_context_examples, activation_intervention, model_family]
         levels:
-          prompt_framing:
+          in_context_examples:
             - "number of teaching pairs k: 0, 1, 3, 5, 7, 9"
             - "labels in the teaching pairs and question: correct, inverted, Masking/Jitter, X/Y, Rotation/Permutation, each also flipped"
           activation_intervention: ["dropout rate x noise SD, 11 x 11 strengths of the model's ranges"]
           model_family: ["the eight models of s1"]
         note: >
-          The number of in-context examples is coded under prompt_framing ("instructions, examples or framing");
-          the codebook has no value for it alone. See LOG.md.
+          Codebook 0.11: the number of teaching pairs and the labels they carry are in_context_examples (the
+          number or kind of examples in the prompt); under 0.10 both were coded as prompt_framing, the nearest
+          value. The label arms are counted as a kind of example because what is contrasted is how the teaching
+          pairs are labelled; the control aliases also name the options in the final question, which is the
+          same wording as in the examples, so prompt_framing is not kept beside it.
       comparison: [within_model, cross_model]
       output_route_control:
         value: by_construction
@@ -636,6 +653,7 @@ claims:
     evidence_kind: measured
     effect_of: [activation_intervention]
     effect_presence: present
+    better: higher
     effect_direction: increases
   - id: fornasiere2026-dropout-noise-recognition.c2
     study: fornasiere2026-dropout-noise-recognition.s1
@@ -793,6 +811,7 @@ claims:
     effect_of: [post_training_stage]
     effect_presence: present
     effect_direction: increases
+    better: higher
     note: The text states only that every later checkpoint surpasses 95%. Under noise at sigma = 0.056 all four stages are near 99%.
   - id: fornasiere2026-dropout-noise-recognition.c16
     study: fornasiere2026-dropout-noise-recognition.s4
@@ -813,6 +832,7 @@ claims:
     effect_of: [pretraining_progress]
     effect_presence: present
     effect_direction: increases
+    better: higher
     note: Not monotonic; a bump to about 63 to 65% at step 437k falls back to chance at 510k. The authors note the strengths were calibrated on the final model.
   - id: fornasiere2026-dropout-noise-recognition.c18
     study: fornasiere2026-dropout-noise-recognition.s5
@@ -977,6 +997,7 @@ claims:
     evidence_kind: measured
     effect_of: [activation_intervention]
     effect_presence: mixed
+    better: higher
     scope:
       models: [gemma-4-31b-it, llama-3.1-8b-instruct, mistral-small-3.2-24b-instruct-2506, olmo-3.1-32b-instruct, qwen3-14b, seed-oss-36b-instruct]
     note: >
@@ -993,6 +1014,7 @@ claims:
     effect_of: [activation_intervention]
     effect_presence: present
     effect_direction: increases
+    better: higher
     scope:
       models: [qwen3-32b]
   - id: fornasiere2026-dropout-noise-recognition.c33
@@ -1054,6 +1076,7 @@ claims:
     effect_of: [activation_intervention]
     effect_presence: present
     effect_direction: increases
+    better: higher
     scope:
       models: [qwen3-32b]
       conditions: k = 1, correct labels.
@@ -1066,9 +1089,10 @@ claims:
       Qwen3-14B end near 60 to 64%.
     where: "§7.1, Fig. 9 (right) and Fig. 10 (values read from the figures)"
     evidence_kind: measured
-    effect_of: [prompt_framing]
+    effect_of: [in_context_examples]
     effect_presence: present
     effect_direction: increases
+    better: higher
     scope:
       models: [gemma-4-31b-it, mistral-small-3.2-24b-instruct-2506, qwen3-14b, qwen3-32b, qwen3.8-27b, seed-oss-36b-instruct]
       conditions: Number of teaching pairs, correct labels.
@@ -1079,8 +1103,9 @@ claims:
       52%.
     where: "§7.2, Fig. 10 (values read from the figure)"
     evidence_kind: measured
-    effect_of: [prompt_framing]
+    effect_of: [in_context_examples]
     effect_presence: absent
+    better: higher
     scope:
       models: [llama-3.1-8b-instruct, olmo-3.1-32b-instruct]
       conditions: Number of teaching pairs.
@@ -1093,8 +1118,9 @@ claims:
       Qwen3-14B and Qwen3.8-27B the two curves nearly overlap beyond k = 1.
     where: "§7.2, Fig. 10 (the per-model gaps read from the figure)"
     evidence_kind: measured
-    effect_of: [prompt_framing]
+    effect_of: [in_context_examples]
     effect_presence: present
+    better: higher
     scope:
       models: [gemma-4-31b-it, mistral-small-3.2-24b-instruct-2506, qwen3-32b, seed-oss-36b-instruct]
       conditions: Correct against inverted labels.
@@ -1107,8 +1133,9 @@ claims:
       and for X/Y its sign depends on which perturbation is stronger.
     where: "§7.2, Fig. 11 (values printed in the cells)"
     evidence_kind: measured
-    effect_of: [prompt_framing]
+    effect_of: [in_context_examples]
     effect_presence: present
+    better: higher
     scope:
       models: [qwen3-32b]
       conditions: k = 1; labels Dropout/Noise and Masking/Jitter against X/Y and Rotation/Permutation.

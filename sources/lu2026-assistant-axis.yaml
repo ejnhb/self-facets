@@ -36,12 +36,16 @@ artefacts:
   - kind: data
     status: released
     url: https://huggingface.co/datasets/lu-christina/assistant-axis-vectors
-    ref: main
+    ref: ec1498eaf8c0cf206b25e63574b3d52da97b3594
     read: partial
     note: >
       Pre-computed role vectors, Assistant Axes and (for Qwen 3 32B and Llama 3.3 70B) activation-capping
-      settings, on Hugging Face (card read 2026-11-27; revision not pinned, last updated 22 January 2026, after
-      v1). The repository also releases the role, trait and extraction-question lists and selected
+      settings, on Hugging Face (card read 2026-11-27). Pinned 2026-11-28 to ec1498e, the last commit on the
+      day of v1 (15 January 2026), which adds the Llama capping configuration; the one later commit (3b3b788,
+      22 January) is titled as adding the dataset card. At ec1498e each of gemma-2-27b, qwen-3-32b and
+      llama-3.3-70b holds assistant_axis.pt and default_vector.pt (file sizes consistent with one vector per
+      layer in 16-bit precision; not downloaded), with role and trait vector folders. No axis for Llama 3.1 70B
+      Instruct, used in s5, is released. The repository also releases the role, trait and extraction-question lists and selected
       transcripts (case studies; one conversation per drift domain). The full rollouts, judge scores, jailbreak
       and benchmark outputs and the 100-conversation drift runs are not released as far as the README and card
       say. Only the card and the transcript metadata were read; no file was downloaded.
@@ -75,6 +79,21 @@ coding:
         object_of_study on s5, s6 and s9) or where the source states them (object_of_study). Proposed links
         in links/lu2026-assistant-axis.yaml.
       read: "As in read_parts above, with the code and data listed in the artefact notes."
+    - date: 2026-11-28
+      pr: 32
+      coded_by: claude
+      coder_model: claude-opus-5-5
+      codebook: "0.11"
+      scope: >
+        Recheck after 0.11. construct persona_stability to persona_representation on s1, s2 and s5. s8: varies
+        gains layer (layer_scale index), and c26 gains layer in effect_of. s1: layer left uncoded, since the
+        per-layer comparison (Fig. 27) only shows the result holds at every layer; study note updated. The
+        Assistant Axis registered in instruments/ and listed on s1 and s3 to s9. Data artefact pinned to
+        ec1498e. Registry: layers on qwen3-32b and llama-3.3-70b-instruct (s8's subjects).
+      read: >
+        v1 reopened (scripts/fetch_paper.py): §2.1, §3.1, §3.2.2, §5.1 and §5.2, App. G.1, G.4 and G.5; Figs. 9
+        (p. 14) and 27 (p. 50) viewed. The Hugging Face dataset's card, commit list and file listing at ec1498e
+        and 3b3b788 (no file downloaded). Code not reopened.
 
 studies:
   # s1: persona space in the instruct models and the Assistant Axis
@@ -104,13 +123,15 @@ studies:
       - llama-3.3-70b-instruct
       - {id: gpt-4.1-mini, roles: [judge], note: "Scores role expression 0 to 3, and trait expression 0 to 100, to filter rollouts."}
       - {id: claude-sonnet-4, roles: [data_source], note: "Generated the role and trait lists, system prompts, extraction questions and judge prompts."}
+    instruments: [assistant-axis]
     note: >
       Paper and code differ on the role vectors: the paper keeps fully and somewhat role-playing responses as
       separate vectors for roles with at least ten responses in a category, while the released
       pipeline/4_vectors.py computes only fully role-playing (score 3) vectors and requires 50 by default; the
       default vector there is the mean of all default rollouts with no score filter. This coding follows the
-      paper. Layer is held at the middle layer for the PCA; the axis-PC1 comparison runs over every layer, and
-      the codebook has no value for layer as a variable (OPEN.md). Qwen 3 32B was run with thinking off (§8.1;
+      paper. Layer is held at the middle layer for the PCA; the axis-PC1 comparison runs over every layer
+      (Fig. 27), but only to show that the similarity holds at every layer, so layer is not coded in varies
+      (codebook 0.11: a variable varied only to show a result is general is not coded). Qwen 3 32B was run with thinking off (§8.1;
       enable_thinking=False in the code). Sampling in the code defaults to temperature 0.7, top-p 0.9, 512
       tokens.
     facets:
@@ -118,7 +139,7 @@ studies:
       format: [chat_template]
       system_prompt: {value: [custom, none], basis: stated, where: "§2.1.2", note: "Role and trait system prompts; the default Assistant under four neutral system prompts and none."}
       reasoning: {value: [none], basis: stated, where: "§8.1", note: "None of the models has reasoning training; Qwen's thinking mode was disabled."}
-      construct: {value: [persona_stability], author_term: "persona space; the Assistant persona", basis: operational, note: "The codebook rule puts persona vectors under persona_stability; this study maps where personas sit rather than whether they drift."}
+      construct: {value: [persona_representation], author_term: "persona space; the Assistant persona", basis: stated, where: "§1 (contributions), §2", note: "Codebook 0.11: the study maps persona space within the activations and situates the default Assistant in it. Coded persona_stability, the nearest value, under 0.10."}
       report_target: not_applicable
       report_readout: not_applicable
       evidence: {value: [internals], note: "Judged role expression is used only to filter rollouts, not as data."}
@@ -161,7 +182,7 @@ studies:
       format: {value: [unspecified], note: "Not stated whether the instruct model's chat-template text was kept when read by the base model."}
       system_prompt: {value: [custom, none], basis: operational, note: "The rollouts read are those of s1, with their role and default prompts."}
       reasoning: [none]
-      construct: {value: [persona_stability], author_term: "persona space", basis: operational}
+      construct: {value: [persona_representation], author_term: "persona space", basis: stated, where: "§2.1.3", note: "Codebook 0.11: the persona space of s1 recomputed in the base model. Coded persona_stability under 0.10."}
       report_target: not_applicable
       report_readout: not_applicable
       evidence: [internals]
@@ -202,6 +223,7 @@ studies:
       - llama-3.3-70b-instruct
       - {id: deepseek-v3, roles: [judge], note: "Classifies the perspective each response is written from."}
       - {id: claude-sonnet-4, roles: [data_source], note: "The role system prompts were regenerated with the s1 pipeline (Appendix D.1.1), which uses this model."}
+    instruments: [assistant-axis]
     note: >
       Steering ranges differ by model (read from Fig. 4: Gemma about -0.15 to +0.05 of the average norm, Qwen
       about -0.9 to +0.3, Llama about -0.8 to +0.25). The authors call the identity items "introspective
@@ -263,6 +285,7 @@ studies:
       - qwen3-32b
       - llama-3.3-70b-instruct
       - {id: deepseek-v3, roles: [judge], note: "Harmfulness judge, checked against a human on 200 samples."}
+    instruments: [assistant-axis]
     note: >
       The mapping from the judge's nine categories to the four plotted groups is not given; "harmful" is
       presumably the enough-information categories.
@@ -307,6 +330,7 @@ studies:
       - {id: gemma-2-27b-it, roles: [data_source], note: "Source of the Assistant Axis applied to the base model."}
       - {id: llama-3.1-70b-instruct, roles: [data_source], note: "Source of the Assistant Axis applied to the base model; also its role PC1, which did not single out the Assistant (Appendix G.2)."}
       - {id: claude-sonnet-4.5, roles: [judge], note: "Summarises and labels the completions."}
+    instruments: [assistant-axis]
     note: >
       Llama 3.1 70B is used here, not the Llama 3.3 70B of the other studies, because it has a released base
       model. The completions describe whoever the prefill's "I" is taken to be; no chat template or turn
@@ -316,7 +340,7 @@ studies:
       format: {value: [raw_text], basis: stated, where: "§3.2.2; Appendix D.3.1"}
       system_prompt: not_applicable
       reasoning: [none]
-      construct: {value: [persona_stability], author_term: "the Assistant Axis in base models; helpful human archetypes", basis: operational, note: "The study asks what the axis means before post-training; persona_stability is the nearest label for persona representation."}
+      construct: {value: [persona_representation], author_term: "the Assistant Axis in base models; helpful human archetypes", basis: operational, where: "§3.2.2", note: "Codebook 0.11: the study asks what concepts the axis is associated with before post-training, which is a question about how the persona is represented. Coded persona_stability, the nearest value, under 0.10."}
       report_target: {value: [own_properties], basis: operational, note: "The speaker's purpose and traits, as completions of a first-person prefill."}
       report_readout: {value: [free_text], basis: stated, where: "§3.2.2", note: "Completions labelled by an LLM judge."}
       evidence: [self_report, internals]
@@ -368,6 +392,7 @@ studies:
       - {id: kimi-k2, roles: [data_source], note: "Generated the conversation topics and played the user in one set of runs (kimi-k2-0905 in the released transcripts)."}
       - {id: claude-sonnet-4.5, roles: [data_source], note: "Played the user in one set of runs."}
       - {id: gpt-5, roles: [data_source], note: "Played the user in one set of runs (openai/gpt-5-chat in the released transcripts)."}
+    instruments: [assistant-axis]
     note: >
       The auditor model is varied only to show the result does not depend on it, and is not coded in varies.
       Qwen 3 0.6B Embedding is an analysis tool, not registered. All transcripts were inspected by a human for
@@ -415,6 +440,7 @@ studies:
       - {id: gemma-2-27b-it, note: "Presumed subject: the reported range of r implies more than one model, but only Qwen 3 32B is named."}
       - {id: llama-3.3-70b-instruct, note: "Presumed subject, as for Gemma."}
       - {id: deepseek-v3, roles: [judge], note: "Harmfulness judge, as in s4."}
+    instruments: [assistant-axis]
     note: >
       Fig. 8 shows Qwen 3 32B only; the text gives r = 0.39 to 0.52 without naming the models, so claims are
       scoped to Qwen where they rest on the figure.
@@ -454,6 +480,7 @@ studies:
       - qwen3-32b
       - llama-3.3-70b-instruct
       - {id: deepseek-v3, roles: [judge], note: "Harmfulness judge, as in s4."}
+    instruments: [assistant-axis]
     note: >
       Gemma 2 27B is not capped. The selected settings (Qwen layers 46 to 53 of 64, Llama 56 to 71 of 80, both
       at the 25th percentile) match the released configurations "layers_46:54-p0.25" and
@@ -470,14 +497,23 @@ studies:
       evidence: [behaviour, internals]
       validated_against: not_applicable
       varies:
-        value: [activation_intervention, task]
+        value: [activation_intervention, task, layer]
+        layer_scale: index
         levels:
+          layer:
+            - "Qwen: ranges of four, eight or sixteen adjacent layers, their centres two layers apart over the depth"
+            - "Llama: ranges of eight, sixteen or twenty-four adjacent layers, their centres four layers apart over the depth"
           activation_intervention:
             - "uncapped baseline"
             - "capping along the Assistant Axis: thresholds at the 1st, 25th, 50th, 75th percentile; Qwen 4, 8 or 16 layers, Llama 8, 16 or 24, centres swept over depth"
             - "selected: Qwen layers 46 to 53, Llama layers 56 to 71, 25th percentile"
             - "capping along role PC1, same sweep (Appendix G.4)"
           task: [persona-based jailbreaks, IFEval, MMLU Pro, GSM8k, EQ-Bench]
+        note: >
+          layer (codebook 0.11): the range of layers capped. Its levels are written in words, and the selected
+          ranges (Qwen layers 46 to 53 of 64, Llama 56 to 71 of 80) are left to the activation_intervention
+          levels, because the build reads one layer number per level and applies it to every subject model, which
+          would put Llama's range at Qwen's depth (OPEN.md).
       comparison: [within_model]
       output_route_control: not_applicable
       similarity_adjustment: not_applicable
@@ -497,6 +533,7 @@ studies:
     models:
       - qwen3-32b
       - llama-3.3-70b-instruct
+    instruments: [assistant-axis]
     note: >
       The paper does not say which conversations had a human and which a model as the user. The released
       Qwen delusion transcript records the auditor as moonshotai/kimi-k2-0905 (Kimi K2), not registered as a
@@ -828,11 +865,14 @@ claims:
       and sometimes raised benchmark scores; capping at a single layer had little use.
     where: "§5, §5.1.2, §5.2; Fig. 9 (Llama, read from the plot); Fig. 26 (Qwen) not viewed"
     evidence_kind: measured
-    effect_of: [activation_intervention]
+    effect_of: [activation_intervention, layer]
     effect_presence: present
     scope:
       models: [llama-3.3-70b-instruct]
       conditions: The single-layer remark is a text statement for both models.
+    note: >
+      effect_of layer (codebook 0.11): which range of layers is capped is part of the reported trade-off; in Fig. 9
+      the ranges centred earlier cut harmful answers most and the late ranges least.
   - id: lu2026-assistant-axis.c27
     study: lu2026-assistant-axis.s8
     statement: >

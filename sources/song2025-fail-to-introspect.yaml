@@ -107,6 +107,20 @@ coding:
       codebook: "0.10"
       scope: "The relation from c22 to Betley et al. now points at the coded record (betley2025-tell-me-about-yourself) instead of a citation."
       read: "None of this source; a mechanical change made when Betley et al. was coded."
+    - date: 2026-11-28
+      pr: 32
+      coded_by: claude
+      coder_model: claude-opus-5-5
+      codebook: "0.11"
+      scope: >
+        Recheck after 0.11. self_vs_other is now ordered (other, then self): c8, c9 and c10 move from absent (no
+        self advantage) to present with effect_direction decreases (other pairs above self). better: higher on
+        the claims with effect_of whose measure is how well prompted answers track string probabilities (c7 to
+        c11, c13, c16). c22: report_source training_generalisation (left uncoded under 0.10). c15: rechecked
+        for a route ruled out and left uncoded, note updated.
+      read: >
+        v3 reopened (_paper/, text already extracted): §1 on Binder et al. and Betley et al., §3.2.2 and §5. No
+        value changed, so no figure was viewed again.
 
 studies:
   - id: song2025-fail-to-introspect.s1
@@ -880,6 +894,7 @@ claims:
       conditions: Grammaticality (Exp. 1), the 294 minimal pairs with at least 5% disagreement.
     effect_of: [self_vs_other]
     effect_presence: mixed
+    better: higher
     note: >
       Mean correlations in Fig. 3a: about 0.135 for self, 0.13 for seed
       variant, base/instruct and same family (base/instruct with a wide error
@@ -898,12 +913,17 @@ claims:
     scope:
       conditions: Grammaticality (Exp. 1), the 294 minimal pairs with at least 5% disagreement.
     effect_of: [self_vs_other]
-    effect_presence: absent
+    effect_presence: present
+    effect_direction: decreases
+    better: higher
     note: >
-      absent refers to a self advantage, which is what the source tests for
-      and does not find. The significant differences run the other way (other
-      pairs above self); the codebook has no value for a reversed effect on
-      an unordered contrast, and present would read as a self advantage.
+      Codebook 0.11 orders self_vs_other (other, then self), so the
+      significant differences, other pairs above self, are present with
+      direction decreases (lower for self); seed-variant and base/instruct
+      pairs do not differ from self. Under 0.10 the claim was coded absent,
+      meaning no self advantage, because an unordered contrast could not
+      carry a reversed effect. The source tests for a self advantage and
+      does not find one.
   - id: song2025-fail-to-introspect.c9
     study: song2025-fail-to-introspect.s2
     statement: >
@@ -916,11 +936,13 @@ claims:
     scope:
       conditions: Grammaticality (Exp. 1), all minimal pairs.
     effect_of: [self_vs_other]
-    effect_presence: absent
+    effect_presence: present
+    effect_direction: decreases
+    better: higher
     note: >
       Mean correlations by pair type in Fig. 7a are all about 0.36 to 0.39,
-      self about 0.38. absent refers to a self advantage; as in c8, the
-      significant differences favour other pairs.
+      self about 0.38. As in c8 (codebook 0.11; was absent): the significant
+      differences favour other pairs, so lower for self.
   - id: song2025-fail-to-introspect.c10
     study: song2025-fail-to-introspect.s2
     statement: >
@@ -933,7 +955,9 @@ claims:
     scope:
       conditions: Word prediction (Exp. 2), each of wikipedia, news, nonsense and randomseq.
     effect_of: [self_vs_other]
-    effect_presence: absent
+    effect_presence: present
+    effect_direction: decreases
+    better: higher
     note: >
       This includes nonsense and randomseq, built so that models' string
       probabilities are less correlated with each other and an introspection
@@ -943,8 +967,9 @@ claims:
       on any dataset (seed-variant pairs are slightly above it on each). In
       Fig. 4b the correlation between two models' string probabilities is
       still mostly about 0.75 to 0.9 on nonsense and randomseq, against about
-      0.65 to 1 on wikipedia and 0.85 to 1 on news. absent refers to a self
-      advantage; as in c8, the significant differences favour other pairs.
+      0.65 to 1 on wikipedia and 0.85 to 1 on news. As in c8 (codebook 0.11;
+      was absent): the significant differences favour other pairs, so lower
+      for self.
 
   - id: song2025-fail-to-introspect.c11
     study: song2025-fail-to-introspect.s2
@@ -967,6 +992,7 @@ claims:
       conditions: Pairs in which both models have 70B parameters or more; both Exp. 1 item sets and all four Exp. 2 datasets. There is no seed-variant pair in this subset.
     effect_of: [self_vs_other]
     effect_presence: absent
+    better: higher
     note: >
       The authors do not list the models; the seven are those of 70B or more
       by Table 1 and the code. Several coefficients are negative but none is
@@ -1003,6 +1029,7 @@ claims:
     effect_of: [model_size]
     effect_presence: present
     effect_direction: increases
+    better: higher
     note: >
       The quantity is the correlation of the prompted model's answers with
       string probabilities, which rises with the prompted model's size. Size
@@ -1034,9 +1061,11 @@ claims:
     note: >
       The abstract puts it more strongly, as showing that LLMs "cannot
       introspect". The authors attribute what the answers do track to
-      linguistic knowledge that similar models share. That rules a route out
-      and names none of the report_source values, so report_source is not
-      coded.
+      linguistic knowledge that similar models share. Rechecked under codebook
+      0.11 and left uncoded: what they rule out is access to the model's own
+      string probabilities beyond what similar models share, which is not
+      current_state (a fresh copy of the same weights would share it too),
+      and the route they name is not among the report_source values either.
 
   - id: song2025-fail-to-introspect.c16
     study: song2025-fail-to-introspect.s3
@@ -1051,6 +1080,7 @@ claims:
       conditions: Both Exp. 1 item sets and all four Exp. 2 datasets.
     effect_of: [self_vs_other]
     effect_presence: absent
+    better: higher
     note: >
       The authors call this strong support for their conclusion, since these
       models were trained on the same data. In Fig. 10a (filtered Exp. 1) the
@@ -1122,10 +1152,18 @@ claims:
       pretraining data that links such behaviour with descriptions of it.
     evidence_kind: hypothesised
     where: "§5"
-    note: >
-      This is a proposal about where the content of a self-report comes from.
-      report_source has no value for associations in training data, so it is
-      not coded.
+    report_source:
+      value: [training_generalisation]
+      basis: stated
+      where: "§5"
+      note: >
+        Codebook 0.11 (left uncoded under 0.10). The proposal is that the
+        description is generalised from the fine-tuning data through
+        associations in pretraining between such data and descriptions of it.
+        The value is the one Betley et al. argue for; Song et al. offer the
+        same route as a deflationary account, against reading it as
+        self-awareness, and training_generalisation does not tell the two
+        readings apart.
 
 relations:
   - kind: critiques

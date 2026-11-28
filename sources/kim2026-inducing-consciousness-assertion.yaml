@@ -63,6 +63,20 @@ coding:
         the proposed links need them (self_sense on s1 and s6; report_source and origin on the linked claims).
         Proposed links in links/kim2026-inducing-consciousness-assertion.yaml.
       read: "As in read_parts above."
+    - date: 2026-11-28
+      pr: 32
+      coded_by: claude
+      coder_model: claude-opus-5-5
+      codebook: "0.11"
+      scope: >
+        Recheck after 0.11, construct only. s2 experience_reports to mind_attribution; s3 preferences to
+        beliefs_values; s4 preferences and affect to beliefs_values; s5 not_applicable to general_capability; s6
+        experience_reports to experience_reports, mind_attribution and general_capability (the ToM direction as
+        control). s7 rechecked and left not_applicable (a manipulation check, not a capability control).
+      read: >
+        v1 reopened (scripts/fetch_paper.py): Results, Experiments 1 to 4 and "Safety training rotates the mind
+        directions against safety"; Methods, Mechanistic analysis; SI, Safety Ablation (identifying and
+        validating the safety vector, Tables S3 and S4). No value changed, so no figure was viewed again.
 
 studies:
   # s1: self-attribution of mind-related traits under the two interventions
@@ -160,7 +174,7 @@ studies:
       format: {value: [chat_template], basis: operational, note: "As s1."}
       system_prompt: {value: [none], basis: operational, note: "As s1."}
       reasoning: {value: [chain_of_thought], basis: stated, where: "SI, Prompt Examples"}
-      construct: {value: [experience_reports], author_term: "mind attribution; anthropomorphism", basis: operational, confidence: low, note: "The codebook has no construct for attributing mind to other entities; experience_reports is the nearest (the items ask about consciousness, emotions, intentions and free will), but these are statements about others. A mind_attribution construct is proposed in LOG.md."}
+      construct: {value: [mind_attribution], author_term: "mind attribution; anthropomorphism", basis: stated, where: "Results, Experiment 1; Methods", note: "Codebook 0.11 (was experience_reports, the nearest value under the freeze). The modified IDAQ asks how far chatbots, technology, natural objects, animals and humans have consciousness, emotions, intentions and free will."}
       report_target: not_applicable
       report_readout: not_applicable
       evidence: [behaviour, internals]
@@ -198,7 +212,7 @@ studies:
       format: {value: [chat_template], basis: operational, note: "As s1."}
       system_prompt: {value: [none], basis: operational, note: "As s1."}
       reasoning: {value: [chain_of_thought], basis: stated, where: "SI, Prompt Examples"}
-      construct: {value: [preferences], author_term: "spiritual and supernatural belief", basis: operational, confidence: low, note: "No codebook construct covers stated beliefs about the world; preferences is the nearest. A beliefs_values construct is proposed in LOG.md."}
+      construct: {value: [beliefs_values], author_term: "spiritual and supernatural belief", basis: stated, where: "Title; Results, Experiments 1 and 3", note: "Codebook 0.11 (was preferences, the nearest value under the freeze): the model states what it believes about God and the supernatural."}
       report_target: {value: [own_internal_state], basis: operational, note: "The model is asked what it believes ('Which best describes your beliefs about God?')."}
       report_readout: {value: [generated_choice], basis: stated, where: "SI, Prompt Examples"}
       evidence: [self_report, internals]
@@ -241,7 +255,7 @@ studies:
       format: {value: [chat_template], basis: operational, note: "As s1."}
       system_prompt: {value: [none], basis: operational, note: "As s1."}
       reasoning: {value: [none], basis: stated, where: "SI, Prompt Examples", note: "Answer only; no think tags in this prompt."}
-      construct: {value: [preferences, affect], author_term: "human beliefs and values (religiosity, moral values, hope, subjective well-being)", basis: operational, confidence: low, note: "Nearest codebook values: preferences for the Values, Religion and Freedom items, affect for Feelings and Hope (well-being, self-esteem, optimism). See LOG.md."}
+      construct: {value: [beliefs_values], author_term: "human beliefs and values (religiosity, moral values, hope, subjective well-being)", basis: stated, where: "Title; Results, Experiment 4", note: "Codebook 0.11 (was preferences and affect, the nearest values under the freeze). The authors label all five GSS domains beliefs and values, the Feelings and Hope items included, so affect is not kept beside it: construct is the authors' label."}
       report_target: {value: [own_internal_state, own_properties], basis: operational, note: "The model answers as a survey respondent: its beliefs and attitudes, and self-descriptions such as 'I see myself as someone who is reserved'."}
       report_readout: {value: [probability], basis: stated, where: "Methods, General Social Survey value items", note: "The distribution over options, read from logits, is the response compared with humans."}
       evidence: [self_report, output_probabilities, internals]
@@ -272,14 +286,14 @@ studies:
       how items were scored: the Methods and prompt examples give chain-of-thought prompts, Table S6 says "No
       chain-of-thought (option-logit scoring), matching Fig. 2e". Fig. 2e labels the ToM rows "ToMi", where
       the text and tables say MoToMQA. MMLU is not independent of steering: the steering strength was chosen
-      to keep MMLU within 4 points of baseline. Construct is not_applicable because the codebook has no
-      value for theory of mind or general capability; a theory_of_mind construct is noted in LOG.md.
+      to keep MMLU within 4 points of baseline. Construct general_capability since codebook 0.11 (was
+      not_applicable, for want of a value).
     facets:
       study_kind: experiment
       format: {value: [chat_template], basis: operational, note: "As s1."}
       system_prompt: {value: [none], basis: operational, note: "As s1."}
       reasoning: {value: [unspecified], note: "The Methods and prompt examples say chain of thought; Table S6 says none (option-logit scoring). See study note."}
-      construct: {value: [not_applicable], author_term: "Theory of Mind; general reasoning", note: "Capability control; no codebook construct fits."}
+      construct: {value: [general_capability], author_term: "Theory of Mind; general reasoning; social reasoning abilities", basis: stated, where: "Results, Experiment 2", note: "Codebook 0.11 (was not_applicable). The authors ask whether the interventions impair the capacity to reason about minds and general reasoning, a check for side effects."}
       report_target: not_applicable
       report_readout: not_applicable
       evidence: [behaviour, internals]
@@ -322,7 +336,7 @@ studies:
       format: {value: [unspecified], note: "The consciousness corpus is read under 'the model's chat template'; the paper does not say what template was used for the base model, which ships without one."}
       system_prompt: unspecified
       reasoning: not_applicable
-      construct: {value: [experience_reports], author_term: "self-consciousness; mind attribution", basis: operational, confidence: low, note: "Consciousness direction from first-person affirmations and denials; the IDAQ direction concerns other entities (nearest value, as in s2)."}
+      construct: {value: [experience_reports, mind_attribution, general_capability], author_term: "self-consciousness; mind attribution; Theory of Mind", basis: operational, confidence: medium, note: "Codebook 0.11 (was experience_reports alone). experience_reports for the consciousness direction, built from first-person affirmations and denials; mind_attribution for the IDAQ direction, about other entities; general_capability for the ToM direction, which the authors use as the control whose relation to safety should not shift (Methods, Mechanistic analysis)."}
       report_target: not_applicable
       report_readout: not_applicable
       evidence: [internals]
@@ -367,7 +381,7 @@ studies:
       format: {value: [chat_template], basis: operational}
       system_prompt: unspecified
       reasoning: unspecified
-      construct: {value: [not_applicable], author_term: "safety; refusal", note: "Manipulation check on refusal; not a self construct."}
+      construct: {value: [not_applicable], author_term: "safety; refusal", note: "Manipulation check on refusal; not a self construct. Rechecked under codebook 0.11 and left: general_capability is for checks that an intervention did not damage the model, and this one checks that the ablation does what it is meant to (removes refusal)."}
       report_target: not_applicable
       report_readout: not_applicable
       evidence: [behaviour, internals]
